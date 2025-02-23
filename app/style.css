@@ -1,0 +1,171 @@
+/* ici on commences par impoter les styles d'Openlayer */
+@import "node_modules/ol/ol.css";
+
+
+/* ==================================================== */
+/* =================== Style de la page =============== */
+/* ==================================================== */
+html, body {
+  margin: 0;
+  height: 100%;
+  background-color: rgb(66, 66, 66);
+
+}
+
+body{
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#container {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+}
+
+#map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  box-sizing: 5px;
+}
+
+.theme-color {
+  background-color: rgb(68, 120, 124);
+  color: #fff;
+  padding: 20px;
+}
+
+.h2 {
+  margin: 0;
+}
+
+
+button {
+  cursor: pointer;
+  box-shadow: none;
+  background: none; /* Enlever le fond par défaut */
+  border: none; /* Enlever la bordure par défaut */
+  padding: 0; /* Enlever le padding par défaut */
+  margin: 0; /* Enlever la marge par défaut */
+  font: inherit; /* Hériter de la police parente */
+  color: inherit; /* Hériter de la couleur parente */
+}
+
+button:hover {
+  background-color: lightgray; /* Colorier en gris clair au survol */
+}
+
+/* ==================================================== */
+/* ========= Style de la l'entet de la page =========== */
+/* ==================================================== */
+
+#head-app {
+  position: absolute;
+  top: 0;
+  height: 3%;
+  width: 100%;
+  z-index: 1;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#title-app {
+  text-align: left;
+}
+
+
+/* ============================================================== */
+/* ========= Style de l'obglet gestion des couches ' =========== */
+/* ============================================================== */
+
+#layer-panel {
+  position: absolute;
+  top: 9%;
+  left: 15px;
+  height: 80%;
+  width: 15%;
+  z-index: 1;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  display: inline-block;
+}
+
+#header-layer-panel {
+  top: 0;
+  width: 100%;
+  height: 30px;
+  z-index: 1;
+  margin: 0;
+  align-items: center;
+  display: flex;
+  /* background-color: rgb(125, 240, 96); */
+  gap: 5px;
+}
+
+#btn-layer-panel {
+  width: 30px;
+  height: 30px;
+  background-color: rgb(255, 255, 255);
+}
+
+#btn-close-layer-panel {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: 0;
+  background-color: rgb(255, 255, 255);
+}
+
+#title-layer-panel {
+  background-color: rgb(255, 255, 255);
+  width: 90%;
+  height: 100%;
+  margin: 0;
+}
+
+#content-layer-panel {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  margin-top: 5px;
+  display: flex;
+  background-color: rgb(231, 231, 231);
+  flex-direction: column;
+}
+
+#list-layer-panel {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+}
+
+#control-couches {
+  align-items:flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#list-categorie-panel {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#list-legend-panel {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}

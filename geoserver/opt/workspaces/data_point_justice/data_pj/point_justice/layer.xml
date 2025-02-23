@@ -1,0 +1,17 @@
+<layer>
+  <name>point_justice</name>
+  <id>LayerInfoImpl--26d77fff:1950f96deb9:-7ffa</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--26d77fff:1950f96deb9:-7ff9</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--26d77fff:1950f96deb9:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2025-02-16 16:34:06.874 UTC</dateCreated>
+  <dateModified>2025-02-16 16:40:46.912 UTC</dateModified>
+</layer>

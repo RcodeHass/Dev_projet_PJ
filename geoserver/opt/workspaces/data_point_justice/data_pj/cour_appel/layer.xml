@@ -1,0 +1,17 @@
+<layer>
+  <name>cour_appel</name>
+  <id>LayerInfoImpl-7faf15a8:19503fe21cb:-7ff6</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--26d77fff:1950f96deb9:-7ff5</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-7faf15a8:19503fe21cb:-7ff7</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2025-02-14 10:46:37.926 UTC</dateCreated>
+  <dateModified>2025-02-16 16:41:57.997 UTC</dateModified>
+</layer>

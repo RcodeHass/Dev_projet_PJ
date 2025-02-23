@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deals Agriculture</title>
+  </head>
+  <body>
+
+    <!-- =============================================================================== -->
+    <!-- On créer ici la div conteneur qui vas accueillir tous les elements de la page -->
+    <!-- =============================================================================== -->
+    <div id="container" > 
+
+        <!-- Onglet titre de la carte  -->
+      <div id="head-app" class="theme-color">
+        <h2 id="title-app">Accées a la justice </h2>
+      </div>
+
+      <!-- On import ici la carte  -->
+      <div id="map"></div>
+
+      <!-- On import ici la barre de navigation  -->
+      <div id="layer-panel">
+        <div id="header-layer-panel">
+          <button id="btn-layer-panel">=</button>
+          <div id="title-layer-panel">layers</div>
+        </div>
+
+        <div id="content-layer-panel">
+          <div id="list-layer-panel">
+            <button id="btn-close-layer-panel">X</button>
+            <h2>Couches</h2>
+
+            <div id="control-couches">
+              <div id="contries-deals" class="couche">
+                <!-- Le checkbox pour Point de justice -->
+                <input type="checkbox" id="checkbox-pt_justice" name="checkbox-pt_justice" checked />
+                <label for="checkbox-pt_justice">Point de justice</label>
+              </div>
+      
+              <div class="couche">
+                <!-- Le ckeckbox pour Cour d'appel  -->
+                <input type="radio" id="checkbox-cour_appel" name="checkbox-group" checked />
+                <label for="checkbox-cour_appel">Cour d'appel </label>
+              </div>
+      
+              <!-- Le ckeckbox pour Tribunale judiciaire  -->
+              <div class="couche">
+                <input type="radio" id="checkbox-trib_judiciaire" name="checkbox-group" />
+                <label for="checkbox-trib_judiciaire">Tribunale judiciaire </label>
+              </div>
+      
+              <!-- Le ckeckbox pour Prudhomme  -->
+              <div class="couche">
+                <input type="radio" id="checkbox-prudhomme" name="checkbox-group" />
+                <label for="checkbox-prudhomme">Prudhomme </label>
+              </div>
+            </div>
+            
+          </div>
+
+          <div id="list-categorie-panel">
+            <h2>categories</h2>
+            <ul>
+              <li> cathegories 1</li>
+              <li> cathegories 2</li>
+              <li> cathegories 3</li>
+            </ul>
+          </div>
+
+          <div id="list-legend-panel">
+            <h2>Légende</h2>
+          </div>
+
+        </div>
+
+        
+        
+
+
+      </div>
+
+    </div>
+    
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

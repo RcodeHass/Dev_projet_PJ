@@ -1,0 +1,16 @@
+<layer>
+  <name>prudhomme</name>
+  <id>LayerInfoImpl--26d77fff:1950f96deb9:-7ff1</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--26d77fff:1950f96deb9:-7ff5</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--26d77fff:1950f96deb9:-7ff2</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2025-02-16 16:43:39.795 UTC</dateCreated>
+</layer>
