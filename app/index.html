@@ -13,13 +13,14 @@
     <!-- =============================================================================== -->
     <div id="container" > 
 
-        <!-- Onglet titre de la carte  -->
+      <!-- On import ici la carte  -->
+      <div id="map"></div>
+      
+      <div></div>
+      <!-- Onglet titre de la carte  -->
       <div id="head-app" class="theme-color">
         <h2 id="title-app">Accées a la justice </h2>
       </div>
-
-      <!-- On import ici la carte  -->
-      <div id="map"></div>
 
       <!-- On import ici la barre de navigation  -->
       <div id="layer-panel">
@@ -28,7 +29,7 @@
           <div id="title-layer-panel">layers</div>
         </div>
 
-        <div id="content-layer-panel">
+        <div id="content-layer-panel" style="display: none;">
           <div id="list-layer-panel">
             <button id="btn-close-layer-panel">X</button>
             <h2>Couches</h2>
@@ -73,15 +74,51 @@
           <div id="list-legend-panel">
             <h2>Légende</h2>
           </div>
-
         </div>
-
-        
-        
-
-
       </div>
 
+      <div id="info-panel">
+
+        <div id="switch-info-panel">
+          <button id="toggle-size-button"><img id="toggle-img" src="dist/assets/img/next.png" alt=""></button>  
+        </div>
+
+        <div id="info-panel-overlay" style="display: none;">
+          <div id="head-info">
+              head-info
+              <div>
+                  Description générale le le type de point de juste, 
+              </div>
+          </div>
+          <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
+          <div id="switch-info" class="center">
+              <button id="button-text" class="button-info"> Information</button>
+              <button id="button-stat" class="button-info"> Statistique</button>
+              <button id="button-list" class="button-info"> Point justice</button>
+          </div>
+          <div id="contenue-info" class="center">
+
+              <dialog id="text-info" class="view-info" open="true">
+                  texte
+                  <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
+              </dialog>
+              
+              <dialog id="stat-info" class="view-info ">stat
+                  <div id="teste"></div>
+                  <div>
+                      information statistique agrégé au niveaux des commune ou autre sur l'accessibilité et les besoin ou non en point de justice
+                  </div>
+              </dialog>
+
+              <dialog id="stat-list" class="view-info ">stat
+                <div id="teste"></div>
+                <div>
+                    Ici on retrouvera la liste de tout les pj par commune ou autre
+            </dialog>
+
+          </div>
+        </div>
+      </div>
     </div>
     
     <script type="module" src="./main.js"></script>
