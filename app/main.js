@@ -69,6 +69,18 @@ const trib_judiciaire = new ImageLayer({
 });
 
 
+// ============== Impoter la couche trib_judiciaire ================
+const commune = new ImageLayer({
+  source: new ImageWMS({
+    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    params: {'LAYERS' : 'data_point_justice:commune'
+    },
+    serverType: 'geoserver',
+  }),
+});
+
+
+
 // ========================================================================================
 // ===============================  On ajoute ici la carte =============================== 
 // ========================================================================================
@@ -77,7 +89,7 @@ const trib_judiciaire = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm, prudhomme, trib_judiciaire, cour_appel,pt_justice ],
+  layers: [ couche_osm, prudhomme, trib_judiciaire, cour_appel,pt_justice, commune ],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
@@ -99,6 +111,20 @@ checkbox_pt_justice.addEventListener('change', (event) => {
   } else {
     // On fait des trucs quand la checkbox n’est PAS checkée
     pt_justice.setVisible(false);
+  }
+});
+
+
+// Fonctions pour afficher et masquer la couche country 
+const checkbox_commune = document.getElementById('checkbox-commune');
+checkbox_commune.addEventListener('change', (event) => {
+  if (event.currentTarget.checked) {
+    // On fait des trucs quand la checkbox est checkée
+    commune.setVisible(true);
+    console.log('test');
+  } else {
+    // On fait des trucs quand la checkbox n’est PAS checkée
+    commune.setVisible(false);
   }
 });
 
@@ -136,9 +162,9 @@ document.getElementById('btn-layer-panel').addEventListener('click', function() 
   }
 });
 
-document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
-  document.getElementById('content-layer-panel').style.display = 'none';
-});
+// document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
+//   document.getElementById('content-layer-panel').style.display = 'none';
+// });
 
 
 // Bouton d'affichage et masquage de l'onglet info
@@ -148,43 +174,39 @@ const toggleImg = document.getElementById('toggle-img');
 
 // Initialiser l'image en fonction de l'état par défaut
 if (ongletInfo.classList.contains('reduit')) {
-  toggleImg.src = 'dist/assets/img/prev.png'; // Image pour l'état réduit
+  toggleImg.src = 'img/prev.png'; // Image pour l'état réduit
 } else {
-  toggleImg.src = 'dist/assets/img/next.png'; // Image pour l'état normal
+  toggleImg.src = 'img/next.png'; // Image pour l'état normal
 }
 
 toggleButton.addEventListener('click', () => {
   if (ongletInfo.style.display === 'none' || ongletInfo.style.display === '') {
     ongletInfo.style.display = 'block';
-    toggleImg.src = 'dist/assets/img/prev.png'; // Image pour l'état affiché
+    toggleImg.src = 'img/prev.png'; // Image pour l'état affiché
   } else {
     ongletInfo.style.display = 'none';
-    toggleImg.src = 'dist/assets/img/next.png'; // Image pour l'état masqué
+    toggleImg.src = 'img/next.png'; // Image pour l'état masqué
   }
 });
 
 
-function toggleDialog(buttonId, dialogId, otherDialogIds) {
+// Afficher les onglet d'information 
+function toggleDiv(buttonId, divId, otherDivIds) {
   document.getElementById(buttonId).addEventListener('click', function() {
-      const dialog = document.getElementById(dialogId);
-      const otherDialogs = otherDialogIds.map(id => document.getElementById(id));
+      const div = document.getElementById(divId);
+      const otherDivs = otherDivIds.map(id => document.getElementById(id));
       
-      // Fermer les autres dialogues s'ils sont ouverts
-      otherDialogs.forEach(otherDialog => {
-          if (otherDialog.open) {
-              otherDialog.close();
-          }
+      // Fermer les autres divs
+      otherDivs.forEach(otherDiv => {
+          otherDiv.style.display = 'none';
       });
       
-      // Ouvrir ou fermer le dialogue actuel
-      if (dialog.open) {
-      } else {
-          dialog.show(); 
-      }
+      // Ouvrir la div actuelle
+      div.style.display = 'block';
   });
 }
 
 // Utilisation de la fonction générique pour les boutons
-toggleDialog('button-text', 'text-info', ['stat-info', 'stat-list']);
-toggleDialog('button-stat', 'stat-info', ['text-info', 'stat-list']);
-toggleDialog('button-list', 'stat-list', ['text-info', 'stat-info']);
+toggleDiv('button-text', 'text-info', ['stat-info', 'stat-list']);
+toggleDiv('button-stat', 'stat-info', ['text-info', 'stat-list']);
+toggleDiv('button-list', 'stat-list', ['text-info', 'stat-info'])

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Deals Agriculture</title>
+    <title>Carto-justice</title>
   </head>
   <body>
 
@@ -12,113 +12,122 @@
     <!-- On créer ici la div conteneur qui vas accueillir tous les elements de la page -->
     <!-- =============================================================================== -->
     <div id="container" > 
-
-      <!-- On import ici la carte  -->
-      <div id="map"></div>
-      
-      <div></div>
-      <!-- Onglet titre de la carte  -->
-      <div id="head-app" class="theme-color">
-        <h2 id="title-app">Accées a la justice </h2>
-      </div>
-
-      <!-- On import ici la barre de navigation  -->
-      <div id="layer-panel">
-        <div id="header-layer-panel">
-          <button id="btn-layer-panel">=</button>
-          <div id="title-layer-panel">layers</div>
+      <div id="overlay">
+        <div id="head-app" class="theme-color ">
+          <div id="logo-app"><img src="img/logo.png" alt="" srcset=""></div>
+          <h2 id="title-app">Carto-justice </h2>
         </div>
 
-        <div id="content-layer-panel" style="display: none;">
-          <div id="list-layer-panel">
-            <button id="btn-close-layer-panel">X</button>
-            <h2>Couches</h2>
+        <div id="panel-overlay">
+          <!-- On import ici la barre de navigation  -->
+          <div id="layer-panel">
+            <div id="header-layer-panel">
+              <button id="btn-layer-panel">=</button>
+              <div id="title-layer-panel">layers</div>
+            </div>
 
-            <div id="control-couches">
-              <div id="contries-deals" class="couche">
-                <!-- Le checkbox pour Point de justice -->
-                <input type="checkbox" id="checkbox-pt_justice" name="checkbox-pt_justice" checked />
-                <label for="checkbox-pt_justice">Point de justice</label>
+            <div id="content-layer-panel" style="display: none;">
+              <div id="list-layer-panel">
+                <!-- <button id="btn-close-layer-panel">x</button> -->
+
+                <div id="control-couches" class="theme-layer">
+                  <h2>Couches</h2>
+
+                  <div id="communes" class="couche">
+                    <!-- Le checkbox pour Point de justice -->
+                    <input type="checkbox" id="checkbox-commune" name="checkbox-commune" checked />
+                    <label for="checkbox-commune">Commune</label>
+                  </div>
+
+                  <div id="contries-deals" class="couche">
+                    <!-- Le checkbox pour Point de justice -->
+                    <input type="checkbox" id="checkbox-pt_justice" name="checkbox-pt_justice" checked />
+                    <label for="checkbox-pt_justice">Point de justice</label>
+                  </div>
+          
+                  <div class="couche">
+                    <!-- Le ckeckbox pour Cour d'appel  -->
+                    <input type="radio" id="checkbox-cour_appel" name="checkbox-group" checked />
+                    <label for="checkbox-cour_appel">Cour d'appel </label>
+                  </div>
+          
+                  <!-- Le ckeckbox pour Tribunale judiciaire  -->
+                  <div class="couche">
+                    <input type="radio" id="checkbox-trib_judiciaire" name="checkbox-group" />
+                    <label for="checkbox-trib_judiciaire">Tribunale judiciaire </label>
+                  </div>
+          
+                  <!-- Le ckeckbox pour Prudhomme  -->
+                  <div class="couche">
+                    <input type="radio" id="checkbox-prudhomme" name="checkbox-group" />
+                    <label for="checkbox-prudhomme">Prudhomme </label>
+                  </div>
+                </div>
+                
               </div>
-      
-              <div class="couche">
-                <!-- Le ckeckbox pour Cour d'appel  -->
-                <input type="radio" id="checkbox-cour_appel" name="checkbox-group" checked />
-                <label for="checkbox-cour_appel">Cour d'appel </label>
+
+              <div id="list-categorie-panel" class="theme-layer">
+                <h2>Categories</h2>
+                <ul>
+                  <li> indicateur 1</li>
+                  <li> indicateur 2</li>
+                  <li> indicateur 3</li>
+                </ul>
               </div>
-      
-              <!-- Le ckeckbox pour Tribunale judiciaire  -->
-              <div class="couche">
-                <input type="radio" id="checkbox-trib_judiciaire" name="checkbox-group" />
-                <label for="checkbox-trib_judiciaire">Tribunale judiciaire </label>
-              </div>
-      
-              <!-- Le ckeckbox pour Prudhomme  -->
-              <div class="couche">
-                <input type="radio" id="checkbox-prudhomme" name="checkbox-group" />
-                <label for="checkbox-prudhomme">Prudhomme </label>
+
+              <div id="list-legend-panel" class="theme-layer">
+                <h2>Légende</h2>
               </div>
             </div>
-            
           </div>
 
-          <div id="list-categorie-panel">
-            <h2>categories</h2>
-            <ul>
-              <li> cathegories 1</li>
-              <li> cathegories 2</li>
-              <li> cathegories 3</li>
-            </ul>
-          </div>
+          <!-- Onglet laterale d'information -->
+          <div id="info-panel" >
 
-          <div id="list-legend-panel">
-            <h2>Légende</h2>
-          </div>
-        </div>
-      </div>
-
-      <div id="info-panel">
-
-        <div id="switch-info-panel">
-          <button id="toggle-size-button"><img id="toggle-img" src="dist/assets/img/next.png" alt=""></button>  
-        </div>
-
-        <div id="info-panel-overlay" style="display: none;">
-          <div id="head-info">
-              head-info
-              <div>
-                  Description générale le le type de point de juste, 
-              </div>
-          </div>
-          <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
-          <div id="switch-info" class="center">
-              <button id="button-text" class="button-info"> Information</button>
-              <button id="button-stat" class="button-info"> Statistique</button>
-              <button id="button-list" class="button-info"> Point justice</button>
-          </div>
-          <div id="contenue-info" class="center">
-
-              <dialog id="text-info" class="view-info" open="true">
-                  texte
-                  <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
-              </dialog>
-              
-              <dialog id="stat-info" class="view-info ">stat
-                  <div id="teste"></div>
+            <div id="switch-info-panel">
+              <button id="toggle-size-button"><img id="toggle-img" src="img/next.png" alt=""></button>  
+            </div>
+  
+            <div id="info-panel-overlay" style="display: none;" class="theme-color2">
+              <div id="head-info" class="center">
                   <div>
-                      information statistique agrégé au niveaux des commune ou autre sur l'accessibilité et les besoin ou non en point de justice
+                      Description générale sur le type de point de juste sélectionner, 
                   </div>
-              </dialog>
+              </div>
+              <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
+              <div id="switch-info" class="center">
+                  <button id="button-text" class="button-info"> Information</button>
+                  <button id="button-stat" class="button-info"> Statistique</button>
+                  <button id="button-list" class="button-info"> Point justice</button>
+              </div>
+              <div id="contenue-info">
+  
+                <div id="text-info" class="view-info">
+                    texte
+                    <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
+                </div>
+                
+                <div id="stat-info" class="view-info " style="display: none;">stat
+                    <div id="teste">
+                      information statistique agrégé au niveaux des commune ou autre sur l'accessibilité et les besoin ou non en point de justice
+                    </div>
+                </div>
 
-              <dialog id="stat-list" class="view-info ">stat
-                <div id="teste"></div>
-                <div>
+                <div id="stat-list" class="view-info" style="display: none;">stat
+                  <div id="teste">
                     Ici on retrouvera la liste de tout les pj par commune ou autre
-            </dialog>
-
+                    </div>
+                </div>
+  
+              </div>
+            </div>
           </div>
+
         </div>
+        <!-- Div qui contient la carte -->
+        <div id="map"></div>
       </div>
+      
     </div>
     
     <script type="module" src="./main.js"></script>

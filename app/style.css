@@ -22,24 +22,40 @@ body{
   position: absolute;
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 #map {
-  position: relative;
+  position: absolute;
   width: 100%;
   height: 100%;
   border-radius: 10px;
   box-sizing: 5px;
+  z-index: 0;
 }
 
 .theme-color {
   background-color: rgb(68, 120, 124);
   color: #fff;
-  padding: 20px;
+}
+
+.theme-color2 {
+  background-color: rgb(245, 245, 245);
+}
+
+.theme-layer {
+  background-color: rgb(245, 245, 245);
 }
 
 .h2 {
   margin: 0;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
@@ -59,24 +75,52 @@ button:hover {
 }
 
 
+#overlay{
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+
+#panel-overlay {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
 /* ==================================================== */
 /* ========= Style de la l'entet de la page =========== */
 /* ==================================================== */
 
 #head-app {
-  position: absolute;
   top: 0;
-  height: 20px;
-  width: 97%;
+  height: 6vh;
+  width: 100%;
   z-index: 1;
   margin: 0;
   justify-content: center;
   align-items: center;
   display: flex;
+  gap: 10px;
 }
 
 #title-app {
   text-align: left;
+}
+
+#logo-app {
+
+  width: 40px;
+  height: 40px;
+}
+
+#logo-app img {
+  width: 100%;
+  height: 100%;
 }
 
 
@@ -85,38 +129,35 @@ button:hover {
 /* ============================================================== */
 
 #layer-panel {
-  position: absolute;
-  top: 9%;
-  left: 15px;
-  height: 80%;
-  width: 15%;
+  height: 85%;
+  width: 25vh;
   z-index: 1;
   margin: 0;
-  justify-content: center;
+  margin-top: 15px;
+  margin-left: 15px;
   align-items: center;
-  display: inline-block;
+  
 }
 
 #header-layer-panel {
   top: 0;
   width: 100%;
-  height: 30px;
+  height: 40px;
   z-index: 1;
   margin: 0;
   align-items: center;
   display: flex;
-  /* background-color: rgb(125, 240, 96); */
   gap: 5px;
+
 }
 
 #btn-layer-panel {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 100%;
   background-color: rgb(255, 255, 255);
 }
 
 #btn-close-layer-panel {
-  position: absolute;
   width: 30px;
   height: 30px;
   right: 0;
@@ -125,19 +166,19 @@ button:hover {
 
 #title-layer-panel {
   background-color: rgb(255, 255, 255);
-  width: 90%;
+  width: 100%;
   height: 100%;
   margin: 0;
 }
 
 #content-layer-panel {
-  width: 100%;
   height: 100%;
   z-index: 1;
   margin-top: 5px;
   display: flex;
-  background-color: rgb(231, 231, 231);
   flex-direction: column;
+  gap: 10px;
+  padding: 5px;
 }
 
 #list-layer-panel {
@@ -152,22 +193,22 @@ button:hover {
   align-items:flex-start;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+}
+
+#contries-deals {
+  padding-bottom: 5px;
+  margin-bottom: 2px; 
+  border-bottom: 2px solid #111111; 
 }
 
 #list-categorie-panel {
   margin: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 #list-legend-panel {
-  position: absolute;
   bottom: 0;
   width: 100%;
   margin: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 
@@ -176,14 +217,13 @@ button:hover {
 /* ============================================================== */
 
 #info-panel {
-  position:absolute;
-  top: 60px;
+  top: 2vh;
   right: 2px;
-  height: 94%;
-  max-width: 25%;
+  height: 100%;
+  max-width: 35vh;
   z-index: 1;
   margin: 0;
-  display: inline-flex;
+  display: flex;
 }
 
 #switch-info-panel {
@@ -202,17 +242,14 @@ button:hover {
   width: 100%;
   z-index: 1;
   margin: 0;
-  background-color: rgba(216, 44, 44, 0.5);
 }
 
 #head-info {
-  background-color: rosybrown;
   height: 20%;
 }
 
 #switch-info {
   height: 5%;
-  background-color: rgb(204, 204, 204);
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -228,38 +265,15 @@ button:hover {
 }
 
 #contenue-info {
-  height: 66%;
-  background-color: rgb(192, 85, 85);
   padding: 2px;
+  height: 100%;
+  
 }
 
-.body-dialog {
-  background-color: rgb(219, 238, 243);
-  padding: 0px;
-  padding-top: 0px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 9999; 
-  overflow: hidden;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-}
-
-
-#text-info {
-  background-color: rgb(170, 112, 24);
-}
-#stat-info {
-  background-color: rgb(24, 170, 80);
-}
 
 .view-info {
   position: relative;
-  height: 99%;
-  width: 99%;
-  background-color: rgb(24, 170, 80);
-  box-sizing: border-box;
-  border: 1px solid #ccc;
+  background-color: rgba(0, 255, 255, 0);
 }
 
 .reduit {
