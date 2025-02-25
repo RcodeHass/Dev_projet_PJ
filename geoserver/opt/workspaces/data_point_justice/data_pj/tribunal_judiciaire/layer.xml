@@ -1,0 +1,21 @@
+<layer>
+  <name>tribunal_judiciaire</name>
+  <id>LayerInfoImpl--477ccb55:1953e60d737:-7ffb</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--26d77fff:1950f96deb9:-7ff5</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--26d77fff:1950f96deb9:-7ff5</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--477ccb55:1953e60d737:-7ffc</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2025-02-25 19:58:33.212 UTC</dateCreated>
+</layer>

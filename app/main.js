@@ -36,6 +36,28 @@ const pt_justice = new ImageLayer({
   }),
 });
 
+// // =========== Impoter la couche Point de justice en vecteur ================
+// const vecteur_pj = new VectorSource({
+//   format: new GeoJSON(),
+//   url: 'http://localhost:8090/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&maxFeatures=50&outputFormat=application/json',
+//   crossOrigin: 'anonymous' // Permet d'éviter des erreurs CORS si nécessaire
+// });
+
+// // On peux maintenant configurer le style de la couche 
+// function getStyleCentroid(feature) {
+//   const style = new Style({
+//     image: new Circle({
+//       fill: new Fill({ color: '#fac460da'}),
+//     }),
+//   });
+//   return style;
+// }
+
+// // On configure ici la couche vecteur 
+// const vecteur_point_justice = new VectorLayer({
+//   source: vecteur_pj,
+//   style: getStyleCentroid  
+// });
 
 
 // ============== Impoter la couche Cour d'appel ================
@@ -89,7 +111,7 @@ const commune = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm, prudhomme, trib_judiciaire, cour_appel,pt_justice, commune ],
+  layers: [ couche_osm, commune, prudhomme, trib_judiciaire, cour_appel,pt_justice],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
@@ -210,3 +232,24 @@ function toggleDiv(buttonId, divId, otherDivIds) {
 toggleDiv('button-text', 'text-info', ['stat-info', 'stat-list']);
 toggleDiv('button-stat', 'stat-info', ['text-info', 'stat-list']);
 toggleDiv('button-list', 'stat-list', ['text-info', 'stat-info'])
+
+document.addEventListener("DOMContentLoaded", function () {
+  const buttons = document.querySelectorAll(".button-info");
+  const sections = document.querySelectorAll(".view-info");
+
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", function () {
+      // Supprimer la classe active de tous les boutons
+      buttons.forEach(btn => btn.classList.remove("active"));
+      
+      // Ajouter la classe active au bouton cliqué
+      this.classList.add("active");
+
+      // Masquer toutes les sections
+      sections.forEach(section => section.style.display = "none");
+
+      // Afficher la section correspondante
+      sections[index].style.display = "block";
+    });
+  });
+});

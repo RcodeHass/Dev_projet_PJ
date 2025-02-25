@@ -26,13 +26,13 @@
               <div id="title-layer-panel">layers</div>
             </div>
 
-            <div id="content-layer-panel" style="display: none;">
+            <div id="content-layer-panel"  class="theme-layer" style="display: none;">
               <div id="list-layer-panel">
                 <!-- <button id="btn-close-layer-panel">x</button> -->
 
-                <div id="control-couches" class="theme-layer">
+                <!-- Bulle de gestion des couches de la carte -->
+                <div id="control-couches" class="theme-color2">
                   <h2>Couches</h2>
-
                   <div id="communes" class="couche">
                     <!-- Le checkbox pour Point de justice -->
                     <input type="checkbox" id="checkbox-commune" name="checkbox-commune" checked />
@@ -63,20 +63,17 @@
                     <label for="checkbox-prudhomme">Prudhomme </label>
                   </div>
                 </div>
-                
               </div>
 
-              <div id="list-categorie-panel" class="theme-layer">
-                <h2>Categories</h2>
-                <ul>
-                  <li> indicateur 1</li>
-                  <li> indicateur 2</li>
-                  <li> indicateur 3</li>
-                </ul>
+              <!-- Bulle de filtre de par categorie de la carte -->
+              <div id="list-categorie-panel" class="theme-color2">
+                <h4> Filtre cathégories de points de justice</h4>
+                  <ul class="list"  id="list-filtre">
+                  </ul>
               </div>
-
-              <div id="list-legend-panel" class="theme-layer">
-                <h2>Légende</h2>
+              <!-- Bulle la légende de la carte -->
+              <div id="list-legend-panel" class="theme-color2">
+                <h4>Légende </h4>
               </div>
             </div>
           </div>
@@ -88,7 +85,7 @@
               <button id="toggle-size-button"><img id="toggle-img" src="img/next.png" alt=""></button>  
             </div>
   
-            <div id="info-panel-overlay" style="display: none;" class="theme-color2">
+            <div id="info-panel-overlay" style="display: none;" class="theme-layer">
               <div id="head-info" class="center">
                   <div>
                       Description générale sur le type de point de juste sélectionner, 
@@ -100,9 +97,9 @@
                   <button id="button-stat" class="button-info"> Statistique</button>
                   <button id="button-list" class="button-info"> Point justice</button>
               </div>
-              <div id="contenue-info">
+              <div id="contenue-info" class="theme-color2">
   
-                <div id="text-info" class="view-info">
+                <div id="text-info" class="view-info ">
                     texte
                     <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
                 </div>

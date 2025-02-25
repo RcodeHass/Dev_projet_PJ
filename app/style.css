@@ -41,7 +41,9 @@ body{
 }
 
 .theme-color2 {
-  background-color: rgb(245, 245, 245);
+  background-color: rgba(68, 120, 124, 0.123);
+  border-radius: 5px;
+  padding: 5px;
 }
 
 .theme-layer {
@@ -129,6 +131,7 @@ button:hover {
 /* ============================================================== */
 
 #layer-panel {
+  position: relative;
   height: 85%;
   width: 25vh;
   z-index: 1;
@@ -177,15 +180,12 @@ button:hover {
   margin-top: 5px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 5px;
 }
 
 #list-layer-panel {
   width: 100%;
-  margin: 0;
   display: flex;
-  flex-direction: column;
+  gap: 20px;
 
 }
 
@@ -193,6 +193,8 @@ button:hover {
   align-items:flex-start;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 #contries-deals {
@@ -206,9 +208,10 @@ button:hover {
 }
 
 #list-legend-panel {
+  position: absolute;
   bottom: 0;
-  width: 100%;
-  margin: 0;
+  left: 5px;
+  right: 5px;
 }
 
 
@@ -236,22 +239,22 @@ button:hover {
 }
 
 #info-panel-overlay {
-  top: 0;
   right: 0;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  overflow: hidden; 
 }
 
 #head-info {
   height: 20%;
+  padding: 5px;
 }
 
 #switch-info {
   height: 5%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   gap: 5px;
 }
@@ -262,18 +265,29 @@ button:hover {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   background-color: rgb(255, 255, 255);
+  transition: background 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.button-info:hover {
+  background: rgba(68, 120, 124, 0.123);
+}
+
+.button-info:hover,
+.button-info.active {
+  background-color: rgba(68, 120, 124, 0.123); 
 }
 
 #contenue-info {
-  padding: 2px;
+  flex: 1; 
+  overflow-y: auto; 
   height: 100%;
-  
 }
 
 
 .view-info {
-  position: relative;
-  background-color: rgba(0, 255, 255, 0);
+  height: 100%; /* Remplit la div parente */
+  overflow: auto; /* Ajoute un défilement si nécessaire */
 }
 
 .reduit {
