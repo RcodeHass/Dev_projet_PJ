@@ -20,6 +20,16 @@ const couche_osm = new TileLayer({ source: new OSM() });
 // =========================================================================================
 // ================================= Import de mes 3 couches wms ===========================
 // =========================================================================================
+// ============== Charger la couche WFS des points de justice ================
+const source_pj = new VectorSource({
+  format: new GeoJSON(),
+  url: 'http://localhost:8090/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&outputFormat=application/json',
+  crossOrigin: 'anonymous' // Pour éviter les erreurs CORS
+});
+
+const vecteur_pj = new VectorLayer({
+  source: source_pj
+});
 
 
 // =========================================================================================
@@ -64,9 +74,13 @@ const pt_justice = new ImageLayer({
 const cour_appel = new ImageLayer({
   source: new ImageWMS({
     url: 'http://localhost:8090/geoserver/data_point_justice/wms',
-    params: {'LAYERS' : 'data_point_justice:cour_appel'
+    params: {
+      'LAYERS' : 'data_point_justice:cour_appel',
+      'TILED': true
     },
     serverType: 'geoserver',
+    crossOrigin: 'anonymous'
+
   }),
 });
 
@@ -74,9 +88,12 @@ const cour_appel = new ImageLayer({
 const prudhomme = new ImageLayer({
   source: new ImageWMS({
     url: 'http://localhost:8090/geoserver/data_point_justice/wms',
-    params: {'LAYERS' : 'data_point_justice:prudhomme'
+    params: {
+      'LAYERS' : 'data_point_justice:prudhomme',
+      'TILED': true
     },
     serverType: 'geoserver',
+    crossOrigin: 'anonymous'
   }),
 });
 
@@ -84,9 +101,12 @@ const prudhomme = new ImageLayer({
 const trib_judiciaire = new ImageLayer({
   source: new ImageWMS({
     url: 'http://localhost:8090/geoserver/data_point_justice/wms',
-    params: {'LAYERS' : 'data_point_justice:tribunal judiciaire'
+    params: {
+      'LAYERS' : 'data_point_justice:tribunal_judiciaire',
+      'TILED': true
     },
     serverType: 'geoserver',
+    crossOrigin: 'anonymous'
   }),
 });
 
@@ -95,9 +115,12 @@ const trib_judiciaire = new ImageLayer({
 const commune = new ImageLayer({
   source: new ImageWMS({
     url: 'http://localhost:8090/geoserver/data_point_justice/wms',
-    params: {'LAYERS' : 'data_point_justice:commune'
+    params: {
+      'LAYERS' : 'data_point_justice:commune',
+      'TILED': true
     },
     serverType: 'geoserver',
+    crossOrigin: 'anonymous'
   }),
 });
 
@@ -111,7 +134,7 @@ const commune = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm, commune, prudhomme, trib_judiciaire, cour_appel,pt_justice],
+  layers: [ couche_osm, commune, prudhomme, trib_judiciaire, cour_appel,vecteur_pj],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
@@ -136,14 +159,13 @@ checkbox_pt_justice.addEventListener('change', (event) => {
   }
 });
 
-
-// Fonctions pour afficher et masquer la couche country 
+commune.setVisible(false);
+// Fonctions pour afficher et masquer la couche commune
 const checkbox_commune = document.getElementById('checkbox-commune');
 checkbox_commune.addEventListener('change', (event) => {
   if (event.currentTarget.checked) {
     // On fait des trucs quand la checkbox est checkée
     commune.setVisible(true);
-    console.log('test');
   } else {
     // On fait des trucs quand la checkbox n’est PAS checkée
     commune.setVisible(false);
@@ -169,6 +191,74 @@ document.querySelectorAll('input[name="checkbox-group"]').forEach((radio) => {
   });
 });
 
+// ========================================================================================
+// ====================== Fonctions d'intéraction avec les couches  ====================== 
+// ========================================================================================
+
+// ============== Écouteur de clic pour récupérer le code du cours d'appel ================
+// map.on('singleclick', function (evt) {
+//   const viewResolution = map.getView().getResolution();
+//   const wmsSource = cour_appel.getSource();
+//   const url = wmsSource.getFeatureInfoUrl(
+//     evt.coordinate,
+//     viewResolution,
+//     'EPSG:3857',
+//     { 'INFO_FORMAT': 'application/json' }
+//   );
+
+//   if (url) {
+//     fetch(url)
+//       .then(response => response.json())
+//       .then(data => {
+//         if (data.features.length > 0) {
+//           const cour_appel = data.features[0].properties.num_ca;
+//           console.log("Code du cours d'appel sélectionné :", cour_appel);
+
+//           // Mise à jour du filtre sur la couche commune
+//           const communeSource = commune.getSource();
+//           communeSource.updateParams({
+//             'CQL_FILTER': `n_ca='${cour_appel}'`
+//           });
+//         }
+//       })
+//       .catch(error => console.error('Erreur lors de la récupération des données:', error));
+//   }
+// });
+
+
+// // ============== Gestion de l'événement survol pour filtrer les communes ================
+map.on('pointermove', function (evt) {
+  const viewResolution = map.getView().getResolution();
+  const wmsSource = cour_appel.getSource();
+  const url = wmsSource.getFeatureInfoUrl(
+    evt.coordinate,
+    viewResolution,
+    'EPSG:3857',
+    { 'INFO_FORMAT': 'application/json' }
+  );
+
+  if (url) {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.features.length > 0) {
+          const courAppelCode = data.features[0].properties.num_ca;
+          console.log("Survol de la cour d'appel :", courAppelCode);
+
+          // Mise à jour du filtre pour afficher uniquement les communes dans la cour d'appel
+          const communeSource = commune.getSource();
+          communeSource.updateParams({
+            'CQL_FILTER': `n_ca='${courAppelCode}'`
+          });
+
+          commune.setVisible(true); // S'assurer que la couche est bien visible
+        } else {
+          commune.setVisible(false); // Masquer la couche si aucune cour d'appel n'est détectée
+        }
+      })
+      .catch(error => console.error('Erreur lors de la récupération des données:', error));
+  }
+});
 
 // ========================================================================================
 // ===============================  Fonctions accésoires  =============================== 

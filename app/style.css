@@ -42,7 +42,6 @@ body{
 
 .theme-color2 {
   background-color: rgba(68, 120, 124, 0.123);
-  border-radius: 5px;
   padding: 5px;
 }
 
@@ -212,6 +211,10 @@ button:hover {
   bottom: 0;
   left: 5px;
   right: 5px;
+}
+
+#list-categorie-panel, #list-indicateur-panel {
+  margin-bottom: 10px;
 }
 
 

@@ -7,9 +7,10 @@
     "serve": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.4.11"
+    "vite": "^6.2.0"
   },
   "dependencies": {
+    "geoportal-extensions-openlayers": "^2.0.0",
     "ol": "latest"
   }
 }
