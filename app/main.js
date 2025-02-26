@@ -343,3 +343,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+
+// ========================================================================================
+// ====================== Intégration du widget IGN de recherche  ========================= 
+// ========================================================================================
+
+// Creation du controle
+var searchControl = new ol.control.SearchEngine({
+});
+
+// Ajout à la carte
+map.addControl(searchControl);
+var title_layer_panel = document.getElementById("title-layer-panel");
+title_layer_panel.innerHTML = "<p> Extension OL version " + Gp.olExtVersion + " (" + Gp.olExtDate + ")</p>";
