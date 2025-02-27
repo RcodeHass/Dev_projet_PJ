@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <!-- script OL-->
     <link rel="stylesheet" href="./node_modules/ol/ol.css" />
-    <link rel="stylesheet" href="./node_modules/geoportal-extensions-openlayers/dist/GpPluginOpenLayers.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol/ol.css" type="text/css">
+
+    <script src="./node_modules/ol/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carto-justice</title>
   </head>
@@ -27,7 +33,10 @@
 
         <div id="header-layer-panel">
           <button id="btn-layer-panel">=</button>
-          <div id="title-layer-panel">layers</div>
+          <div id="title-layer-panel">
+            <input type="text" id="search" placeholder="Rechercher une adresse...">
+            <button id="searchButton" alt="Rechercher">Rechercher</button>
+          </div>
 
         </div>
 
@@ -119,6 +128,17 @@
                 <div id="text-info" class="view-info ">
                     texte
                     <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
+                    <table id="closest-points-table">
+                      <thead>
+                        <tr>
+                          <th>Nom</th>
+                          <th>Distance (km)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
+                      </tbody>
+                    </table>
                 </div>
                 
                 <div id="stat-info" class="view-info " style="display: none;">stat
@@ -145,7 +165,5 @@
     </div>
     
     <script type="module" src="./main.js"></script>
-    <script src="./node_modules/ol/dist/ol.js"></script>
-    <script src="./node_modules/geoportal-extensions-openlayers/GpPluginOpenLayers.js"></script>
   </body>
 </html>

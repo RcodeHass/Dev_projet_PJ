@@ -580,14 +580,147 @@ map.on('click', function (event) {
 });
 
 // ========================================================================================
-// ====================== Intégration du widget IGN de recherche  ========================= 
+// ====================== Intégration du widget d'adressage  ==============================
+//  =====================   Intégration des 5 plus proches   ==============================
 // ========================================================================================
+// Déclare locationLayer globalement afin de pouvoir supprimer les points de anciennes recherches
+let locationLayer = null; 
 
-// // Creation du controle
-// var searchControl = new ol.control.SearchEngine({
-// });
+// Fonction pour afficher les points les plus proches
+function displayClosestPoints(closestPoints) {
+  const tableBody = $('#closest-points-table tbody');
+  tableBody.empty(); // Vider le contenu précédent
 
-// // Ajout à la carte
-// map.addControl(searchControl);
-// var title_layer_panel = document.getElementById("title-layer-panel");
-// title_layer_panel.innerHTML = "<p> Extension OL version " + Gp.olExtVersion + " (" + Gp.olExtDate + ")</p>";
+  closestPoints.forEach(point => {
+    const row = $('<tr>').append(
+      $('<td>').text(point.name),
+      $('<td>').text(point.distance + ' km')
+    );
+    tableBody.append(row); // Ajouter la ligne au corps du tableau
+  });
+}
+
+//fonction pour le calcul des points les plus proches 
+function calculateDistance(point1, point2) {
+  // Vérifiez que les points sont des tableaux avec deux éléments
+  if (!Array.isArray(point1) || point1.length !== 2 || 
+      !Array.isArray(point2) || point2.length !== 2) {
+    console.error("Invalid coordinates:", point1, point2);
+    return Infinity; // retourne une distance infinie en cas d'erreur
+  }
+  
+  const [lon1, lat1] = point1;
+  const [lon2, lat2] = point2;
+  
+  // Distance euclidienne (approximation)
+  const distanceInMeters = Math.sqrt(Math.pow(lon2 - lon1, 2) + Math.pow(lat2 - lat1, 2));
+  
+  // Convertir en kilomètres
+  return (distanceInMeters * 111) // 1 degré ≈ 111 km
+    .toFixed(1); // Formater à une décimale
+}
+
+function searchLocation(query) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+  
+  $.get(url, function(data) {
+    if (data.length > 0) {
+      const firstResult = data[0];
+      const coordinates = [parseFloat(firstResult.lon), parseFloat(firstResult.lat)];
+
+      // Centrer la carte sur le lieu trouvé
+      map.getView().setCenter(ol.proj.fromLonLat(coordinates));
+      map.getView().setZoom(15);
+
+      // Supprimer l'ancien marqueur s'il existe
+      if (locationLayer !== null) {
+        map.removeLayer(locationLayer);
+        console.log("Ancien marqueur supprimé");
+      }
+
+      // Ajouter un marqueur
+      const location = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates))
+      });
+
+      // Créer un style pour le marqueur avec un fichier local
+      const locationStyle = new ol.style.Style({
+        image: new ol.style.Icon({
+          src: './img/localisation.png', 
+          scale: 0.1, 
+          anchor: [0.5, 1]
+        })
+      });
+
+      // Appliquer le style au marqueur
+      location.setStyle(locationStyle);
+
+      // Créer une nouvelle source vectorielle
+      const locationSource = new ol.source.Vector({
+        features: [location]
+      });
+
+      // Affecter la nouvelle couche à la variable globale
+      locationLayer = new ol.layer.Vector({
+        source: locationSource
+      });
+
+      // Ajouter la couche à la carte
+      map.addLayer(locationLayer);
+      
+      // Trouver les 5 points les plus proches
+      const closestPoints = findClosestPoints(coordinates, point_justice_vec.getFeatures(), 5);
+      console.log("5 points les plus proches :", closestPoints);
+
+      // Afficher les points les plus proches dans la div
+      displayClosestPoints(closestPoints);
+
+    } else {
+      alert("Aucun résultat trouvé.");
+    }
+  });
+}
+
+// Événement sur le bouton de recherche
+$('#searchButton').on('click', function() {
+  const query = $('#search').val();
+  if (query) {
+    searchLocation(query);
+    } else {
+    alert("Veuillez entrer un lieu à rechercher.");
+    }
+});
+
+      // Événement sur la barre de recherche pour valider avec Entrée
+$('#search').on('keypress', function(e) {
+ if (e.which === 13) { // Touche Entrée
+  const query = $(this).val();
+  if (query) {
+    searchLocation(query);
+    }
+  }
+});
+
+function findClosestPoints(targetCoordinates, features, n) {
+  const distances = features.map(feature => {
+    const coords = feature.getGeometry().getCoordinates();
+
+    // Vérifiez le format des coordonnées
+    if (!Array.isArray(coords) || coords.length < 2) {
+      console.error("Invalid geometry coordinates:", coords);
+      return null; // Ignore les features invalides
+    }
+
+    return {
+      name: feature.getProperties().name || "Unknown",
+      coordinates: coords,
+      distance: calculateDistance(targetCoordinates, coords)
+    };
+  }).filter(item => item !== null); // Filtrer les éléments invalides
+
+  // Trier les distances par distance croissante
+  distances.sort((a, b) => a.distance - b.distance);
+
+  // Retourner les n points les plus proches
+  return distances.slice(0, n);
+}
