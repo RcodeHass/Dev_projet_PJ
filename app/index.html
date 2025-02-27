@@ -35,7 +35,7 @@
           <button id="btn-layer-panel">=</button>
           <div id="title-layer-panel">
             <input type="text" id="search" placeholder="Rechercher une adresse...">
-            <button id="searchButton" alt="Rechercher">Rechercher</button>
+            <div id="search-button"><button id="searchButton" alt="Rechercher"><img src="img/recherche.png" alt=""></button></div>
           </div>
 
         </div>
@@ -45,8 +45,8 @@
           <div id="layer-panel">
             
             <div id="content-layer-panel"  style="display: none;">
+              <div id="btn-closepanel" class="theme-layer" ><button id="btn-close-layer-panel">x</button></div>
               <div id="list-layer-panel">
-                <button id="btn-close-layer-panel">x</button>
 
                 <!-- Bulle de gestion des couches de la carte -->
                 <div id="control-couches" class="theme-layer theme-color2">
@@ -114,8 +114,19 @@
             <div id="info-panel-overlay" style="display: none;" class="theme-color2">
               <div id="head-info" class="center">
                   <div>
-                      Description générale sur le type de point de juste sélectionner, 
+                      Description générale sur le type de point de juste sélectionner,
                   </div>
+                  <table id="closest-points-table">
+                    <thead>
+                      <tr>
+                        <th>Nom</th>
+                        <th>Distance (km)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
+                    </tbody>
+                  </table>
               </div>
               <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
               <div id="switch-info" class="center">
@@ -126,19 +137,7 @@
               <div id="contenue-info" class="theme-color2">
   
                 <div id="text-info" class="view-info ">
-                    texte
-                    <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
-                    <table id="closest-points-table">
-                      <thead>
-                        <tr>
-                          <th>Nom</th>
-                          <th>Distance (km)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
-                      </tbody>
-                    </table>
+                    <!-- Contenu remplire par JavaScript -->
                 </div>
                 
                 <div id="stat-info" class="view-info " style="display: none;">stat

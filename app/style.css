@@ -167,37 +167,40 @@ button:hover {
 /* =================================================================== */
 
 #title-layer-panel {
-  position: absolute;
-  top: 13%;
-  left: 4%;
   width: auto; /* Ajuste la largeur au contenu */
-  max-width: 475px; /* Limite la taille max */
   height: auto;
-  max-height: 50px;
-  padding: 5px;
-  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  display: inline-block; /* Empêche l'expansion en largeur */
+  display: flex;
   align-items: center;
-  gap: 5px;
-  z-index: 1000;
-  box-sizing: border-box; /* Assure que width inclut padding */
+  
 }
 #search {
-  flex: 1; /* Prend toute la place disponible */
-  min-width: 0; /* Évite que l'input ne force la div à s'élargir */
+  flex: 1; 
+  width: 100%;
+  height: 100%;
   padding: 3px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 24px;
   outline: none;
-  box-sizing: border-box; /* Assure que width inclut padding et border */
-  margin-left: -6%; /* Aligne l'élément à droite */
+  box-sizing: border-box; 
+}
+
+#search-button {
+  display: flex;
+  height: 100%;
+  width: 40px;
+  color: white;
+  padding: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#search-button img {
+  height: 100%;
+  width: 100%;
 }
 
 #searchButton {
-  background: #007bff;
   color: white;
   border: none;
   padding: 3px;
@@ -208,7 +211,7 @@ button:hover {
 }
 
 #searchButton:hover {
-  background: #0056b3;
+  color: #f0f0f0;
 }
 
 
@@ -235,6 +238,12 @@ button:hover {
   background-color: rgb(255, 255, 255);
 }
 
+#btn-closepanel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
 #btn-close-layer-panel {
   width: 30px;
   height: 30px;
@@ -243,7 +252,6 @@ button:hover {
 }
 
 #title-layer-panel {
-  background-color: rgb(255, 255, 255);
   width: 100%;
   height: 100%;
   margin: 0;
