@@ -163,6 +163,56 @@ button:hover {
 }
 
 /* =================================================================== */
+/* ========= Style de l'onglet de recherche de lieu  ================= */
+/* =================================================================== */
+
+#title-layer-panel {
+  position: absolute;
+  top: 13%;
+  left: 4%;
+  width: auto; /* Ajuste la largeur au contenu */
+  max-width: 475px; /* Limite la taille max */
+  height: auto;
+  max-height: 50px;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  display: inline-block; /* Empêche l'expansion en largeur */
+  align-items: center;
+  gap: 5px;
+  z-index: 1000;
+  box-sizing: border-box; /* Assure que width inclut padding */
+}
+#search {
+  flex: 1; /* Prend toute la place disponible */
+  min-width: 0; /* Évite que l'input ne force la div à s'élargir */
+  padding: 3px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 24px;
+  outline: none;
+  box-sizing: border-box; /* Assure que width inclut padding et border */
+  margin-left: -6%; /* Aligne l'élément à droite */
+}
+
+#searchButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  white-space: nowrap; /* Évite que le texte force l'élargissement */
+}
+
+#searchButton:hover {
+  background: #0056b3;
+}
+
+
+/* =================================================================== */
 /* ========= Style entete de la div de gestion des couches =========== */
 /* =================================================================== */
 
