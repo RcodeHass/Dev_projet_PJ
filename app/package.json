@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "geoportal-extensions-openlayers": "^2.0.0",
-    "ol": "latest"
+    "ol": "^10.4.0"
   }
 }

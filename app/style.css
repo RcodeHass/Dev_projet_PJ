@@ -73,6 +73,7 @@ button {
 
 button:hover {
   background-color: lightgray; /* Colorier en gris clair au survol */
+  border-radius: 10px;
 }
 
 
@@ -80,18 +81,9 @@ button:hover {
   position: absolute;
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   flex-direction: column;
 }
-
-
-#panel-overlay {
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-
-}
-
 
 /* ==================================================== */
 /* ========= Style de la l'entet de la page =========== */
@@ -125,28 +117,52 @@ button:hover {
 }
 
 
-/* ============================================================== */
-/* ========= Style de l'obglet gestion des couches ' =========== */
-/* ============================================================== */
 
-#layer-panel {
+/* ==================================================== */
+/* ========= Style de la l'entet de la page =========== */
+/* ==================================================== */
+
+#switch-map {
   position: relative;
-  height: 85%;
-  width: 25vh;
+  width: 28vh;
   z-index: 1;
   margin: 0;
-  margin-top: 15px;
-  margin-left: 15px;
   align-items: center;
-  
+  display: flex;
+  border-bottom-right-radius: 50px;
+
 }
+
+#switch-map > div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  height: 4vh;
+}
+
+#switch-map > div:hover {
+  background-color: rgba(68, 120, 124, 0.1); 
+  transition: background-color 0.3s; 
+}
+
+#switch-map > div > button {
+  width: 100%;
+  height: 100%;
+}
+
+/* =================================================================== */
+/* ========= Style entete de la div de gestion des couches =========== */
+/* =================================================================== */
 
 #header-layer-panel {
   top: 0;
-  width: 100%;
+  width: 25vh;
   height: 40px;
   z-index: 1;
-  margin: 0;
+  margin-top: 3vh;
+  margin-left: 1vh;
   align-items: center;
   display: flex;
   gap: 5px;
@@ -160,6 +176,7 @@ button:hover {
 }
 
 #btn-close-layer-panel {
+  position: absolute;
   width: 30px;
   height: 30px;
   right: 0;
@@ -173,9 +190,31 @@ button:hover {
   margin: 0;
 }
 
-#content-layer-panel {
-  height: 100%;
+/* ============================================================== */
+/* ========= Style de l'obglet gestion des couches ' =========== */
+/* ============================================================== */
+
+#panel-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25vh;
+}
+
+#layer-panel {
+  position: relative;
+  width: 100%;
   z-index: 1;
+  margin: 0;
+  margin-top: 5%;
+  margin-left: 1vh;
+  align-items: center;
+  
+}
+
+/* Le style des contenue de l'onglet */
+#content-layer-panel {
+  z-index: 0;
   margin-top: 5px;
   display: flex;
   flex-direction: column;
@@ -223,10 +262,10 @@ button:hover {
 /* ============================================================== */
 
 #info-panel {
-  top: 2vh;
+  position: absolute;
+  top: 6vh;
   right: 2px;
-  height: 100%;
-  max-width: 35vh;
+  height: calc(100vh - 6vh);
   z-index: 1;
   margin: 0;
   display: flex;
@@ -246,7 +285,8 @@ button:hover {
   display: flex;
   flex-direction: column;
   flex: 1; 
-  overflow: hidden; 
+  overflow: hidden;
+  width: 40vh;
 }
 
 #head-info {
@@ -296,4 +336,91 @@ button:hover {
 .reduit {
   display: none;/* Exemple de hauteur réduite */
   overflow: hidden; /* Masquer le contenu qui dépasse */
+}
+
+.hidden {
+  display: none;
+  margin-left: 100%;
+}
+
+
+
+
+
+/* Style global des listes */
+#list-type, #list-categorie {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style des éléments <li> */
+.filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Effet hover */
+.filter-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Style du texte */
+.filter-text {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Style du switch */
+.switch {
+  position: relative;
+  width: 40px;
+  height: 20px;
+}
+
+/* Cacher l'input */
+.switch-checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Style du slider (toggle) */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 20px;
+  transition: 0.4s;
+}
+
+/* Rond du switch */
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Switch activé */
+.switch-checkbox:checked + .slider {
+  background-color: #4CAF50;
+}
+
+.switch-checkbox:checked + .slider:before {
+  transform: translateX(20px);
 }

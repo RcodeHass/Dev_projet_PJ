@@ -15,27 +15,33 @@
     <!-- =============================================================================== -->
     <div id="container" > 
       <div id="overlay">
-        <div id="head-app" class="theme-color ">
+        <div id="head-app" class="theme-color">
           <div id="logo-app"><img src="img/logo.png" alt="" srcset=""></div>
           <h2 id="title-app">Carto-justice </h2>
+        </div>
+
+        <div id="switch-map" class="theme-layer">
+          <div><button>Basic</button></div>
+          <div><button>Avancée</button></div>
+        </div>
+
+        <div id="header-layer-panel">
+          <button id="btn-layer-panel">=</button>
+          <div id="title-layer-panel">layers</div>
+
         </div>
 
         <div id="panel-overlay">
           <!-- On import ici la barre de navigation  -->
           <div id="layer-panel">
-            <div id="header-layer-panel">
-              <button id="btn-layer-panel">=</button>
-              <div id="title-layer-panel">layers</div>
-
-            </div>
-
+            
             <div id="content-layer-panel"  class="theme-layer" style="display: none;">
               <div id="list-layer-panel">
-                <!-- <button id="btn-close-layer-panel">x</button> -->
+                <button id="btn-close-layer-panel">x</button>
 
                 <!-- Bulle de gestion des couches de la carte -->
                 <div id="control-couches" class="theme-color2">
-                  <h2>Couches</h2>
+                  <h4> Filtre type de point de justice</h4>
                   <div id="communes" class="couche">
                     <!-- Le checkbox pour Point de justice -->
                     <input type="checkbox" id="checkbox-commune" name="checkbox-commune" checked />
@@ -70,22 +76,22 @@
 
               <!-- Bulle de filtre de par categorie de la carte -->
               <div id="list-categorie-panel" class="theme-color2">
-                <h4> Filtre cathégories de points de justice</h4>
-                  <ul class="list"  id="list-filtre">
+                <h4> Filtre type de point de justice</h4>
+                  <ul class="list"  id="list-type">
                   </ul>
               </div>
               
               <!-- Bulle de filtre de par categorie de la carte -->
               <div id="list-indicateur-panel" class="theme-color2">
-                <h4> Changer d'indicateur</h4>
-                  <ul class="list"  id="list-filtre">
+                <h4> Changer catégorie</h4>
+                  <ul class="list"  id="list-categorie">
                   </ul>
               </div>
 
               <!-- Bulle la légende de la carte -->
-              <div id="list-legend-panel" class="theme-color2">
+              <!-- <div id="list-legend-panel" class="theme-color2">
                 <h4>Légende </h4>
-              </div>
+              </div> -->
             </div>
           </div>
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deals Agriculture</title>
+    <script type="module" crossorigin src="/assets/index-C1Fb5LUF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DM8o4Dq8.css">
+  </head>
+  <body>
+
+    <!-- =============================================================================== -->
+    <!-- On créer ici la div conteneur qui vas accueillir tous les elements de la page -->
+    <!-- =============================================================================== -->
+    <div id="container" > 
+
+      <!-- On import ici la carte  -->
+      <div id="map"></div>
+      
+      <div></div>
+      <!-- Onglet titre de la carte  -->
+      <div id="head-app" class="theme-color">
+        <h2 id="title-app">Accées a la justice </h2>
+      </div>
+
+      <!-- On import ici la barre de navigation  -->
+      <div id="layer-panel">
+        <div id="header-layer-panel">
+          <button id="btn-layer-panel">=</button>
+          <div id="title-layer-panel">layers</div>
+        </div>
+
+        <div id="content-layer-panel" style="display: none;">
+          <div id="list-layer-panel">
+            <button id="btn-close-layer-panel">X</button>
+            <h2>Couches</h2>
+
+            <div id="control-couches">
+              <div id="contries-deals" class="couche">
+                <!-- Le checkbox pour Point de justice -->
+                <input type="checkbox" id="checkbox-pt_justice" name="checkbox-pt_justice" checked />
+                <label for="checkbox-pt_justice">Point de justice</label>
+              </div>
+      
+              <div class="couche">
+                <!-- Le ckeckbox pour Cour d'appel  -->
+                <input type="radio" id="checkbox-cour_appel" name="checkbox-group" checked />
+                <label for="checkbox-cour_appel">Cour d'appel </label>
+              </div>
+      
+              <!-- Le ckeckbox pour Tribunale judiciaire  -->
+              <div class="couche">
+                <input type="radio" id="checkbox-trib_judiciaire" name="checkbox-group" />
+                <label for="checkbox-trib_judiciaire">Tribunale judiciaire </label>
+              </div>
+      
+              <!-- Le ckeckbox pour Prudhomme  -->
+              <div class="couche">
+                <input type="radio" id="checkbox-prudhomme" name="checkbox-group" />
+                <label for="checkbox-prudhomme">Prudhomme </label>
+              </div>
+            </div>
+            
+          </div>
+
+          <div id="list-categorie-panel">
+            <h2>categories</h2>
+            <ul>
+              <li> cathegories 1</li>
+              <li> cathegories 2</li>
+              <li> cathegories 3</li>
+            </ul>
+          </div>
+
+          <div id="list-legend-panel">
+            <h2>Légende</h2>
+          </div>
+        </div>
+      </div>
+
+      <div id="info-panel">
+
+        <div id="switch-info-panel">
+          <button id="toggle-size-button"><img id="toggle-img" src="data:image/png;base64,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" alt=""></button>  
+        </div>
+
+        <div id="info-panel-overlay" style="display: none;">
+          <div id="head-info">
+              head-info
+              <div>
+                  Description générale le le type de point de juste, 
+              </div>
+          </div>
+          <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
+          <div id="switch-info" class="center">
+              <button id="button-text" class="button-info"> Information</button>
+              <button id="button-stat" class="button-info"> Statistique</button>
+              <button id="button-list" class="button-info"> Point justice</button>
+          </div>
+          <div id="contenue-info" class="center">
+
+              <dialog id="text-info" class="view-info" open="true">
+                  texte
+                  <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
+              </dialog>
+              
+              <dialog id="stat-info" class="view-info ">stat
+                  <div id="teste"></div>
+                  <div>
+                      information statistique agrégé au niveaux des commune ou autre sur l'accessibilité et les besoin ou non en point de justice
+                  </div>
+              </dialog>
+
+              <dialog id="stat-list" class="view-info ">stat
+                <div id="teste"></div>
+                <div>
+                    Ici on retrouvera la liste de tout les pj par commune ou autre
+            </dialog>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>
