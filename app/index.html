@@ -20,9 +20,9 @@
           <h2 id="title-app">Carto-justice </h2>
         </div>
 
-        <div id="switch-map" class="theme-layer">
-          <div><button>Basic</button></div>
-          <div><button>Avancée</button></div>
+        <div id="switch-map" class="theme-color2">
+          <div><button id="basic-button">Basic</button></div>
+          <div><button id="advanced-button">Avancée</button></div>
         </div>
 
         <div id="header-layer-panel">
@@ -35,12 +35,12 @@
           <!-- On import ici la barre de navigation  -->
           <div id="layer-panel">
             
-            <div id="content-layer-panel"  class="theme-layer" style="display: none;">
+            <div id="content-layer-panel"  style="display: none;">
               <div id="list-layer-panel">
                 <button id="btn-close-layer-panel">x</button>
 
                 <!-- Bulle de gestion des couches de la carte -->
-                <div id="control-couches" class="theme-color2">
+                <div id="control-couches" class="theme-layer theme-color2">
                   <h4> Filtre type de point de justice</h4>
                   <div id="communes" class="couche">
                     <!-- Le checkbox pour Point de justice -->
@@ -75,14 +75,14 @@
               </div>
 
               <!-- Bulle de filtre de par categorie de la carte -->
-              <div id="list-categorie-panel" class="theme-color2">
+              <div id="list-categorie-panel" class="theme-layer theme-color2">
                 <h4> Filtre type de point de justice</h4>
                   <ul class="list"  id="list-type">
                   </ul>
               </div>
               
               <!-- Bulle de filtre de par categorie de la carte -->
-              <div id="list-indicateur-panel" class="theme-color2">
+              <div id="list-indicateur-panel" class="theme-layer theme-color2">
                 <h4> Changer catégorie</h4>
                   <ul class="list"  id="list-categorie">
                   </ul>
@@ -102,7 +102,7 @@
               <button id="toggle-size-button"><img id="toggle-img" src="img/next.png" alt=""></button>  
             </div>
   
-            <div id="info-panel-overlay" style="display: none;" class="theme-layer">
+            <div id="info-panel-overlay" style="display: none;" class="theme-color2">
               <div id="head-info" class="center">
                   <div>
                       Description générale sur le type de point de juste sélectionner, 
@@ -117,8 +117,7 @@
               <div id="contenue-info" class="theme-color2">
   
                 <div id="text-info" class="view-info ">
-                    texte
-                    <div> information detailler sur le point de justice : adresse numèros le gérant etc... </div>
+                  <!-- texte ajouter via le scripte js -->
                 </div>
                 
                 <div id="stat-info" class="view-info " style="display: none;">stat
@@ -127,10 +126,11 @@
                     </div>
                 </div>
 
-                <div id="stat-list" class="view-info" style="display: none;">stat
-                  <div id="teste">
-                    Ici on retrouvera la liste de tout les pj par commune ou autre
-                    </div>
+                <div id="list-info" class="view-info" style="display: none;">
+                  
+                  <ul id="list-pj">
+                  </ul>
+                  
                 </div>
   
               </div>

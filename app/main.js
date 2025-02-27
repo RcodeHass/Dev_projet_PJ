@@ -174,7 +174,7 @@ const commune = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm,  vecteur_point_justice],
+  layers: [ couche_osm,  vecteur_point_justice, cour_appel],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
@@ -191,11 +191,10 @@ const checkbox_pt_justice = document.getElementById('checkbox-pt_justice');
 checkbox_pt_justice.addEventListener('change', (event) => {
   if (event.currentTarget.checked) {
     // On fait des trucs quand la checkbox est checkée
-    pt_justice.setVisible(true);
-    console.log('test');
+    vecteur_point_justice.setVisible(true);
   } else {
     // On fait des trucs quand la checkbox n’est PAS checkée
-    pt_justice.setVisible(false);
+    vecteur_point_justice.setVisible(false);
   }
 });
 
@@ -234,6 +233,21 @@ document.querySelectorAll('input[name="checkbox-group"]').forEach((radio) => {
 // ========================================================================================
 // ====================== Fonctions d'intéraction avec les couches  ====================== 
 // ========================================================================================
+
+// Fonction pour passer de l'onglet de base à l'onglet avancé
+document.getElementById('basic-button').addEventListener('click', function() {
+  document.getElementById('list-indicateur-panel').style.display = 'none';
+  document.getElementById('control-couches').style.display = 'none';
+  document.getElementById('button-stat').style.display = 'none';
+  document.getElementById('stat-info').style.display = 'none';
+});
+
+document.getElementById('advanced-button').addEventListener('click', function() {
+  document.getElementById('list-indicateur-panel').style.display = 'block';
+  document.getElementById('control-couches').style.display = 'block';
+  document.getElementById('button-stat').style.display = 'block';
+});
+
 
 // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
 // map.on('singleclick', function (evt) {
@@ -385,16 +399,17 @@ function createFilterItem(value, listSet, frag) {
 
         // Rendre tout le <li> cliquable
         li.addEventListener('click', function (event) {
-            if (event.target !== switchInput) {
+            if (event.target !== switchInput && event.target !== switchLabel && event.target !== switchSlider) {
                 switchInput.checked = !switchInput.checked;
                 switchInput.dispatchEvent(new Event('change')); // Déclencher l'événement de changement
             }
         });
 
         // Gestion du filtrage
-        switchInput.addEventListener('change', function () {
+        switchInput.addEventListener('change', debounce(() => {
             filterPointsJustice();
-        });
+            afficherPointsJusticeDansEmpriseEcran();
+        }, 300));
 
         // Ajout au fragment
         frag.appendChild(li);
@@ -448,7 +463,85 @@ function filterPointsJustice() {
     });
 }
 
+// Fonction de debounce pour limiter la fréquence des appels
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
 
+// Appeler la fonction de filtrage initialement
+filterPointsJustice();
+
+// Fonction pour afficher dynamiquement les points visibles sur la carte
+function afficherPointsJusticeDansEmpriseEcran() {
+  const extent = map.getView().calculateExtent(map.getSize()); // Récupère l'étendue visible
+  const features = point_justice_vec.getFeatures(); // Récupère toutes les features de la source
+  const listElement = document.getElementById('list-pj');
+  listElement.innerHTML = ''; // Vider la liste existante
+
+  let pointsAffiches = 0;
+
+  const checkedTypes = new Set();
+  const checkedCategories = new Set();
+
+  // Récupère les valeurs cochées pour les types
+  document.querySelectorAll('#list-type input[type="checkbox"]:checked')
+      .forEach(input => checkedTypes.add(input.dataset.filterValue));
+
+  // Récupère les valeurs cochées pour les catégories
+  document.querySelectorAll('#list-categorie input[type="checkbox"]:checked')
+      .forEach(input => checkedCategories.add(input.dataset.filterValue));
+
+  features.forEach(feature => {
+    const point = feature.getGeometry().getCoordinates();
+    const type_pj = feature.get('type_pj');
+    const categorie = feature.get('categorie');
+
+    if (ol.extent.containsCoordinate(extent, point) && checkedTypes.has(type_pj) && checkedCategories.has(categorie)) {
+      const intitule = feature.get('intitule') || 'Sans intitulé'; // Vérifie que l'attribut existe
+
+      // Création de l'élément de la liste
+      const listItem = document.createElement('li');
+      listItem.textContent = `📍 ${intitule}`;
+      listItem.style.cursor = 'pointer'; // Curseur en pointeur pour indiquer qu'il est cliquable
+
+      // Ajout d'un événement de clic pour zoomer et afficher le popup
+      listItem.addEventListener('click', function () {
+        map.getView().animate({ center: point, zoom: 10, duration: 800 }); // Zoom sur le point
+        
+        // Récupération des infos du point
+        const adresse = feature.get('adresse') || 'Adresse inconnue';
+        const codgeo = feature.get('codgeo') || '';
+        const telephone = feature.get('telephone') || 'Non disponible';
+
+        // Mise à jour du popup
+        document.getElementById('text-info').innerHTML = `
+          <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
+          <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
+          <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
+          <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
+        `;
+        
+        popupElement.innerHTML = `<b>${intitule}</b>`;
+        popup.setPosition(point);
+        popupElement.style.display = 'block';
+      });
+
+      listElement.appendChild(listItem);
+      pointsAffiches++;
+    }
+  });
+
+  // Afficher ou masquer la liste en fonction des points visibles
+  document.getElementById('list-pj').style.display = pointsAffiches > 0 ? 'block' : 'none';
+}
+
+// Mise à jour dynamique lors des interactions de la carte
+map.on('moveend', afficherPointsJusticeDansEmpriseEcran);
+map.on('loadend', afficherPointsJusticeDansEmpriseEcran); // Exécute aussi au chargement initial
 // ========================================================================================
 // ===============================  Fonctions accésoires  =============================== 
 // ========================================================================================
@@ -480,6 +573,9 @@ document.getElementById('btn-close-layer-panel').addEventListener('click', funct
 const toggleButton = document.getElementById('toggle-size-button');
 const ongletInfo = document.getElementById('info-panel-overlay');
 const toggleImg = document.getElementById('toggle-img');
+const onglettext = document.getElementById('text-info');
+const ongletstat = document.getElementById('stat-info');
+const ongletlist = document.getElementById('list-info');
 
 // Initialiser l'image en fonction de l'état par défaut
 if (ongletInfo.classList.contains('reduit')) {
@@ -491,6 +587,10 @@ if (ongletInfo.classList.contains('reduit')) {
 toggleButton.addEventListener('click', () => {
   if (ongletInfo.style.display === 'none' || ongletInfo.style.display === '') {
     ongletInfo.style.display = 'block';
+    onglettext.style.display = 'block';
+    ongletstat.style.display = 'none';
+    ongletlist.style.display = 'none';
+
     toggleImg.src = 'img/prev.png'; // Image pour l'état affiché
   } else {
     ongletInfo.style.display = 'none';
@@ -541,6 +641,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// ========================================================================================
+// ===============================  Fonctions onglet information  =============================== 
+// ========================================================================================
 
 // Création du popup
 const popupElement = document.createElement('div');
@@ -555,7 +658,7 @@ document.body.appendChild(popupElement);
 
 const popup = new ol.Overlay({
   element: popupElement,
-  positioning: 'top-center',
+  positioning: 'bottom-center', // Positionnement du popup
   stopEvent: false,
   offset: [0, -10] // Décalage pour ne pas masquer le point
 });
@@ -569,10 +672,23 @@ map.on('click', function (event) {
 
   if (feature) {
     const intitule = feature.get('intitule'); // Récupère l'intitulé du point
+    const categorie = feature.get('categorie'); // Récupère la catégorie du point
+    const adresse = feature.get('adresse'); // Récupère l'adresse du point
+    const codgeo = feature.get('codgeo'); // Récupère le téléphone du point
+    const telephone = feature.get('telephone'); // Récupère le téléphone du point
     if (intitule) {
+
+      document.getElementById('text-info').innerHTML = `
+        <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
+        <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
+        <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo} </div>
+        <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
+      `;
+      
       popupElement.innerHTML = `<b>${intitule}</b>`;
       popup.setPosition(event.coordinate);
       popupElement.style.display = 'block';
+      popupElement.style.border = '';
     }
   } else {
     popupElement.style.display = 'none';
@@ -591,3 +707,6 @@ map.on('click', function (event) {
 // map.addControl(searchControl);
 // var title_layer_panel = document.getElementById("title-layer-panel");
 // title_layer_panel.innerHTML = "<p> Extension OL version " + Gp.olExtVersion + " (" + Gp.olExtDate + ")</p>";
+
+
+

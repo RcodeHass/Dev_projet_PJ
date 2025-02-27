@@ -41,15 +41,24 @@ body{
 }
 
 .theme-color2 {
-  background-color: rgba(68, 120, 124, 0.123);
-  padding: 5px;
-}
-
-.theme-layer {
+  /* background-color: rgba(68, 120, 124, 0.123); */
   background-color: rgb(245, 245, 245);
 }
 
+.theme-layer {
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.border-radius {
+  border-radius: 5px;
+}
+
 .h2 {
+  margin: 0;
+}
+h4 {
   margin: 0;
 }
 
@@ -130,6 +139,7 @@ button:hover {
   align-items: center;
   display: flex;
   border-bottom-right-radius: 50px;
+  overflow: hidden;
 
 }
 
@@ -176,7 +186,6 @@ button:hover {
 }
 
 #btn-close-layer-panel {
-  position: absolute;
   width: 30px;
   height: 30px;
   right: 0;
@@ -223,8 +232,6 @@ button:hover {
 #list-layer-panel {
   width: 100%;
   display: flex;
-  gap: 20px;
-
 }
 
 #control-couches {
@@ -232,17 +239,6 @@ button:hover {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
-}
-
-#contries-deals {
-  padding-bottom: 5px;
-  margin-bottom: 2px; 
-  border-bottom: 2px solid #111111; 
-}
-
-#list-categorie-panel {
-  margin: 0;
 }
 
 #list-legend-panel {
@@ -250,10 +246,6 @@ button:hover {
   bottom: 0;
   left: 5px;
   right: 5px;
-}
-
-#list-categorie-panel, #list-indicateur-panel {
-  margin-bottom: 10px;
 }
 
 
@@ -269,6 +261,7 @@ button:hover {
   z-index: 1;
   margin: 0;
   display: flex;
+  max-width:35%;
 }
 
 #switch-info-panel {
@@ -325,12 +318,58 @@ button:hover {
   flex: 1; 
   overflow-y: auto; 
   height: 100%;
+  background-color: rgba(68, 120, 124, 0.123)
 }
 
 
 .view-info {
-  height: 100%; /* Remplit la div parente */
-  overflow: auto; /* Ajoute un défilement si nécessaire */
+  overflow: hidden; /* Ajoute un défilement si nécessaire */
+  padding: 10px;
+}
+
+#text-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px; /* Espace entre les divs */
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.info-item b {
+  margin-bottom: 5px; /* Espace entre le titre et le contenu */
+}
+
+
+
+/* Liste de points */
+
+
+#list-pj {
+  list-style-type: none; /* Enlever les puces */
+  cursor: pointer;
+  padding: 5px;
+  text-align: left; /* Centrer le contenu à gauche */
+  margin-bottom: 20px;
+  height: 30%;
+  position: relative;
+
+}
+
+#list-pj li {
+  margin: 5px 0;
+  width: 100%;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+
+li:hover {
+  background-color: #b3b8b32f;
 }
 
 .reduit {
@@ -358,7 +397,7 @@ button:hover {
 .filter-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 5px;
   padding: 5px;
   border-radius: 5px;
   cursor: pointer;
