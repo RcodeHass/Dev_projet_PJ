@@ -9,26 +9,7 @@
   </mimeFormats>
   <gridSubsets>
     <gridSubset>
-      <gridSetName>EPSG:900913</gridSetName>
-      <extent>
-        <coords>
-          <double>-572324.1680463997</double>
-          <double>5066479.728827572</double>
-          <double>1064209.282107344</double>
-          <double>6637050.003208333</double>
-        </coords>
-      </extent>
-    </gridSubset>
-    <gridSubset>
-      <gridSetName>EPSG:4326</gridSetName>
-      <extent>
-        <coords>
-          <double>-5.141275476270702</double>
-          <double>41.36601573982175</double>
-          <double>9.559954636188905</double>
-          <double>51.08898919991336</double>
-        </coords>
-      </extent>
+      <gridSetName>WebMercatorQuad</gridSetName>
     </gridSubset>
   </gridSubsets>
   <metaWidthHeight>
@@ -41,7 +22,9 @@
     <styleParameterFilter>
       <key>STYLES</key>
       <defaultValue></defaultValue>
-      <availableStyles class="sorted-set"/>
+      <availableStyles class="sorted-set">
+        <string>data_point_justice:style_commune2</string>
+      </availableStyles>
       <defaultStyle>data_point_justice:style_commune2</defaultStyle>
     </styleParameterFilter>
   </parameterFilters>

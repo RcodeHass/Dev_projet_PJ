@@ -1,7 +1,7 @@
 <GeoServerGWCConfig>
   <version>1.1.0</version>
-  <directWMSIntegrationEnabled>false</directWMSIntegrationEnabled>
-  <requireTiledParameter>true</requireTiledParameter>
+  <directWMSIntegrationEnabled>true</directWMSIntegrationEnabled>
+  <requireTiledParameter>false</requireTiledParameter>
   <WMSCEnabled>true</WMSCEnabled>
   <TMSEnabled>true</TMSEnabled>
   <securityEnabled>false</securityEnabled>
@@ -25,8 +25,7 @@
   <metaTilingY>4</metaTilingY>
   <gutter>0</gutter>
   <defaultCachingGridSetIds>
-    <string>EPSG:4326</string>
-    <string>EPSG:900913</string>
+    <string>WebMercatorQuad</string>
   </defaultCachingGridSetIds>
   <defaultCoverageCacheFormats>
     <string>image/png</string>

@@ -175,7 +175,7 @@ const commune = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm,  vecteur_point_justice, cour_appel],
+  layers: [ couche_osm, commune, vecteur_point_justice, cour_appel],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
