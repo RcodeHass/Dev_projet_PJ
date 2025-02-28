@@ -30,11 +30,12 @@ const couche_osm = new TileLayer({ source: new OSM() });
 // const vecteur_pj = new VectorLayer({
 //   source: point_justice_vec
 // });
+var geoserversUrl = 'http://localhost:8090'
 
 const point_justice_vec = new ol.source.Vector({
   format: new ol.format.GeoJSON(),
   url: function(extent) {
-    return 'http://localhost:8090/geoserver/data_point_justice/ows?' +
+    return geoserversUrl + '/geoserver/data_point_justice/ows?' + 
            'service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice' +
            '&outputFormat=application/json&bbox=' + extent.join(',') + ',EPSG:3857';
   },
@@ -79,7 +80,7 @@ const vecteur_point_justice = new ol.layer.Vector({
 // =========== Impoter la couche Point de justice ================
 const pt_justice = new ImageLayer({
   source: new ImageWMS({
-    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    url: geoserversUrl + '/geoserver/data_point_justice/wms',
     params: {'LAYERS' : 'data_point_justice:point_justice'
     },
     serverType: 'geoserver',
@@ -89,7 +90,7 @@ const pt_justice = new ImageLayer({
 // // =========== Impoter la couche Point de justice en vecteur ================
 // const vecteur_pj = new VectorSource({
 //   format: new GeoJSON(),
-//   url: 'http://localhost:8090/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&maxFeatures=50&outputFormat=application/json',
+//   url: geoserversUrl + '/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&maxFeatures=50&outputFormat=application/json',
 //   crossOrigin: 'anonymous' // Permet d'éviter des erreurs CORS si nécessaire
 // });
 
@@ -113,7 +114,7 @@ const pt_justice = new ImageLayer({
 // ============== Impoter la couche Cour d'appel ================
 const cour_appel = new ImageLayer({
   source: new ImageWMS({
-    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    url: geoserversUrl + '/geoserver/data_point_justice/wms',
     params: {
       'LAYERS' : 'data_point_justice:cour_appel',
       'TILED': true
@@ -127,7 +128,7 @@ const cour_appel = new ImageLayer({
 // ================= Impoter la couche Prudhomme =================
 const prudhomme = new ImageLayer({
   source: new ImageWMS({
-    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    url: geoserversUrl + '/geoserver/data_point_justice/wms',
     params: {
       'LAYERS' : 'data_point_justice:prudhomme',
       'TILED': true
@@ -140,7 +141,7 @@ const prudhomme = new ImageLayer({
 // ============== Impoter la couche trib_judiciaire ================
 const trib_judiciaire = new ImageLayer({
   source: new ImageWMS({
-    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    url: geoserversUrl + '/geoserver/data_point_justice/wms',
     params: {
       'LAYERS' : 'data_point_justice:tribunal_judiciaire',
       'TILED': true
@@ -154,7 +155,7 @@ const trib_judiciaire = new ImageLayer({
 // ============== Impoter la couche trib_judiciaire ================
 const commune = new ImageLayer({
   source: new ImageWMS({
-    url: 'http://localhost:8090/geoserver/data_point_justice/wms',
+    url: geoserversUrl + '/geoserver/data_point_justice/wms',
     params: {
       'LAYERS' : 'data_point_justice:commune',
       'TILED': true
@@ -702,43 +703,87 @@ map.on('click', function (event) {
 // Déclare locationLayer globalement afin de pouvoir supprimer les points de anciennes recherches
 let locationLayer = null; 
 
-// Fonction pour afficher les points les plus proches
 function displayClosestPoints(closestPoints) {
   const tableBody = $('#closest-points-table tbody');
-  tableBody.empty(); // Vider le contenu précédent
+  tableBody.empty(); // Supprimer les anciennes lignes
+
+  if (closestPoints.length === 0) {
+    tableBody.append('<tr><td colspan="2">Aucun point trouvé</td></tr>');
+    return;
+  }
 
   closestPoints.forEach(point => {
     const row = $('<tr>').append(
       $('<td>').text(point.name),
       $('<td>').text(point.distance + ' km')
     );
-    tableBody.append(row); // Ajouter la ligne au corps du tableau
+    tableBody.append(row);
   });
 }
 
-//fonction pour le calcul des points les plus proches 
+// Déclarez la fonction calculateDistance
 function calculateDistance(point1, point2) {
   // Vérifiez que les points sont des tableaux avec deux éléments
-  if (!Array.isArray(point1) || point1.length !== 2 || 
+  if (!Array.isArray(point1) || point1.length !== 2 ||
       !Array.isArray(point2) || point2.length !== 2) {
-    console.error("Invalid coordinates:", point1, point2);
+    console.error("Coordonnées invalides:", point1, point2);
     return Infinity; // retourne une distance infinie en cas d'erreur
   }
-  
+
   const [lon1, lat1] = point1;
   const [lon2, lat2] = point2;
-  
-  // Distance euclidienne (approximation)
-  const distanceInMeters = Math.sqrt(Math.pow(lon2 - lon1, 2) + Math.pow(lat2 - lat1, 2));
-  
-  // Convertir en kilomètres
-  return (distanceInMeters * 111) // 1 degré ≈ 111 km
-    .toFixed(1); // Formater à une décimale
+
+  // Utilisation de la formule de Haversine pour une meilleure précision
+  const R = 6371; // Rayon de la Terre en kilomètres
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+
+  return distance.toFixed(1); // Formater à une décimale
 }
 
+// Assurez-vous que la source est chargée avant de l'utiliser
+point_justice_vec.on('featuresloadend', function() {
+  console.log("Données POI chargées:", point_justice_vec.getFeatures().length);
+});
+
+function findClosestPoints(targetCoordinates, n) {
+  const features = point_justice_vec.getFeatures(); // Récupérer les entités depuis la source
+  
+  const distances = features.map(feature => {
+    const coords = feature.getGeometry().getCoordinates();
+
+    // Vérifie le format des coordonnées
+    if (!Array.isArray(coords) || coords.length < 2) {
+      console.error("Coordonnées de géométrie invalides:", coords);
+      return null; // Ignore les entités invalides
+    }
+
+    // Récupérer les valeurs attributaires
+    const properties = feature.getProperties();
+    
+    return {
+      name: properties.name || "Inconnu",  // Assurez-vous que la propriété 'name' existe
+      coordinates: coords,
+      distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)) // Correction ici
+    };
+  }).filter(item => item !== null); // Filtrer les éléments invalides
+
+  // Trier les distances par ordre croissant
+  distances.sort((a, b) => a.distance - b.distance);
+
+  // Retourner les n points les plus proches
+  return distances.slice(0, n);
+}
+
+// Exemple d'utilisation après avoir recherché un lieu
 function searchLocation(query) {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-  
+
   $.get(url, function(data) {
     if (data.length > 0) {
       const firstResult = data[0];
@@ -748,10 +793,14 @@ function searchLocation(query) {
       map.getView().setCenter(ol.proj.fromLonLat(coordinates));
       map.getView().setZoom(15);
 
-      // Supprimer l'ancien marqueur s'il existe
-      if (locationLayer !== null) {
-        map.removeLayer(locationLayer);
-        console.log("Ancien marqueur supprimé");
+      // Mettre à jour le marqueur existant ou en créer un nouveau
+      if (locationLayer === null) {
+        locationLayer = new ol.layer.Vector({
+          source: new ol.source.Vector()
+        });
+        map.addLayer(locationLayer);
+      } else {
+        locationLayer.getSource().clear();
       }
 
       // Ajouter un marqueur
@@ -762,8 +811,8 @@ function searchLocation(query) {
       // Créer un style pour le marqueur avec un fichier local
       const locationStyle = new ol.style.Style({
         image: new ol.style.Icon({
-          src: './img/localisation.png', 
-          scale: 0.1, 
+          src: './img/localisation.png',
+          scale: 0.1,
           anchor: [0.5, 1]
         })
       });
@@ -771,31 +820,25 @@ function searchLocation(query) {
       // Appliquer le style au marqueur
       location.setStyle(locationStyle);
 
-      // Créer une nouvelle source vectorielle
-      const locationSource = new ol.source.Vector({
-        features: [location]
-      });
+      // Ajouter le marqueur à la source de la couche
+      locationLayer.getSource().addFeature(location);
 
-      // Affecter la nouvelle couche à la variable globale
-      locationLayer = new ol.layer.Vector({
-        source: locationSource
-      });
-
-      // Ajouter la couche à la carte
-      map.addLayer(locationLayer);
-      
       // Trouver les 5 points les plus proches
-      const closestPoints = findClosestPoints(coordinates, point_justice_vec.getFeatures(), 5);
+      const closestPoints = findClosestPoints(coordinates, 5);
       console.log("5 points les plus proches :", closestPoints);
 
       // Afficher les points les plus proches dans la div
       displayClosestPoints(closestPoints);
 
+
     } else {
       alert("Aucun résultat trouvé.");
     }
+  }).fail(function() {
+    alert("Erreur lors de la recherche du lieu. Veuillez réessayer.");
   });
 }
+
 
 // Événement sur le bouton de recherche
 $('#searchButton').on('click', function() {
@@ -817,26 +860,3 @@ $('#search').on('keypress', function(e) {
   }
 });
 
-function findClosestPoints(targetCoordinates, features, n) {
-  const distances = features.map(feature => {
-    const coords = feature.getGeometry().getCoordinates();
-
-    // Vérifiez le format des coordonnées
-    if (!Array.isArray(coords) || coords.length < 2) {
-      console.error("Invalid geometry coordinates:", coords);
-      return null; // Ignore les features invalides
-    }
-
-    return {
-      name: feature.getProperties().name || "Unknown",
-      coordinates: coords,
-      distance: calculateDistance(targetCoordinates, coords)
-    };
-  }).filter(item => item !== null); // Filtrer les éléments invalides
-
-  // Trier les distances par distance croissante
-  distances.sort((a, b) => a.distance - b.distance);
-
-  // Retourner les n points les plus proches
-  return distances.slice(0, n);
-}
