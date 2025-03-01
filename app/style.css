@@ -177,22 +177,20 @@ button:hover {
 }
 #search {
   flex: 1; 
-  width: 100%;
+  width: auto;
   height: 100%;
-  padding: 3px;
   border: 1px solid #ccc;
-  /* border-radius: 5px; */
   outline: none;
   box-sizing: border-box; 
 }
 
 #search-button {
   display: flex;
-  height: 100%;
   width: 40px;
-  padding: 3px;
+  height: 100%;
   border-radius: 5px;
   cursor: pointer;
+  border: 1px solid #ccc;
  
 }
 
@@ -201,15 +199,6 @@ button:hover {
   width: 70%;
 }
 
-#searchButton {
-  color: white;
-  border: none;
-  padding: 3px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-  white-space: nowrap; /* Évite que le texte force l'élargissement */
-}
 
 #searchButton:hover {
   color: #f0f0f0;
@@ -266,7 +255,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 25vh;
+  width: 30vh;
 }
 
 #layer-panel {

@@ -6,6 +6,7 @@ import { ImageWMS } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import ImageLayer from 'ol/layer/Image';
 import OSM from 'ol/source/OSM';
+import XYZ from 'ol/source/XYZ';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector';
@@ -16,6 +17,13 @@ import ScaleLine from 'ol/control/ScaleLine.js' //pour ajouter l'echelle
 // Je sors la couche OSM de l’objet Map pour la stocker dans une variable
 const scaleline = new ScaleLine(); //On appelle ici le scale 
 const couche_osm = new TileLayer({ source: new OSM() });
+
+const positronLayer = new TileLayer({
+  source: new XYZ({
+    url: 'https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attributions: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+  })
+});
 
 // =========================================================================================
 // ================================= Import de mes 3 couches wms ===========================
@@ -175,7 +183,15 @@ const commune = new ImageLayer({
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
-  layers: [ couche_osm, commune, vecteur_point_justice, cour_appel],
+  layers: [ 
+    couche_osm,
+    positronLayer,
+    commune,
+    prudhomme,
+    trib_judiciaire,
+    cour_appel,
+    vecteur_point_justice, 
+  ],
   view: new View({
     center: fromLonLat([4.385923767089852, 45.43798463466298]),
     zoom: 6
@@ -250,6 +266,11 @@ document.getElementById('advanced-button').addEventListener('click', function() 
 });
 
 
+// ========================================================================================
+// ============ Fonctions gestion des couche de découpage administratif ================== 
+// ========================================================================================
+
+
 // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
 // map.on('singleclick', function (evt) {
 //   const viewResolution = map.getView().getResolution();
@@ -318,40 +339,6 @@ document.getElementById('advanced-button').addEventListener('click', function() 
 // ========================================================================================
 // ==========================  Fonctions filtrage des points  =========================== 
 // ========================================================================================
-
-    // Ajouter une deuxieme filtrage 2  par type 
-    // let Listtype = document.querySelector('ul#list-type')
-    // const frag1 = document.createDocumentFragment();
-    // const equipement = new Set();
-    // DataEquipements.forEach((equip) => {
-    //     if (!equipement.has(equip.type)){
-    //         const liequip = document.createElement('li')
-    //         const textEl = document.createElement('span');
-    //         // Création de  l'élément switch
-    //         const switchInput = document.createElement('input');
-    //         switchInput.type = 'checkbox';
-    //         switchInput.id = `switch-${equip.type}`;
-    //         switchInput.dataset.type = equip.type;
-    //         textEl.innerText = equip.type;
-
-    //         const switchLabel = document.createElement('label');
-    //         switchLabel.htmlFor = switchInput.id;
-    //         switchLabel.appendChild(switchInput);
-    //         switchLabel.appendChild(textEl);
-            
-    //         // Ajouter le switch et le texte à l'élément <li>
-    //         liequip.appendChild(switchInput);
-    //         liequip.appendChild(switchLabel);
-    //         liequip.dataset.lat = equip.lat
-    //         liequip.dataset.lon = equip.lon
-    //         frag1.appendChild(liequip);
-    //         equipement.add(equip.type);
-
-    //     }
-    // });
-    // Listtype.appendChild(frag1);
-
-
 
 // Fonction pour récupérer et afficher les types depuis GeoServer
 // Sélection des listes où afficher les types et catégories
@@ -580,9 +567,9 @@ const ongletlist = document.getElementById('list-info');
 
 // Initialiser l'image en fonction de l'état par défaut
 if (ongletInfo.classList.contains('reduit')) {
-  toggleImg.src = 'img/prev.png'; // Image pour l'état réduit
+  toggleImg.src = 'img/next.png'; // Image pour l'état réduit
 } else {
-  toggleImg.src = 'img/next.png'; // Image pour l'état normal
+  toggleImg.src = 'img/prev.png'; // Image pour l'état normal
 }
 
 toggleButton.addEventListener('click', () => {
@@ -592,10 +579,10 @@ toggleButton.addEventListener('click', () => {
     ongletstat.style.display = 'none';
     ongletlist.style.display = 'none';
 
-    toggleImg.src = 'img/prev.png'; // Image pour l'état affiché
+    toggleImg.src = 'img/next.png'; // Image pour l'état affiché
   } else {
     ongletInfo.style.display = 'none';
-    toggleImg.src = 'img/next.png'; // Image pour l'état masqué
+    toggleImg.src = 'img/prev.png'; // Image pour l'état masqué
   }
 });
 
