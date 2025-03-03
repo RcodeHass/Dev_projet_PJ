@@ -45,9 +45,24 @@
           <div id="layer-panel">
             
             <div id="content-layer-panel"  style="display: none;">
-              <div id="btn-closepanel" class="theme-layer" ><button id="btn-close-layer-panel">x</button></div>
-              <div id="list-layer-panel">
 
+              <!-- Bulle de filtre de par categorie de la carte -->
+              <div id="list-categorie-panel" class="theme-layer theme-color2">
+                <h4> Point de justice les plus proches</h4>
+                <table id="closest-points-table">
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Distance (km)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
+                  </tbody>
+                </table>>
+              </div>
+
+              <div id="list-layer-panel">
                 <!-- Bulle de gestion des couches de la carte -->
                 <div id="control-couches" class="theme-layer theme-color2">
                   <h4> Filtre type de point de justice</h4>
@@ -116,22 +131,12 @@
                   <div>
                       Description générale sur le type de point de juste sélectionner,
                   </div>
-                  <table id="closest-points-table">
-                    <thead>
-                      <tr>
-                        <th>Nom</th>
-                        <th>Distance (km)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
-                    </tbody>
-                  </table>
               </div>
               <!-- Div qui contien les boutons pour passer a l'onglet suivant -->
               <div id="switch-info" class="center">
                   <button id="button-text" class="button-info"> Information</button>
                   <button id="button-stat" class="button-info"> Statistique</button>
+                  <button id="button-indi" class="button-info"> indicateur</button>
                   <button id="button-list" class="button-info"> Point justice</button>
               </div>
               <div id="contenue-info" class="theme-color2">
@@ -145,6 +150,13 @@
                       information statistique agrégé au niveaux des commune ou autre sur l'accessibilité et les besoin ou non en point de justice
                     </div>
                 </div>
+
+                <div id="stat-indicateur" class="view-info " style="display: none;">indicatreur
+                  <div id="filtre-indicateur">
+                    <ul class="list"  id="list-indic">
+                    </ul>
+                  </div>
+              </div>
 
                 <div id="list-info" class="view-info" style="display: none;">
                   

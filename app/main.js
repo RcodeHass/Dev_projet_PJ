@@ -26,18 +26,10 @@ const positronLayer = new TileLayer({
 });
 
 // =========================================================================================
-// ================================= Import de mes 3 couches wms ===========================
+// ================================= Import des point de justice wfs ===========================
 // =========================================================================================
 // ============== Charger la couche WFS des points de justice ================
-// const point_justice_vec = new VectorSource({
-//   format: new GeoJSON(),
-//   url: 'http://localhost:8090/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&outputFormat=application/json',
-//   crossOrigin: 'anonymous' // Pour éviter les erreurs CORS
-// });
 
-// const vecteur_pj = new VectorLayer({
-//   source: point_justice_vec
-// });
 var geoserversUrl = 'http://localhost:8090'
 
 const point_justice_vec = new ol.source.Vector({
@@ -51,25 +43,24 @@ const point_justice_vec = new ol.source.Vector({
   crossOrigin: 'anonymous' // Évite les erreurs CORS
 });
 
-const categorieColors = {
-  "Pérmanences": "red",
-  "Autre": "gray",
-  "Maisons": "blue",
-  "Mairie": "green",
-  "Etablissement": "purple",
-  "Associations": "orange"
+// Dictionnaire des icônes par type de point de justice
+const categorieIcons = {
+  "France Service": "img/FS.png",
+  "Autre": "img/logo.png",
+  "Spécialiste hors FS": "img/S.png",
+  "Domaine juridique": "img/D.png",
+  "Généraliste hors FS": "img/G.png"
 };
 
 // Fonction de style dynamique
 const pointJusticeStyleFunction = function (feature) {
-  const categorie = feature.get('categorie'); // Récupère la valeur du champ "categorie"
-  const color = categorieColors[categorie] || "black"; // Couleur par défaut si non définie
+  const categorie = feature.get('type_pj'); // Récupère la valeur du champ "categorie"
+  const iconSrc = categorieIcons[categorie] || "img/Divers.svg"; // Icône par défaut si non définie
 
   return new ol.style.Style({
-    image: new ol.style.Circle({
-      radius: 4,//Taille du point
-      fill: new ol.style.Fill({ color: color }),
-      stroke: new ol.style.Stroke({ color: 'white', width: 2 }) // Contour blanc pour bien voir le point
+    image: new ol.style.Icon({
+      src: iconSrc,
+      scale: 0.07 // Ajustez l'échelle selon vos besoins
     })
   });
 };
@@ -81,86 +72,172 @@ const vecteur_point_justice = new ol.layer.Vector({
 });
 
 
-// =========================================================================================
-// ================================= Import de mes 3 couches wms ===========================
-// =========================================================================================
 
-// =========== Impoter la couche Point de justice ================
-const pt_justice = new ImageLayer({
-  source: new ImageWMS({
-    url: geoserversUrl + '/geoserver/data_point_justice/wms',
-    params: {'LAYERS' : 'data_point_justice:point_justice'
-    },
-    serverType: 'geoserver',
-  }),
+// ========================================================================================
+// ============================ Import de mes 3 couches wms ============================== 
+// ========================================================================================
+
+// =======================================================================================
+// Fonction pour calculer les classes de Jenks 
+const calculateJenksClassesForLayer = (source, indicator, numClasses = 5) => {
+  const values = source.getFeatures()
+    .map(f => parseFloat(f.get(indicator)))
+    .filter(v => !isNaN(v))
+    .sort((a, b) => a - b);
+
+  if (values.length < numClasses) return values; // Sécurité si peu de valeurs
+
+  const jenksClasses = [];
+  for (let i = 1; i <= numClasses; i++) {
+    jenksClasses.push(values[Math.floor(i * values.length / numClasses) - 1]);
+  }
+  return jenksClasses;
+};
+
+// Fonction pour appliquer un style dynamique basé sur un indicateur donné
+const applyJenksStyleToLayer = (layer, source, indicator, colorScale, threshold = 42) => {
+  if (source.getState() !== 'ready') return;
+
+  const jenksClasses = calculateJenksClassesForLayer(source, indicator);
+
+  const getJenksColor = (value) => {
+    for (let i = 0; i < jenksClasses.length; i++) {
+      if (value <= jenksClasses[i]) return colorScale[i];
+    }
+    return colorScale[colorScale.length - 1];
+  };
+
+  layer.setStyle((feature) => {
+    const taux = parseFloat(feature.get(indicator)) || 0;
+    return new Style({
+      fill: new Fill({ color: getJenksColor(taux) }),
+      stroke: new Stroke({ color: 'black', width: 0.2 })
+    });
+  });
+};
+
+// Palettes de couleurs pour chaque indicateur
+const colorsPartFmp = [
+  'rgba(255, 255, 204, 0.8)', // Jaune clair
+  'rgba(255, 204, 153, 0.8)', // Orange clair
+  'rgba(255, 153, 102, 0.8)', // Orange moyen
+  'rgba(255, 102, 51, 0.8)',  // Rouge clair
+  'rgba(204, 0, 0, 0.8)'      // Rouge foncé
+];
+
+const colorsnb_victime_1000 = [
+  'rgba(255, 204, 255, 0.8)', // Pourpre clair
+  'rgba(255, 153, 255, 0.8)', // Pourpre moyen clair
+  'rgba(204, 102, 204, 0.8)', // Pourpre moyen
+  'rgba(153, 51, 153, 0.8)',  // Pourpre foncé
+  'rgba(102, 0, 102, 0.8)'    // Pourpre très foncé
+];
+
+const colorstaux_chomage = [
+  'rgba(204, 229, 255, 0.8)', // Bleu clair
+  'rgba(153, 204, 255, 0.8)', // Bleu moyen clair
+  'rgba(102, 178, 255, 0.8)', // Bleu moyen
+  'rgba(51, 153, 255, 0.8)',  // Bleu foncé
+  'rgba(0, 102, 204, 0.8)'    // Bleu très foncé
+];
+
+const colorsMoyenAge = [
+  'rgba(255, 182, 193, 0.8)', // Rose clair
+  'rgba(255, 105, 180, 0.8)', // Rose moyen
+  'rgba(255, 0, 255, 0.8)',   // Magenta
+  'rgba(0, 191, 255, 0.8)',   // Bleu clair
+  'rgba(0, 0, 255, 0.8)'      // Bleu foncé
+];
+
+const colorsTauxPauvrete = [
+  'rgba(204, 255, 204, 0.8)', // Vert clair
+  'rgba(153, 255, 153, 0.8)', // Vert moyen
+  'rgba(102, 204, 102, 0.8)', // Vert plus foncé
+  'rgba(51, 153, 51, 0.8)',   // Vert foncé
+  'rgba(0, 102, 0, 0.8)'      // Vert très foncé
+];
+
+
+
+// ========================================================================================
+// Source WFS pour la couche cour d'appel
+const courAppelSource = new VectorSource({
+  format: new GeoJSON(),
+  url: geoserversUrl + '/geoserver/data_point_justice/ows?'
+    + 'service=WFS&version=1.0.0&request=GetFeature'
+    + '&typename=data_point_justice:cour_appel'
+    + '&outputFormat=application/json',
+  crossOrigin: 'anonymous'
 });
 
-// // =========== Impoter la couche Point de justice en vecteur ================
-// const vecteur_pj = new VectorSource({
-//   format: new GeoJSON(),
-//   url: geoserversUrl + '/geoserver/data_point_justice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=data_point_justice:point_justice&maxFeatures=50&outputFormat=application/json',
-//   crossOrigin: 'anonymous' // Permet d'éviter des erreurs CORS si nécessaire
+// Source WFS pour la couche tribunal judiciaire 
+const tibunalJudiciaireSource = new VectorSource({
+  format: new GeoJSON(),
+  url: geoserversUrl + '/geoserver/data_point_justice/ows?'
+    + 'service=WFS&version=1.0.0&request=GetFeature'
+    + '&typename=data_point_justice:tribunal_judiciaire'
+    + '&outputFormat=application/json',
+  crossOrigin: 'anonymous'
+});
+
+// Source WFS pour la couche cour d'appel
+const PrudhommeSource = new VectorSource({
+  format: new GeoJSON(),
+  url: geoserversUrl + '/geoserver/data_point_justice/ows?'
+    + 'service=WFS&version=1.0.0&request=GetFeature'
+    + '&typename=data_point_justice:prudhomme'
+    + '&outputFormat=application/json',
+  crossOrigin: 'anonymous'
+});
+
+
+// =========================================================================================
+// ================================= Import des couche en wfs ===========================
+// =========================================================================================
+
+
+// // ============== Impoter la couche Cour d'appel ================
+// const cour_appel = new ImageLayer({
+//   source: new ImageWMS({
+//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
+//     params: {
+//       'LAYERS' : 'data_point_justice:cour_appel',
+//       'TILED': true
+//     },
+//     serverType: 'geoserver',
+//     crossOrigin: 'anonymous'
+
+//   }),
 // });
 
-// // On peux maintenant configurer le style de la couche 
-// function getStyleCentroid(feature) {
-//   const style = new Style({
-//     image: new Circle({
-//       fill: new Fill({ color: '#fac460da'}),
-//     }),
-//   });
-//   return style;
-// }
-
-// // On configure ici la couche vecteur 
-// const vecteur_point_justice = new VectorLayer({
-//   source: vecteur_pj,
-//   style: getStyleCentroid  
+// // ================= Impoter la couche Prudhomme =================
+// const prudhomme = new ImageLayer({
+//   source: new ImageWMS({
+//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
+//     params: {
+//       'LAYERS' : 'data_point_justice:prudhomme',
+//       'TILED': true
+//     },
+//     serverType: 'geoserver',
+//     crossOrigin: 'anonymous'
+//   }),
 // });
+// prudhomme.setVisible(false);
+// // ============== Impoter la couche trib_judiciaire ================
+// const trib_judiciaire = new ImageLayer({
+//   source: new ImageWMS({
+//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
+//     params: {
+//       'LAYERS' : 'data_point_justice:tribunal_judiciaire',
+//       'TILED': true
+//     },
+//     serverType: 'geoserver',
+//     crossOrigin: 'anonymous'
+//   }),
+// });
+// trib_judiciaire.setVisible(false);
 
-
-// ============== Impoter la couche Cour d'appel ================
-const cour_appel = new ImageLayer({
-  source: new ImageWMS({
-    url: geoserversUrl + '/geoserver/data_point_justice/wms',
-    params: {
-      'LAYERS' : 'data_point_justice:cour_appel',
-      'TILED': true
-    },
-    serverType: 'geoserver',
-    crossOrigin: 'anonymous'
-
-  }),
-});
-
-// ================= Impoter la couche Prudhomme =================
-const prudhomme = new ImageLayer({
-  source: new ImageWMS({
-    url: geoserversUrl + '/geoserver/data_point_justice/wms',
-    params: {
-      'LAYERS' : 'data_point_justice:prudhomme',
-      'TILED': true
-    },
-    serverType: 'geoserver',
-    crossOrigin: 'anonymous'
-  }),
-});
-
-// ============== Impoter la couche trib_judiciaire ================
-const trib_judiciaire = new ImageLayer({
-  source: new ImageWMS({
-    url: geoserversUrl + '/geoserver/data_point_justice/wms',
-    params: {
-      'LAYERS' : 'data_point_justice:tribunal_judiciaire',
-      'TILED': true
-    },
-    serverType: 'geoserver',
-    crossOrigin: 'anonymous'
-  }),
-});
-
-
-// ============== Impoter la couche trib_judiciaire ================
+// ============== Impoter la couche commune ================
 const commune = new ImageLayer({
   source: new ImageWMS({
     url: geoserversUrl + '/geoserver/data_point_justice/wms',
@@ -176,20 +253,41 @@ const commune = new ImageLayer({
 
 
 // ========================================================================================
+// import des couche en wfs dans le projet
+const courAppelLayer = new VectorLayer({
+  source: courAppelSource
+});
+
+// Couche vectorielle avec style initial
+const tribunalJudiciaireLayer = new VectorLayer({
+  source: tibunalJudiciaireSource
+});
+
+// Couche vectorielle avec style initial
+const prudhommeLayer = new VectorLayer({
+  source: PrudhommeSource
+});
+
+
+// ========================================================================================
 // ===============================  On ajoute ici la carte =============================== 
 // ========================================================================================
 // Création de l’objet map avec appel de mes deux couches "couche_osm" et "ma_couche" dans layers
 // commune, prudhomme, trib_judiciaire, cour_appel,
+
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
   layers: [ 
     couche_osm,
     positronLayer,
+    courAppelLayer,
+    tribunalJudiciaireLayer,
+    prudhommeLayer,
     commune,
-    prudhomme,
-    trib_judiciaire,
-    cour_appel,
+    // prudhomme,
+    // trib_judiciaire,
+    // cour_appel,
     vecteur_point_justice, 
   ],
   view: new View({
@@ -200,9 +298,73 @@ const map = new Map({
 
 
 // ========================================================================================
-// ==== Définition de la fonction des ckeckbox pour afficher et masquer les couche  ======= 
+// ====================== Fonctions d'intéraction avec les couches  ====================== 
 // ========================================================================================
+// Ajouter un écouteur pour détecter le changement d'indicateur
+// Gestion de la sélection au clic
+// map.on('singleclick', function (evt) {
+//   map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+//     courAppelLayer.setStyle(function (f) {
+//       return f === feature ? new Style({
+//         fill: new Fill({ color: getJenksColor(parseFloat(f.get('part_fmp')) || 0) }),
+//         stroke: new Stroke({ color: 'black', width: 1 })
+//       }) : transparentStyle;
+//     });
+//   });
+// });
 
+// ========================================================================================
+// Fonction pour mettre à jour le style en fonction des cases cochées
+const updateLayerStyles = () => {
+  const checkedIndicators = Array.from(document.querySelectorAll('#list-indic input:checked'))
+    .map(checkbox => checkbox.value);
+
+  if (checkedIndicators.length === 0) { 
+    // Masquer les styles si aucune case n'est cochée
+    courAppelLayer.setStyle(null);
+    tribunalJudiciaireLayer.setStyle(null);
+    prudhommeLayer.setStyle(null);
+    return;
+  }
+
+  // On applique uniquement le dernier indicateur coché
+  const selectedIndicator = checkedIndicators[checkedIndicators.length - 1];
+  let colorScale;
+  switch (selectedIndicator) {
+    case 'part_fmp':
+      colorScale = colorsPartFmp;
+      break;
+    case 'nb_victime_1000':
+      colorScale = colorsnb_victime_1000;
+      break;
+    case 'taux_chomage':
+      colorScale = colorstaux_chomage;
+      break;
+    case 'age_moyen':
+      colorScale = colorsMoyenAge;
+      break;
+    case 'taux_pauvrete':
+      colorScale = colorsTauxPauvrete;
+      break;
+    default:
+      return;
+  }
+
+  applyJenksStyleToLayer(courAppelLayer, courAppelSource, selectedIndicator, colorScale);
+  applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, selectedIndicator, colorScale);
+  applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, selectedIndicator, colorScale);
+};
+
+// document.getElementById('list-indic').addEventListener('change', (event) => {
+//   if (event.target.type === 'radio') {
+//     const indicator = event.target.value;
+//     applyJenksStyleToLayer(courAppelLayer, courAppelSource, indicator);
+//     applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, indicator);
+//     applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, indicator);
+//   }
+// });
+
+// ========================================================================================
 // Fonctions pour afficher et masquer la couche country 
 const checkbox_pt_justice = document.getElementById('checkbox-pt_justice');
 checkbox_pt_justice.addEventListener('change', (event) => {
@@ -228,41 +390,114 @@ checkbox_commune.addEventListener('change', (event) => {
   }
 });
 
-
+tribunalJudiciaireLayer.setVisible(false);
+prudhommeLayer.setVisible(false);
+// Fonctions pour afficher et masquer la couche Cour d'appel
 document.querySelectorAll('input[name="checkbox-group"]').forEach((radio) => {
   radio.addEventListener("change", (event) => {
     if (event.target.id === "checkbox-cour_appel") {
-      cour_appel.setVisible(true);
-      trib_judiciaire.setVisible(false);
-      prudhomme.setVisible(false);
+      courAppelLayer.setVisible(true);
+      tribunalJudiciaireLayer.setVisible(false);
+      prudhommeLayer.setVisible(false);
     } else if (event.target.id === "checkbox-trib_judiciaire") {
-      trib_judiciaire.setVisible(true);
-      cour_appel.setVisible(false);
-      prudhomme.setVisible(false);
+      tribunalJudiciaireLayer.setVisible(true);
+      courAppelLayer.setVisible(false);
+      prudhommeLayer.setVisible(false);
     } else if (event.target.id === "checkbox-prudhomme") {
-      prudhomme.setVisible(true);
-      cour_appel.setVisible(false);
-      trib_judiciaire.setVisible(false);
+      prudhommeLayer.setVisible(true);
+      courAppelLayer.setVisible(false);
+      tribunalJudiciaireLayer.setVisible(false);
     }
   });
 });
 
 // ========================================================================================
-// ====================== Fonctions d'intéraction avec les couches  ====================== 
+// ====================== Fonctions pour gérer les indicateur   ====================== 
 // ========================================================================================
 
+// Récupérer les indicateurs à partir de l'une des sources
+const getIndicatorsFromSource = (source) => {
+  const features = source.getFeatures();
+  if (features.length === 0) return [];
+
+  const properties = features[0].getProperties();
+  return Object.keys(properties).slice(3);
+};
+
+// Fonction pour créer des cases à cocher
+const createCheckboxList = (indicators) => {
+  const list = document.getElementById('list-indic');
+  list.innerHTML = '';
+
+  indicators.forEach(indicator => {
+    const listItem = document.createElement('li');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = indicator;
+    checkbox.name = 'indicator'; // Utiliser le même nom pour toutes les cases à cocher
+    checkbox.value = indicator;
+    // Cocher la case taux_pauvrete par défaut
+    if (indicator === 'taux_pauvrete') {
+      checkbox.checked = true;
+    }
+    checkbox.addEventListener('change', function() {
+      updateLayerStyles();
+      // Décoche toutes les autres cases à cocher
+      const checkboxes = document.querySelectorAll('input[name="indicator"]');
+      checkboxes.forEach(cb => {
+        if (cb !== checkbox) {
+          cb.checked = false;
+        }
+      });
+    });
+
+    const label = document.createElement('label');
+    label.htmlFor = indicator;
+    label.appendChild(document.createTextNode(indicator));
+
+    listItem.appendChild(checkbox);
+    listItem.appendChild(label);
+    list.appendChild(listItem);
+  });
+};
+
+// Initialisation de la liste de checkboxes après chargement de la source
+courAppelSource.once('change', () => {
+  if (courAppelSource.getState() === 'ready') {
+    const indicators = getIndicatorsFromSource(courAppelSource);
+    createCheckboxList(indicators);
+    updateLayerStyles();
+  }
+});
+
 // Fonction pour passer de l'onglet de base à l'onglet avancé
-document.getElementById('basic-button').addEventListener('click', function() {
+const activateBasicButton = () => {
   document.getElementById('list-indicateur-panel').style.display = 'none';
   document.getElementById('control-couches').style.display = 'none';
   document.getElementById('button-stat').style.display = 'none';
   document.getElementById('stat-info').style.display = 'none';
-});
+  document.getElementById('stat-indicateur').style.display = 'none';
+  document.getElementById('button-indi').style.display = 'none';
+
+  // Masquer les styles des couches
+  courAppelLayer.setStyle(null);
+  tribunalJudiciaireLayer.setStyle(null);
+  prudhommeLayer.setStyle(null);
+};
+
+// Ajouter l'événement au bouton "basic-button"
+document.getElementById('basic-button').addEventListener('click', activateBasicButton);
+
+// Activer le bouton "basic-button" par défaut au chargement du site
+window.addEventListener('load', activateBasicButton);
 
 document.getElementById('advanced-button').addEventListener('click', function() {
   document.getElementById('list-indicateur-panel').style.display = 'block';
   document.getElementById('control-couches').style.display = 'block';
   document.getElementById('button-stat').style.display = 'block';
+  document.getElementById('button-indi').style.display = 'block';
+  // Mettre à jour les styles pour afficher taux_pauvrete par défaut
+  updateLayerStyles();
 });
 
 
@@ -546,10 +781,15 @@ document.getElementById('btn-layer-panel').addEventListener('click', function() 
   }
 });
 
-document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
+
+// Fermer le panneau lorsque l'utilisateur clique en dehors de celui-ci
+document.addEventListener('click', function(event) {
   var contentPanel = document.getElementById('content-layer-panel');
-  contentPanel.style.display = 'none';
-  contentPanel.style.zIndex = '';
+  var btnLayerPanel = document.getElementById('btn-layer-panel');
+  if (contentPanel.style.display === 'block' && !contentPanel.contains(event.target) && !btnLayerPanel.contains(event.target)) {
+      contentPanel.style.display = 'none';
+      contentPanel.style.zIndex = '';
+  }
 });
 
 // document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
@@ -733,11 +973,7 @@ function calculateDistance(point1, point2) {
   return distance.toFixed(1); // Formater à une décimale
 }
 
-// Assurez-vous que la source est chargée avant de l'utiliser
-point_justice_vec.on('featuresloadend', function() {
-  console.log("Données POI chargées:", point_justice_vec.getFeatures().length);
-});
-
+// ====================== Intégration du widget d'adressage  ==============================
 function findClosestPoints(targetCoordinates, n) {
   const features = point_justice_vec.getFeatures(); // Récupérer les entités depuis la source
   
