@@ -406,12 +406,15 @@ checkbox_commune.addEventListener('change', (event) => {
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
 // Fonctions pour afficher et masquer la couche Cour d'appel
-document.querySelectorAll('input[name="checkbox-group"]').forEach((radio) => {
+document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
+
   radio.addEventListener("change", (event) => {
     if (event.target.id === "checkbox-cour_appel") {
       courAppelLayer.setVisible(true);
       tribunalJudiciaireLayer.setVisible(false);
       prudhommeLayer.setVisible(false);
+      console.log("Cour d'appel layer toggled");
+
     } else if (event.target.id === "checkbox-trib_judiciaire") {
       tribunalJudiciaireLayer.setVisible(true);
       courAppelLayer.setVisible(false);
@@ -437,89 +440,108 @@ const getIndicatorsFromSource = (source) => {
   return Object.keys(properties).slice(3);
 };
 
-// Fonction pour créer des cases à cocher
-const createCheckboxList = (indicators) => {
+// Fonction pour créer des boutons radio au lieu de checkboxes
+const createRadioList = (indicators) => {
   const list = document.getElementById('list-indic');
   list.innerHTML = '';
 
   indicators.forEach(indicator => {
     const listItem = document.createElement('li');
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = indicator;
-    checkbox.name = 'indicator'; // Utiliser le même nom pour toutes les cases à cocher
-    checkbox.value = indicator;
-    // Cocher la case taux_pauvrete par défaut
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.id = indicator;
+    radio.name = 'indicator';
+    radio.value = indicator;
+    
     if (indicator === 'taux_pauvrete') {
-      checkbox.checked = true;
+      radio.checked = true;
     }
-    checkbox.addEventListener('change', function() {
-      updateLayerStyles();
-      // Décoche toutes les autres cases à cocher
-      const checkboxes = document.querySelectorAll('input[name="indicator"]');
-      checkboxes.forEach(cb => {
-        if (cb !== checkbox) {
-          cb.checked = false;
-        }
-      });
-    });
+
+    radio.addEventListener('change', updateLayerStyles);
 
     const label = document.createElement('label');
     label.htmlFor = indicator;
     label.appendChild(document.createTextNode(indicator));
 
-    listItem.appendChild(checkbox);
+    listItem.appendChild(radio);
     listItem.appendChild(label);
     list.appendChild(listItem);
   });
 };
 
-// Initialisation de la liste de checkboxes après chargement de la source
+// Initialisation de la liste de boutons radio après chargement de la source
 courAppelSource.once('change', () => {
   if (courAppelSource.getState() === 'ready') {
     const indicators = getIndicatorsFromSource(courAppelSource);
-    createCheckboxList(indicators);
+    createRadioList(indicators);
     updateLayerStyles();
   }
 });
-
-
 // // ========================================================================================
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
 // // ========================================================================================
 
 
 // // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
-// // map.on('singleclick', function (evt) {
-// //   const viewResolution = map.getView().getResolution();
-// //   const wmsSource = cour_appel.getSource();
-// //   const url = wmsSource.getFeatureInfoUrl(
-// //     evt.coordinate,
-// //     viewResolution,
-// //     'EPSG:3857',
-// //     { 'INFO_FORMAT': 'application/json' }
-// //   );
+map.on("singleclick", function (evt) {
+  let selectedCode = null;
 
-// //   if (url) {
-// //     fetch(url)
-// //       .then(response => response.json())
-// //       .then(data => {
-// //         if (data.features.length > 0) {
-// //           const cour_appel = data.features[0].properties.num_ca;
-// //           console.log("Code du cours d'appel sélectionné :", cour_appel);
+  // Vérifier sur quelle couche l'utilisateur clique
+  map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+    if (layer === courAppelLayer) {
+      selectedCode = feature.get("num_ca");
+    } else if (layer === tribunalJudiciaireLayer) {
+      selectedCode = feature.get("num_tj");
+    } else if (layer === prudhommeLayer) {
+      selectedCode = feature.get("num_cph");
+    }
+  });
 
-// //           // Mise à jour du filtre sur la couche commune
-// //           const communeSource = commune.getSource();
-// //           communeSource.updateParams({
-// //             'CQL_FILTER': `n_ca='${cour_appel}'`
-// //           });
-// //         }
-// //       })
-// //       .catch(error => console.error('Erreur lors de la récupération des données:', error));
-// //   }
-// // });
+  if (selectedCode) {
+    console.log("Code sélectionné :", selectedCode);
+
+    // Appliquer le filtre CQL sur la couche commune WMS
+    const communeSource = commune.getSource();
+    communeSource.updateParams({
+      "CQL_FILTER": `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`
+    });
+
+    console.log("Filtre CQL appliqué :", `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`);
+  } else {
+    console.log("Aucune entité sélectionnée.");
+  }
+});
 
 
+// ========================== Légende =============================
+
+// // Nom du style à récupérer
+// const styleName = 'part_fmp';
+// console.log(commune.getSource());
+// console.log(commune.getSource().getUrl());
+
+// // Génération de l'URL de la légende avec le style spécifié
+// const legendUrl = `${commune.getSource().getUrl()}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=data_point_justice:communee&STYLE=${styleName}`;
+// console.log("Legend URL:", legendUrl);
+// // Assignation de l'URL à l'élément <img>
+// document.getElementById('legend-image1').src = legendUrl;
+
+const geoserverUrl = "http://localhost:8090/geoserver/wms";
+
+// Nom de la couche et du style
+const layerName = "data_point_justice:commune";
+const styleName = "part_fmp";
+
+// Construction de l'URL de la légende
+const legendUrl = `${geoserverUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layerName}&STYLE=${styleName}`;
+
+
+// Affectation à l'élément HTML
+document.getElementById("legend-image1").src = legendUrl;
+
+// const resolution = map.getView().getResolution();
+// const url = commune.getLegendUrl(resolution);
+// document.getElementById('legend-image1').src = url;
 // // // ============== Gestion de l'événement survol pour filtrer les communes ================
 // // map.on('pointermove', function (evt) {
 // //   const viewResolution = map.getView().getResolution();
@@ -849,6 +871,86 @@ map.on('click', function (event) {
 });
 
 // ========================================================================================
+// ============ Fonctions gestion les graphes et infrormation statistique  ================ 
+// ========================================================================================
+// Fonction pour compter le nombre de tribunaux par type_pj
+let tribunalChart; // Variable pour stocker le graphique
+
+// Fonction pour compter les tribunaux par type dans une zone spécifique
+function countTribunalsByTypeInZone(geometry) {
+  const counts = {}; // Stocke le nombre d'occurrences par type
+
+  point_justice_vec.forEachFeature(function (feature) {
+    const type = feature.get('type_pj'); // Récupère la valeur du champ type_pj
+    if (type && geometry.intersectsExtent(feature.getGeometry().getExtent())) {
+      counts[type] = (counts[type] || 0) + 1;
+    }
+  });
+
+  return counts;
+}
+
+// Fonction pour mettre à jour le graphe
+function updateChart(counts) {
+  const labels = Object.keys(counts); // Les types de tribunaux
+  const data = Object.values(counts); // Nombre d'occurrences par type
+
+  const ctx = document.getElementById('tribunalChart').getContext('2d');
+
+  // Détruire l'ancien graphique s'il existe
+  if (tribunalChart) {
+    tribunalChart.destroy();
+  }
+
+  // Créer un nouveau graphique
+  tribunalChart = new Chart(ctx, {
+    type: 'bar', // Type de graphe (barres)
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Nombre de tribunaux par type',
+        data: data,
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+// Attendre le chargement des données et afficher le graphe initial
+point_justice_vec.once('change', function () {
+  if (point_justice_vec.getState() === 'ready') {
+    const counts = countTribunalsByTypeInZone(map.getView().calculateExtent(map.getSize()));
+    updateChart(counts);
+  }
+});
+
+map.on("click", function (evt) {
+  map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+    if (layer === courAppelLayer || layer === tribunalJudiciaireLayer || layer === prudhommeLayer) {
+      const geom = feature.getGeometry(); // Géométrie de l'entité sélectionnée
+      const counts = countTribunalsByTypeInZone(geom); // Compter les tribunaux dans la zone cliquée
+      updateChart(counts); // Mettre à jour le graphe avec les nouvelles données
+
+      let count = 0;
+      vecteur_point_justice.getSource().forEachFeature(function (pointFeature) {
+        if (geom.intersectsExtent(pointFeature.getGeometry().getExtent())) {
+          count++;
+        }
+      });
+    }
+  });
+});
+
+
+// ========================================================================================
 // ====================== Intégration du widget d'adressage  ==============================
 //  =====================   Intégration des 5 plus proches   ==============================
 // ========================================================================================
@@ -1007,4 +1109,3 @@ $('#search').on('keypress', function(e) {
     }
   }
 });
-
