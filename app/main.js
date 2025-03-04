@@ -74,7 +74,7 @@ const vecteur_point_justice = new ol.layer.Vector({
 
 
 // ========================================================================================
-// ============================ Import de mes 3 couches wms ============================== 
+// ============================ Import de mes 3 couches ws ============================== 
 // ========================================================================================
 
 // =======================================================================================
@@ -157,8 +157,6 @@ const colorsTauxPauvrete = [
   'rgba(0, 102, 0, 0.8)'      // Vert très foncé
 ];
 
-
-
 // ========================================================================================
 // Source WFS pour la couche cour d'appel
 const courAppelSource = new VectorSource({
@@ -195,48 +193,6 @@ const PrudhommeSource = new VectorSource({
 // ================================= Import des couche en wfs ===========================
 // =========================================================================================
 
-
-// // ============== Impoter la couche Cour d'appel ================
-// const cour_appel = new ImageLayer({
-//   source: new ImageWMS({
-//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
-//     params: {
-//       'LAYERS' : 'data_point_justice:cour_appel',
-//       'TILED': true
-//     },
-//     serverType: 'geoserver',
-//     crossOrigin: 'anonymous'
-
-//   }),
-// });
-
-// // ================= Impoter la couche Prudhomme =================
-// const prudhomme = new ImageLayer({
-//   source: new ImageWMS({
-//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
-//     params: {
-//       'LAYERS' : 'data_point_justice:prudhomme',
-//       'TILED': true
-//     },
-//     serverType: 'geoserver',
-//     crossOrigin: 'anonymous'
-//   }),
-// });
-// prudhomme.setVisible(false);
-// // ============== Impoter la couche trib_judiciaire ================
-// const trib_judiciaire = new ImageLayer({
-//   source: new ImageWMS({
-//     url: geoserversUrl + '/geoserver/data_point_justice/wms',
-//     params: {
-//       'LAYERS' : 'data_point_justice:tribunal_judiciaire',
-//       'TILED': true
-//     },
-//     serverType: 'geoserver',
-//     crossOrigin: 'anonymous'
-//   }),
-// });
-// trib_judiciaire.setVisible(false);
-
 // ============== Impoter la couche commune ================
 const commune = new ImageLayer({
   source: new ImageWMS({
@@ -249,8 +205,6 @@ const commune = new ImageLayer({
     crossOrigin: 'anonymous'
   }),
 });
-
-
 
 // ========================================================================================
 // import des couche en wfs dans le projet
@@ -268,13 +222,10 @@ const prudhommeLayer = new VectorLayer({
   source: PrudhommeSource
 });
 
-
 // ========================================================================================
 // ===============================  On ajoute ici la carte =============================== 
 // ========================================================================================
-// Création de l’objet map avec appel de mes deux couches "couche_osm" et "ma_couche" dans layers
-// commune, prudhomme, trib_judiciaire, cour_appel,
-
+// Création de l’objet map avec appel aux couches
 const map = new Map({
   target: 'map',
   controls: [scaleline], // Pour ajouter l'echelle 
@@ -285,9 +236,6 @@ const map = new Map({
     tribunalJudiciaireLayer,
     prudhommeLayer,
     commune,
-    // prudhomme,
-    // trib_judiciaire,
-    // cour_appel,
     vecteur_point_justice, 
   ],
   view: new View({
@@ -296,24 +244,98 @@ const map = new Map({
   })
 });
 
+courAppelLayer.setVisible(false);
+tribunalJudiciaireLayer.setVisible(false);
+prudhommeLayer.setVisible(false);
+
 
 // ========================================================================================
-// ====================== Fonctions d'intéraction avec les couches  ====================== 
+// ===========================  Fonction  de basse de l'appli ============================ 
 // ========================================================================================
-// Ajouter un écouteur pour détecter le changement d'indicateur
-// Gestion de la sélection au clic
-// map.on('singleclick', function (evt) {
-//   map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-//     courAppelLayer.setStyle(function (f) {
-//       return f === feature ? new Style({
-//         fill: new Fill({ color: getJenksColor(parseFloat(f.get('part_fmp')) || 0) }),
-//         stroke: new Stroke({ color: 'black', width: 1 })
-//       }) : transparentStyle;
-//     });
-//   });
-// });
 
-// ========================================================================================
+// ======   fonction de d'ouverture de l'Onglet couches   ===========
+document.getElementById("btn-layer-panel").addEventListener("click", function () {
+  let layerContent = document.getElementById("layer-content");
+  if (layerContent.style.display === "none" || layerContent.style.display === "") {
+    layerContent.style.display = "block";
+  } else {
+    layerContent.style.display = "none";
+  }
+});
+
+// ========   fonction de d'ouverture de l'Onglet info   ===========
+document.addEventListener("DOMContentLoaded", function () {
+  var infoPanel = document.getElementById("infoPanel");
+  var toggleButton = document.getElementById("toggleButton");
+  var toggleImg = toggleButton.querySelector("img"); // Récupère l'image du bouton
+
+  function updateButton() {
+    setTimeout(() => { 
+      var panelWidth = infoPanel.offsetWidth;
+      var panelOpen = infoPanel.classList.contains("show");
+
+      // Déplacement du bouton
+      if (panelOpen) {
+        toggleButton.style.right = (panelWidth + 10) + "px";
+        toggleImg.src = "img/next.png"; 
+      } else {
+        toggleButton.style.right = "10px";
+        toggleImg.src = "img/prev.png"; 
+      }
+    }, 3); // Délai pour la transition
+  }
+
+  // Met à jour l'image et la position du bouton à l'ouverture/fermeture du panneau
+  infoPanel.addEventListener("shown.bs.offcanvas", updateButton);
+  infoPanel.addEventListener("hidden.bs.offcanvas", updateButton);
+
+  // Initialisation au chargement
+  updateButton();
+});
+
+// Fonction pour passer de l'onglet de base à l'onglet avancé
+const activateBasicButton = () => {
+  document.getElementById('list-categorie-panel').style.display = 'none';
+  document.getElementById('control-couches').style.display = 'none';
+  document.getElementById('tab-stat').style.display = 'none';
+  document.getElementById('stat-info').style.display = 'none';
+  document.getElementById('stat-indicateur').style.display = 'none';
+  document.getElementById('tab-indicateur').style.display = 'none';
+
+  // Masquer les couches contenant des indicateurs en mode Basic
+  courAppelLayer.setVisible(false);
+  tribunalJudiciaireLayer.setVisible(false);
+  prudhommeLayer.setVisible(false);
+};
+
+
+// Ajouter l'événement au bouton "basic-button"
+document.getElementById('basic-button').addEventListener('click', activateBasicButton);
+
+// Activer le bouton "basic-button" par défaut au chargement du site
+window.addEventListener('load', activateBasicButton);
+const deactivateBasicButton = () => {
+  document.getElementById('list-categorie-panel').style.display = 'block';
+  document.getElementById('control-couches').style.display = 'block';
+  document.getElementById('tab-stat').style.display = 'block';
+  document.getElementById('stat-info').style.display = 'block';
+  document.getElementById('stat-indicateur').style.display = 'block';
+  document.getElementById('tab-indicateur').style.display = 'block';
+
+  // Afficher la couche par défaut
+  courAppelLayer.setVisible(true);
+
+  /// Appliquer le style par défaut : "Taux de pauvreté"
+  applyJenksStyleToLayer(courAppelLayer, courAppelLayer.getSource(), "taux_pauvrete", colorsTauxPauvrete);
+};
+
+// Ajouter l'événement au bouton "advanced-button"
+document.getElementById('advanced-button').addEventListener('click', deactivateBasicButton);;
+
+// // ========================================================================================
+// // ====================== Fonctions d'intéraction avec les couches  ====================== 
+// // ========================================================================================
+
 // Fonction pour mettre à jour le style en fonction des cases cochées
 const updateLayerStyles = () => {
   const checkedIndicators = Array.from(document.querySelectorAll('#list-indic input:checked'))
@@ -355,17 +377,8 @@ const updateLayerStyles = () => {
   applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, selectedIndicator, colorScale);
 };
 
-// document.getElementById('list-indic').addEventListener('change', (event) => {
-//   if (event.target.type === 'radio') {
-//     const indicator = event.target.value;
-//     applyJenksStyleToLayer(courAppelLayer, courAppelSource, indicator);
-//     applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, indicator);
-//     applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, indicator);
-//   }
-// });
-
 // ========================================================================================
-// Fonctions pour afficher et masquer la couche country 
+// Fonctions pour afficher et masquer la couche point 
 const checkbox_pt_justice = document.getElementById('checkbox-pt_justice');
 checkbox_pt_justice.addEventListener('change', (event) => {
   if (event.currentTarget.checked) {
@@ -411,9 +424,9 @@ document.querySelectorAll('input[name="checkbox-group"]').forEach((radio) => {
   });
 });
 
-// ========================================================================================
-// ====================== Fonctions pour gérer les indicateur   ====================== 
-// ========================================================================================
+// // ========================================================================================
+// // ====================== Fonctions pour gérer les indicateur   ====================== 
+// // ========================================================================================
 
 // Récupérer les indicateurs à partir de l'une des sources
 const getIndicatorsFromSource = (source) => {
@@ -470,106 +483,76 @@ courAppelSource.once('change', () => {
   }
 });
 
-// Fonction pour passer de l'onglet de base à l'onglet avancé
-const activateBasicButton = () => {
-  document.getElementById('list-indicateur-panel').style.display = 'none';
-  document.getElementById('control-couches').style.display = 'none';
-  document.getElementById('button-stat').style.display = 'none';
-  document.getElementById('stat-info').style.display = 'none';
-  document.getElementById('stat-indicateur').style.display = 'none';
-  document.getElementById('button-indi').style.display = 'none';
 
-  // Masquer les styles des couches
-  courAppelLayer.setStyle(null);
-  tribunalJudiciaireLayer.setStyle(null);
-  prudhommeLayer.setStyle(null);
-};
-
-// Ajouter l'événement au bouton "basic-button"
-document.getElementById('basic-button').addEventListener('click', activateBasicButton);
-
-// Activer le bouton "basic-button" par défaut au chargement du site
-window.addEventListener('load', activateBasicButton);
-
-document.getElementById('advanced-button').addEventListener('click', function() {
-  document.getElementById('list-indicateur-panel').style.display = 'block';
-  document.getElementById('control-couches').style.display = 'block';
-  document.getElementById('button-stat').style.display = 'block';
-  document.getElementById('button-indi').style.display = 'block';
-  // Mettre à jour les styles pour afficher taux_pauvrete par défaut
-  updateLayerStyles();
-});
+// // ========================================================================================
+// // ============ Fonctions gestion des couche de découpage administratif ================== 
+// // ========================================================================================
 
 
-// ========================================================================================
-// ============ Fonctions gestion des couche de découpage administratif ================== 
-// ========================================================================================
+// // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
+// // map.on('singleclick', function (evt) {
+// //   const viewResolution = map.getView().getResolution();
+// //   const wmsSource = cour_appel.getSource();
+// //   const url = wmsSource.getFeatureInfoUrl(
+// //     evt.coordinate,
+// //     viewResolution,
+// //     'EPSG:3857',
+// //     { 'INFO_FORMAT': 'application/json' }
+// //   );
+
+// //   if (url) {
+// //     fetch(url)
+// //       .then(response => response.json())
+// //       .then(data => {
+// //         if (data.features.length > 0) {
+// //           const cour_appel = data.features[0].properties.num_ca;
+// //           console.log("Code du cours d'appel sélectionné :", cour_appel);
+
+// //           // Mise à jour du filtre sur la couche commune
+// //           const communeSource = commune.getSource();
+// //           communeSource.updateParams({
+// //             'CQL_FILTER': `n_ca='${cour_appel}'`
+// //           });
+// //         }
+// //       })
+// //       .catch(error => console.error('Erreur lors de la récupération des données:', error));
+// //   }
+// // });
 
 
-// ============== Écouteur de clic pour récupérer le code du cours d'appel ================
-// map.on('singleclick', function (evt) {
-//   const viewResolution = map.getView().getResolution();
-//   const wmsSource = cour_appel.getSource();
-//   const url = wmsSource.getFeatureInfoUrl(
-//     evt.coordinate,
-//     viewResolution,
-//     'EPSG:3857',
-//     { 'INFO_FORMAT': 'application/json' }
-//   );
+// // // ============== Gestion de l'événement survol pour filtrer les communes ================
+// // map.on('pointermove', function (evt) {
+// //   const viewResolution = map.getView().getResolution();
+// //   const wmsSource = cour_appel.getSource();
+// //   const url = wmsSource.getFeatureInfoUrl(
+// //     evt.coordinate,
+// //     viewResolution,
+// //     'EPSG:3857',
+// //     { 'INFO_FORMAT': 'application/json' }
+// //   );
 
-//   if (url) {
-//     fetch(url)
-//       .then(response => response.json())
-//       .then(data => {
-//         if (data.features.length > 0) {
-//           const cour_appel = data.features[0].properties.num_ca;
-//           console.log("Code du cours d'appel sélectionné :", cour_appel);
+// //   if (url) {
+// //     fetch(url)
+// //       .then(response => response.json())
+// //       .then(data => {
+// //         if (data.features.length > 0) {
+// //           const courAppelCode = data.features[0].properties.num_ca;
+// //           console.log("Survol de la cour d'appel :", courAppelCode);
 
-//           // Mise à jour du filtre sur la couche commune
-//           const communeSource = commune.getSource();
-//           communeSource.updateParams({
-//             'CQL_FILTER': `n_ca='${cour_appel}'`
-//           });
-//         }
-//       })
-//       .catch(error => console.error('Erreur lors de la récupération des données:', error));
-//   }
-// });
+// //           // Mise à jour du filtre pour afficher uniquement les communes dans la cour d'appel
+// //           const communeSource = commune.getSource();
+// //           communeSource.updateParams({
+// //             'CQL_FILTER': `n_ca='${courAppelCode}'`
+// //           });
 
-
-// // ============== Gestion de l'événement survol pour filtrer les communes ================
-// map.on('pointermove', function (evt) {
-//   const viewResolution = map.getView().getResolution();
-//   const wmsSource = cour_appel.getSource();
-//   const url = wmsSource.getFeatureInfoUrl(
-//     evt.coordinate,
-//     viewResolution,
-//     'EPSG:3857',
-//     { 'INFO_FORMAT': 'application/json' }
-//   );
-
-//   if (url) {
-//     fetch(url)
-//       .then(response => response.json())
-//       .then(data => {
-//         if (data.features.length > 0) {
-//           const courAppelCode = data.features[0].properties.num_ca;
-//           console.log("Survol de la cour d'appel :", courAppelCode);
-
-//           // Mise à jour du filtre pour afficher uniquement les communes dans la cour d'appel
-//           const communeSource = commune.getSource();
-//           communeSource.updateParams({
-//             'CQL_FILTER': `n_ca='${courAppelCode}'`
-//           });
-
-//           commune.setVisible(true); // S'assurer que la couche est bien visible
-//         } else {
-//           commune.setVisible(false); // Masquer la couche si aucune cour d'appel n'est détectée
-//         }
-//       })
-//       .catch(error => console.error('Erreur lors de la récupération des données:', error));
-//   }
-// });
+// //           commune.setVisible(true); // S'assurer que la couche est bien visible
+// //         } else {
+// //           commune.setVisible(false); // Masquer la couche si aucune cour d'appel n'est détectée
+// //         }
+// //       })
+// //       .catch(error => console.error('Erreur lors de la récupération des données:', error));
+// //   }
+// // });
 
 // ========================================================================================
 // ==========================  Fonctions filtrage des points  =========================== 
@@ -596,33 +579,25 @@ function createFilterItem(value, listSet, frag) {
         switchInput.type = 'checkbox';
         switchInput.checked = true; // Par défaut, activé
         switchInput.dataset.filterValue = value;
-        switchInput.classList.add("switch-checkbox");
+        switchInput.classList.add("form-check-input");
 
-        // Conteneur du switch stylisé
+        // Création du label pour le switch
         const switchLabel = document.createElement('label');
-        switchLabel.classList.add("switch");
+        switchLabel.classList.add("form-check-label");
         switchLabel.appendChild(switchInput);
-        const switchSlider = document.createElement('span');
-        switchSlider.classList.add("slider");
-        switchLabel.appendChild(switchSlider);
-
-        // Création de l'élément texte
-        const textEl = document.createElement('span');
-        textEl.innerText = value;
-        textEl.classList.add("filter-text");
+        switchLabel.appendChild(document.createTextNode(value));
 
         // Création de l'élément <li> (cliquable)
         const li = document.createElement('li');
-        li.classList.add("filter-item");
+        li.classList.add("form-check");
         li.dataset.filterValue = value;
 
         // Ajout des éléments au <li>
         li.appendChild(switchLabel);
-        li.appendChild(textEl);
 
         // Rendre tout le <li> cliquable
         li.addEventListener('click', function (event) {
-            if (event.target !== switchInput && event.target !== switchLabel && event.target !== switchSlider) {
+            if (event.target !== switchInput && event.target !== switchLabel) {
                 switchInput.checked = !switchInput.checked;
                 switchInput.dispatchEvent(new Event('change')); // Déclencher l'événement de changement
             }
@@ -638,7 +613,6 @@ function createFilterItem(value, listSet, frag) {
         frag.appendChild(li);
     }
 }
-
 // Récupération et affichage des types et catégories
 point_justice_vec.on('change', function () {
     if (point_justice_vec.getState() === 'ready') {
@@ -701,11 +675,10 @@ filterPointsJustice();
 // Fonction pour afficher dynamiquement les points visibles sur la carte
 function afficherPointsJusticeDansEmpriseEcran() {
   const extent = map.getView().calculateExtent(map.getSize()); // Récupère l'étendue visible
+  const center = ol.extent.getCenter(extent); // Récupère le centre de l'étendue visible
   const features = point_justice_vec.getFeatures(); // Récupère toutes les features de la source
   const listElement = document.getElementById('list-pj');
   listElement.innerHTML = ''; // Vider la liste existante
-
-  let pointsAffiches = 0;
 
   const checkedTypes = new Set();
   const checkedCategories = new Set();
@@ -718,177 +691,129 @@ function afficherPointsJusticeDansEmpriseEcran() {
   document.querySelectorAll('#list-categorie input[type="checkbox"]:checked')
       .forEach(input => checkedCategories.add(input.dataset.filterValue));
 
-  features.forEach(feature => {
+  // Filtrer les points visibles et calculer leur distance au centre
+  const pointsVisibles = features
+    .filter(feature => {
+      const point = feature.getGeometry().getCoordinates();
+      const type_pj = feature.get('type_pj');
+      const categorie = feature.get('categorie');
+      return ol.extent.containsCoordinate(extent, point) && checkedTypes.has(type_pj) && checkedCategories.has(categorie);
+    })
+    .map(feature => {
+      const point = feature.getGeometry().getCoordinates();
+      const distance = ol.sphere.getDistance(center, point);
+      return { feature, distance };
+    });
+
+  // Trier les points par distance et sélectionner les 25 plus proches
+  pointsVisibles.sort((a, b) => a.distance - b.distance);
+  const pointsAffiches = pointsVisibles.slice(0, 25);
+
+  // Afficher les points sélectionnés
+  pointsAffiches.forEach(({ feature }) => {
     const point = feature.getGeometry().getCoordinates();
-    const type_pj = feature.get('type_pj');
-    const categorie = feature.get('categorie');
+    const intitule = feature.get('intitule') || 'Sans intitulé'; // Vérifie que l'attribut existe
 
-    if (ol.extent.containsCoordinate(extent, point) && checkedTypes.has(type_pj) && checkedCategories.has(categorie)) {
-      const intitule = feature.get('intitule') || 'Sans intitulé'; // Vérifie que l'attribut existe
+    // Création de l'élément de la liste
+    const listItem = document.createElement('li');
+    listItem.textContent = `📍 ${intitule}`;
+    listItem.style.cursor = 'pointer'; // Curseur en pointeur pour indiquer qu'il est cliquable
 
-      // Création de l'élément de la liste
-      const listItem = document.createElement('li');
-      listItem.textContent = `📍 ${intitule}`;
-      listItem.style.cursor = 'pointer'; // Curseur en pointeur pour indiquer qu'il est cliquable
+    // Ajout d'un événement de clic pour zoomer et afficher le popup
+    listItem.addEventListener('click', function () {
+      map.getView().animate({ center: point, zoom: 10, duration: 800 }); // Zoom sur le point
+      
+      // Récupération des infos du point
+      const adresse = feature.get('adresse') || 'Adresse inconnue';
+      const codgeo = feature.get('codgeo') || '';
+      const telephone = feature.get('telephone') || 'Non disponible';
 
-      // Ajout d'un événement de clic pour zoomer et afficher le popup
-      listItem.addEventListener('click', function () {
-        map.getView().animate({ center: point, zoom: 10, duration: 800 }); // Zoom sur le point
-        
-        // Récupération des infos du point
-        const adresse = feature.get('adresse') || 'Adresse inconnue';
-        const codgeo = feature.get('codgeo') || '';
-        const telephone = feature.get('telephone') || 'Non disponible';
+      // Mise à jour du popup
+      document.getElementById('text-info').innerHTML = `
+        <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
+        <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
+        <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
+        <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
+      `;
+      
+      popupElement.innerHTML = `<b>${intitule}</b>`;
+      popup.setPosition(point);
+      popupElement.style.display = 'block';
+    });
 
-        // Mise à jour du popup
-        document.getElementById('text-info').innerHTML = `
-          <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
-          <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
-          <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
-          <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
-        `;
-        
-        popupElement.innerHTML = `<b>${intitule}</b>`;
-        popup.setPosition(point);
-        popupElement.style.display = 'block';
-      });
-
-      listElement.appendChild(listItem);
-      pointsAffiches++;
-    }
+    listElement.appendChild(listItem);
   });
 
   // Afficher ou masquer la liste en fonction des points visibles
-  document.getElementById('list-pj').style.display = pointsAffiches > 0 ? 'block' : 'none';
+  document.getElementById('list-pj').style.display = pointsAffiches.length > 0 ? 'block' : 'none';
 }
 
 // Mise à jour dynamique lors des interactions de la carte
 map.on('moveend', afficherPointsJusticeDansEmpriseEcran);
-map.on('loadend', afficherPointsJusticeDansEmpriseEcran); // Exécute aussi au chargement initial
-// ========================================================================================
-// ===============================  Fonctions accésoires  =============================== 
-// ========================================================================================
+map.on('loadend', afficherPointsJusticeDansEmpriseEcran);
 
-// Bouton d'affichage et masquage de l'onglet gestion des couches
-document.getElementById('btn-layer-panel').addEventListener('click', function() {
-  var contentPanel = document.getElementById('content-layer-panel');
-  if (contentPanel.style.display === 'none' || contentPanel.style.display === '') {
-      contentPanel.style.display = 'block';
-      contentPanel.style.zIndex = '1';
-  } else {
-      contentPanel.style.display = 'none';
-      contentPanel.style.zIndex = '';
-  }
-});
+// // ========================================================================================
+// // ===============================  Fonctions accésoires  =============================== 
+// // ========================================================================================
 
-
-// Fermer le panneau lorsque l'utilisateur clique en dehors de celui-ci
-document.addEventListener('click', function(event) {
-  var contentPanel = document.getElementById('content-layer-panel');
-  var btnLayerPanel = document.getElementById('btn-layer-panel');
-  if (contentPanel.style.display === 'block' && !contentPanel.contains(event.target) && !btnLayerPanel.contains(event.target)) {
-      contentPanel.style.display = 'none';
-      contentPanel.style.zIndex = '';
-  }
-});
-
-// document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
-//   document.getElementById('content-layer-panel').style.display = 'none';
+// // Fermer le panneau lorsque l'utilisateur clique en dehors de celui-ci
+// document.addEventListener('click', function(event) {
+//   var contentPanel = document.getElementById('content-layer-panel');
+//   var btnLayerPanel = document.getElementById('btn-layer-panel');
+//   if (contentPanel.style.display === 'block' && !contentPanel.contains(event.target) && !btnLayerPanel.contains(event.target)) {
+//       contentPanel.style.display = 'none';
+//       contentPanel.style.zIndex = '';
+//   }
 // });
 
+// // document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
+// //   document.getElementById('content-layer-panel').style.display = 'none';
+// // });
 
-// Bouton d'affichage et masquage de l'onglet info
-const toggleButton = document.getElementById('toggle-size-button');
-const ongletInfo = document.getElementById('info-panel-overlay');
-const toggleImg = document.getElementById('toggle-img');
-const onglettext = document.getElementById('text-info');
-const ongletstat = document.getElementById('stat-info');
-const ongletlist = document.getElementById('list-info');
+// // Utilisation de la fonction générique pour les boutons
+// toggleDiv('button-text', 'text-info', ['stat-info', 'stat-list']);
+// toggleDiv('button-stat', 'stat-info', ['text-info', 'stat-list']);
+// toggleDiv('button-list', 'stat-list', ['text-info', 'stat-info'])
 
-// Initialiser l'image en fonction de l'état par défaut
-if (ongletInfo.classList.contains('reduit')) {
-  toggleImg.src = 'img/next.png'; // Image pour l'état réduit
-} else {
-  toggleImg.src = 'img/prev.png'; // Image pour l'état normal
-}
+// document.addEventListener("DOMContentLoaded", function () {
+//   const buttons = document.querySelectorAll(".button-info");
+//   const sections = document.querySelectorAll(".view-info");
 
-toggleButton.addEventListener('click', () => {
-  if (ongletInfo.style.display === 'none' || ongletInfo.style.display === '') {
-    ongletInfo.style.display = 'block';
-    onglettext.style.display = 'block';
-    ongletstat.style.display = 'none';
-    ongletlist.style.display = 'none';
-
-    toggleImg.src = 'img/next.png'; // Image pour l'état affiché
-  } else {
-    ongletInfo.style.display = 'none';
-    toggleImg.src = 'img/prev.png'; // Image pour l'état masqué
-  }
-});
-
-
-// Afficher les onglet d'information 
-function toggleDiv(buttonId, divId, otherDivIds) {
-  document.getElementById(buttonId).addEventListener('click', function() {
-      const div = document.getElementById(divId);
-      const otherDivs = otherDivIds.map(id => document.getElementById(id));
+//   buttons.forEach((button, index) => {
+//     button.addEventListener("click", function () {
+//       // Supprimer la classe active de tous les boutons
+//       buttons.forEach(btn => btn.classList.remove("active"));
       
-      // Fermer les autres divs
-      otherDivs.forEach(otherDiv => {
-          otherDiv.style.display = 'none';
-      });
-      
-      // Ouvrir la div actuelle
-      div.style.display = 'block';
-  });
-}
+//       // Ajouter la classe active au bouton cliqué
+//       this.classList.add("active");
 
-// Utilisation de la fonction générique pour les boutons
-toggleDiv('button-text', 'text-info', ['stat-info', 'stat-list']);
-toggleDiv('button-stat', 'stat-info', ['text-info', 'stat-list']);
-toggleDiv('button-list', 'stat-list', ['text-info', 'stat-info'])
+//       // Masquer toutes les sections
+//       sections.forEach(section => section.style.display = "none");
 
-document.addEventListener("DOMContentLoaded", function () {
-  const buttons = document.querySelectorAll(".button-info");
-  const sections = document.querySelectorAll(".view-info");
+//       // Afficher la section correspondante
+//       sections[index].style.display = "block";
+//     });
+//   });
+// });
 
-  buttons.forEach((button, index) => {
-    button.addEventListener("click", function () {
-      // Supprimer la classe active de tous les boutons
-      buttons.forEach(btn => btn.classList.remove("active"));
-      
-      // Ajouter la classe active au bouton cliqué
-      this.classList.add("active");
-
-      // Masquer toutes les sections
-      sections.forEach(section => section.style.display = "none");
-
-      // Afficher la section correspondante
-      sections[index].style.display = "block";
-    });
-  });
-});
-
-// ========================================================================================
-// ===============================  Fonctions onglet information  =============================== 
-// ========================================================================================
-
-// Création du popup
+// =======================  Création du popup  ================================
 const popupElement = document.createElement('div');
 popupElement.id = 'popup';
 popupElement.style.position = 'absolute';
+popupElement.style.width = 'auto';
 popupElement.style.background = 'white';
 popupElement.style.padding = '5px';
 popupElement.style.border = '1px solid black';
 popupElement.style.borderRadius = '5px';
 popupElement.style.display = 'none';
+popupElement.style.fontSize = '10px';
 document.body.appendChild(popupElement);
 
 const popup = new ol.Overlay({
   element: popupElement,
   positioning: 'bottom-center', // Positionnement du popup
   stopEvent: false,
-  offset: [0, -10] // Décalage pour ne pas masquer le point
+  offset: [0, -40] // Décalage pour ne pas masquer le point
 });
 map.addOverlay(popup);
 
