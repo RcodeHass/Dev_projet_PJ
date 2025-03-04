@@ -990,7 +990,7 @@ function findClosestPoints(targetCoordinates, n) {
     const properties = feature.getProperties();
     
     return {
-      name: properties.name || "Inconnu",  // Assurez-vous que la propriété 'name' existe
+      name: properties.libelle|| "Inconnu",  // Assurez-vous que la propriété 'name' existe
       coordinates: coords,
       distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)) // Correction ici
     };
