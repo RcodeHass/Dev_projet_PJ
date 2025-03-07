@@ -39,9 +39,6 @@ body{
   color: #fff;
 }
 
-.z1 {
-  z-index: 2;
-}
 
 #logo {
   height: 30px;
@@ -134,42 +131,14 @@ button {
   height: 100%;
 }
 
-
+.navbar .container-fluid {
+  justify-content: flex-start !important; 
+}
 
 /* ==================================================== */
 /* ========= Style de la l'entet de la page =========== */
 /* ==================================================== */
 
-#switch-map {
-  position: relative;
-  width: 28vh;
-  z-index: 1;
-  margin: 0;
-  align-items: center;
-  display: flex;
-  border-bottom-right-radius: 50px;
-  overflow: hidden;
-
-}
-
-#switch-map > div {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  height: 4vh;
-}
-
-#switch-map > div:hover {
-  background-color: rgba(68, 120, 124, 0.1); 
-  transition: background-color 0.3s; 
-}
-
-#switch-map > div > button {
-  width: 100%;
-  height: 100%;
-}
 
 #sidebar {
   transition: transform 0.3s ease-in-out;
@@ -196,15 +165,21 @@ button {
   height: 100vh;
 }
 
-#info-content {
-  height: 20%;
+.custom-size {
+  width: 40px;
+  padding: 0; /* Ajustez le padding si nécessaire */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-#list-pj {
-  padding: 0;
-  margin: 0;
-  background-color: rgb(216, 216, 216);
-  overflow-y: scroll;
+.custom-size:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 /* ==================================================== */
@@ -216,14 +191,25 @@ button {
 }
 
 
+#info-content {
+  overflow-x: hidden;
+}
+
+
+#entete-info {
+  height: 20%;
+}
+
+#list-pj {
+  padding: 0;
+  margin: 0;
+  background-color: rgba(216, 216, 216, 0.288);
+  overflow-y: scroll;
+}
+
+.custom-padding {
+  padding-right: 10px !important;
+}
 /* ==================================================== */
 /* ============== Style de l'onglet apropos============== */
 /* ==================================================== */
-
-/* #offcanvasApropos {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-
-} */

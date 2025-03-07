@@ -22,7 +22,7 @@
     <!-- On créer ici la div conteneur qui vas accueillir tous les elements de la page -->
     <!-- =============================================================================== -->
     <div id="container">
-      <nav class="navbar navbar-expand-md theme-color z1">
+      <nav class="navbar navbar-expand-md theme-color z-3">
         <div class="container-fluid">
           <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
             <span class="navbar-toggler-icon"></span>
@@ -55,17 +55,17 @@
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-3 p-3 z1" id="sidebar">
+          <div class="col-md-3 p-3 z-1" id="sidebar">
             <div class="input-group mb-3">
-              <button class="btn-primary z1" id="btn-layer-panel">=</button>
+              <button class="btn-primary z-1" id="btn-layer-panel">=</button>
               <input type="text" class="form-control" id="search" placeholder="Rechercher une adresse...">
-              <button class="btn-outline-secondary" id="searchButton">
+              <button class="btn-outline-secondary custom-size" id="searchButton">
                 <img src="img/recherche.png" alt="Rech" width="20">
               </button>
             </div>
             <!-- liste des point de justice a proximiter -->
-            <div id="layer-content" class="z1" style="display: none;">
-              <div id="list-distance-pj" class="mb-2 theme-layer theme-color2 z1">
+            <div id="layer-content" class="z-1" style="display: none;">
+              <div id="list-distance-pj" class="mb-2 theme-layer theme-color2 z-1">
                 <h5> Point de justice les plus proches</h5>
                 <table id="closest-points-table">
                   <thead>
@@ -103,39 +103,39 @@
                   <label class="form-check-label" for="checkbox-prudhomme">Prudhomme</label>
                 </div>
               </div>
-        
-              <!-- Liste des catégories -->
+
+              <!-- Liste des indicateur -->
+              <div id="indicateur-panel" class="mb-2 theme-layer theme-color2">
+                <h5>Indicateurs</h5>
+                <ul class="list-group" id="list-indic"></ul>
+              </div>
+
+              <!-- Liste des type de point de justice -->
               <div id="list-type-panel" class="mb-2 theme-layer theme-color2">
                 <h5>Filtre par type</h5>
                 <ul class="list-group" id="list-type"></ul>
-              </div>
-        
-              <!-- Liste des indicateurs -->
-              <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
-                <h5>Changer catégorie (experimental)</h5>
-                <ul class="list-group" id="list-categorie"></ul>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- ============== -->
-      <!-- Onglet latéral d'information Bootstrap -->
-      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-3"
+
+      <!-- ================ Onglet latéral d'information Bootstrap ===================== -->
+      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding"
       tabindex="-1" id="infoPanel" data-bs-backdrop="false" data-bs-keyboard="false">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title">Informations</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="offcanvas-body">
-          <div id="info-content">
-            <p>Description générale sur le type de point de justice sélectionné.</p>
+        <div class="offcanvas-body" id="info-content">
+          <div id="entete-info">
+            <div id="info-pj"> Clicker sur un point de justice pour voir ses informations </div>
           </div>
 
           <!-- Navigation des onglets -->
           <ul class="nav nav-tabs nav-justified d-flex flex-nowrap" id="infoTabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" href="#text-info" role="tab">Info</a>
+              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" href="#app-info" role="tab">Info</a>
             </li>
             <li class="nav-item" id="tab-stat">
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-info" role="tab">Statistique</a>
@@ -150,10 +150,39 @@
 
           <!-- Contenu des sections -->
           <div class="tab-content mt-3" id="contenu-info">
-            <div id="text-info" class="tab-pane fade show active" role="tabpanel">Informations détaillées ici...</div>
+            <div id="app-info" class="tab-pane fade show active p-2 custom-padding" role="tabpanel">
+              <p class="fs-6"> A savoir avant d'utiliser cette cartographie
+                Cette application cartographique est un projet exploratoire visant à fiabiliser la donnée et à développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. Réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, elle est basée sur des données fournies par le ministère de la Justice.
+                La SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaite disposer d’une cartographie web interactive basée sur des outils open source, mettant en avant à la fois les points de justice accessibles sur la France entière. S’adressant aux collectivités et aux citoyens, cet outil a pour ambition de permettre la visualisation des points d’accès à la justice, la mise en perspective des besoins, facilitant ainsi la prise de décision.
+                 
+                Comment utiliser cette cartographie ? 
+                <ul>
+                  <li>Utilisez le champ de recherche pour trouver une adresse spécifique.</li>
+                  <li>Utilisez les filtres pour sélectionner le type de point de justice que vous souhaitez visualiser.</li>
+                  <li>Cliquez sur un point de justice sur la carte pour afficher des informations détaillées.</li>
+                  <li>Consultez les statistiques et indicateurs pour obtenir des données supplémentaires sur les points de justice.</li>
+                </ul>
+                </p>
+            </div>
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
-              Statistiques sur les points de justice...
-              <div id="graph"><canvas id="tribunalChart" width="400" height="200"></canvas></div>
+              <!-- Liste déroulante pour changer de graphique -->
+              <div>
+                <label for="graph-select">Choisir un graphique :</label>
+                <select id="graph-select" class="form-select">
+                  <option value="tribunalChart">Graphique Tribunal</option>
+                  <option value="autreGraphique">Autre Graphique</option>
+                </select>
+              </div>
+              <div id="graph"><canvas id="tribunalChart" width="400" height="250"></canvas>
+              </div>
+              <div> information sur le graphique afficher </div>
+              <div>
+                <!-- Liste des indicateurs -->
+                <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
+                  <h5>Changer catégorie (expérimentale)</h5>
+                  <ul class="list-group" id="list-categorie"></ul>
+                </div>
+              </div>
             </div>
             <div id="stat-indicateur" class="tab-pane fade" role="tabpanel">
               <ul class="list-group" id="list-indic"></ul>

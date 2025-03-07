@@ -13,7 +13,6 @@ import VectorLayer from 'ol/layer/Vector';
 import {Circle, Fill, Stroke, Style} from 'ol/style.js';
 import ScaleLine from 'ol/control/ScaleLine.js' //pour ajouter l'echelle 
 
-
 // Je sors la couche OSM de l’objet Map pour la stocker dans une variable
 const scaleline = new ScaleLine(); //On appelle ici le scale 
 const couche_osm = new TileLayer({ source: new OSM() });
@@ -55,12 +54,12 @@ const categorieIcons = {
 // Fonction de style dynamique
 const pointJusticeStyleFunction = function (feature) {
   const categorie = feature.get('type_pj'); // Récupère la valeur du champ "categorie"
-  const iconSrc = categorieIcons[categorie] || "img/Divers.svg"; // Icône par défaut si non définie
+  const iconSrc = categorieIcons[categorie] || "img/Divers.png"; // Icône par défaut si non définie
 
   return new ol.style.Style({
     image: new ol.style.Icon({
       src: iconSrc,
-      scale: 0.07 // Ajustez l'échelle selon vos besoins
+      scale: 0.02 // Ajustez la taille des icones
     })
   });
 };
@@ -70,8 +69,6 @@ const vecteur_point_justice = new ol.layer.Vector({
   source: point_justice_vec,
   style: pointJusticeStyleFunction
 });
-
-
 
 // ========================================================================================
 // ============================ Import de mes 3 couches ws ============================== 
@@ -188,7 +185,6 @@ const PrudhommeSource = new VectorSource({
   crossOrigin: 'anonymous'
 });
 
-
 // =========================================================================================
 // ================================= Import des couche en wfs ===========================
 // =========================================================================================
@@ -248,12 +244,12 @@ courAppelLayer.setVisible(false);
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
 
-
 // ========================================================================================
 // ===========================  Fonction  de basse de l'appli ============================ 
 // ========================================================================================
 
 // ======   fonction de d'ouverture de l'Onglet couches   ===========
+
 document.getElementById("btn-layer-panel").addEventListener("click", function () {
   let layerContent = document.getElementById("layer-content");
   if (layerContent.style.display === "none" || layerContent.style.display === "") {
@@ -264,6 +260,7 @@ document.getElementById("btn-layer-panel").addEventListener("click", function ()
 });
 
 // ========   fonction de d'ouverture de l'Onglet info   ===========
+
 document.addEventListener("DOMContentLoaded", function () {
   var infoPanel = document.getElementById("infoPanel");
   var toggleButton = document.getElementById("toggleButton");
@@ -293,13 +290,12 @@ document.addEventListener("DOMContentLoaded", function () {
   updateButton();
 });
 
-// Fonction pour passer de l'onglet de base à l'onglet avancé
+// Fonction pour passer de l'onglet de avancée a l'onglet de basse
 const activateBasicButton = () => {
   document.getElementById('list-categorie-panel').style.display = 'none';
   document.getElementById('control-couches').style.display = 'none';
   document.getElementById('tab-stat').style.display = 'none';
-  document.getElementById('stat-info').style.display = 'none';
-  document.getElementById('stat-indicateur').style.display = 'none';
+  document.getElementById('indicateur-panel').style.display = 'none';
   document.getElementById('tab-indicateur').style.display = 'none';
 
   // Masquer les couches contenant des indicateurs en mode Basic
@@ -307,7 +303,6 @@ const activateBasicButton = () => {
   tribunalJudiciaireLayer.setVisible(false);
   prudhommeLayer.setVisible(false);
 };
-
 
 // Ajouter l'événement au bouton "basic-button"
 document.getElementById('basic-button').addEventListener('click', activateBasicButton);
@@ -317,9 +312,8 @@ window.addEventListener('load', activateBasicButton);
 const deactivateBasicButton = () => {
   document.getElementById('list-categorie-panel').style.display = 'block';
   document.getElementById('control-couches').style.display = 'block';
+  document.getElementById('indicateur-panel').style.display = 'block';
   document.getElementById('tab-stat').style.display = 'block';
-  document.getElementById('stat-info').style.display = 'block';
-  document.getElementById('stat-indicateur').style.display = 'block';
   document.getElementById('tab-indicateur').style.display = 'block';
 
   // Afficher la couche par défaut
@@ -338,47 +332,29 @@ document.getElementById('advanced-button').addEventListener('click', deactivateB
 
 // Fonction pour mettre à jour le style en fonction des cases cochées
 const updateLayerStyles = () => {
-  const checkedIndicators = Array.from(document.querySelectorAll('#list-indic input:checked'))
-    .map(checkbox => checkbox.value);
+  const selectedIndicator = document.querySelector('#list-indic input:checked')?.value || 'taux_pauvrete';
 
-  if (checkedIndicators.length === 0) { 
-    // Masquer les styles si aucune case n'est cochée
-    courAppelLayer.setStyle(null);
-    tribunalJudiciaireLayer.setStyle(null);
-    prudhommeLayer.setStyle(null);
-    return;
-  }
-
-  // On applique uniquement le dernier indicateur coché
-  const selectedIndicator = checkedIndicators[checkedIndicators.length - 1];
   let colorScale;
   switch (selectedIndicator) {
-    case 'part_fmp':
-      colorScale = colorsPartFmp;
-      break;
-    case 'nb_victime_1000':
-      colorScale = colorsnb_victime_1000;
-      break;
-    case 'taux_chomage':
-      colorScale = colorstaux_chomage;
-      break;
-    case 'age_moyen':
-      colorScale = colorsMoyenAge;
-      break;
-    case 'taux_pauvrete':
-      colorScale = colorsTauxPauvrete;
-      break;
-    default:
-      return;
+    case 'part_fmp': colorScale = colorsPartFmp; break;
+    case 'nb_victime_1000': colorScale = colorsnb_victime_1000; break;
+    case 'taux_chomage': colorScale = colorstaux_chomage; break;
+    case 'age_moyen': colorScale = colorsMoyenAge; break;
+    case 'taux_pauvrete': colorScale = colorsTauxPauvrete; break;
+    default: return;
   }
 
-  applyJenksStyleToLayer(courAppelLayer, courAppelSource, selectedIndicator, colorScale);
-  applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, selectedIndicator, colorScale);
-  applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, selectedIndicator, colorScale);
+  // Appliquer le style à la couche visible uniquement
+  if (courAppelLayer.getVisible()) {
+    applyJenksStyleToLayer(courAppelLayer, courAppelSource, selectedIndicator, colorScale);
+  } else if (tribunalJudiciaireLayer.getVisible()) {
+    applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, selectedIndicator, colorScale);
+  } else if (prudhommeLayer.getVisible()) {
+    applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, selectedIndicator, colorScale);
+  }
 };
 
-// ========================================================================================
-// Fonctions pour afficher et masquer la couche point 
+// Fonction pour afficher et masquer la couche point 
 const checkbox_pt_justice = document.getElementById('checkbox-pt_justice');
 checkbox_pt_justice.addEventListener('change', (event) => {
   if (event.currentTarget.checked) {
@@ -403,18 +379,15 @@ checkbox_commune.addEventListener('change', (event) => {
   }
 });
 
+// Fonctions pour afficher et masquer la couche Cour d'appel
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
-// Fonctions pour afficher et masquer la couche Cour d'appel
 document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
-
   radio.addEventListener("change", (event) => {
     if (event.target.id === "checkbox-cour_appel") {
       courAppelLayer.setVisible(true);
       tribunalJudiciaireLayer.setVisible(false);
       prudhommeLayer.setVisible(false);
-      console.log("Cour d'appel layer toggled");
-
     } else if (event.target.id === "checkbox-trib_judiciaire") {
       tribunalJudiciaireLayer.setVisible(true);
       courAppelLayer.setVisible(false);
@@ -424,6 +397,7 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
       courAppelLayer.setVisible(false);
       tribunalJudiciaireLayer.setVisible(false);
     }
+    updateLayerStyles(); 
   });
 });
 
@@ -452,6 +426,7 @@ const createRadioList = (indicators) => {
     radio.id = indicator;
     radio.name = 'indicator';
     radio.value = indicator;
+    radio.classList.add("form-check-input");
     
     if (indicator === 'taux_pauvrete') {
       radio.checked = true;
@@ -464,9 +439,31 @@ const createRadioList = (indicators) => {
     label.appendChild(document.createTextNode(indicator));
 
     listItem.appendChild(radio);
+    listItem.classList.add('form-check');
     listItem.appendChild(label);
     list.appendChild(listItem);
   });
+
+  // Ajout du bouton radio "Aucun"
+  const noneItem = document.createElement('li');
+  const noneRadio = document.createElement('input');
+  noneRadio.type = 'radio';
+  noneRadio.id = 'aucun';
+  noneRadio.name = 'indicator';
+  noneRadio.value = 'aucun';
+  noneRadio.classList.add("form-check-input");
+  noneRadio.checked = false; // Défini par défaut
+
+  noneRadio.addEventListener('change', updateLayerStyles);
+
+  const noneLabel = document.createElement('label');
+  noneLabel.htmlFor = 'aucun';
+  noneLabel.appendChild(document.createTextNode('Aucun'));
+
+  noneItem.appendChild(noneRadio);
+  noneItem.classList.add('form-check');
+  noneItem.appendChild(noneLabel);
+  list.appendChild(noneItem);
 };
 
 // Initialisation de la liste de boutons radio après chargement de la source
@@ -477,12 +474,13 @@ courAppelSource.once('change', () => {
     updateLayerStyles();
   }
 });
+
 // // ========================================================================================
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
 // // ========================================================================================
 
-
 // // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
+
 map.on("singleclick", function (evt) {
   let selectedCode = null;
 
@@ -508,23 +506,10 @@ map.on("singleclick", function (evt) {
 
     console.log("Filtre CQL appliqué :", `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`);
   } else {
-    console.log("Aucune entité sélectionnée.");
   }
 });
 
-
 // ========================== Légende =============================
-
-// // Nom du style à récupérer
-// const styleName = 'part_fmp';
-// console.log(commune.getSource());
-// console.log(commune.getSource().getUrl());
-
-// // Génération de l'URL de la légende avec le style spécifié
-// const legendUrl = `${commune.getSource().getUrl()}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=data_point_justice:communee&STYLE=${styleName}`;
-// console.log("Legend URL:", legendUrl);
-// // Assignation de l'URL à l'élément <img>
-// document.getElementById('legend-image1').src = legendUrl;
 
 const geoserverUrl = "http://localhost:8090/geoserver/wms";
 
@@ -535,53 +520,12 @@ const styleName = "part_fmp";
 // Construction de l'URL de la légende
 const legendUrl = `${geoserverUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layerName}&STYLE=${styleName}`;
 
-
 // Affectation à l'élément HTML
 document.getElementById("legend-image1").src = legendUrl;
 
-// const resolution = map.getView().getResolution();
-// const url = commune.getLegendUrl(resolution);
-// document.getElementById('legend-image1').src = url;
-// // // ============== Gestion de l'événement survol pour filtrer les communes ================
-// // map.on('pointermove', function (evt) {
-// //   const viewResolution = map.getView().getResolution();
-// //   const wmsSource = cour_appel.getSource();
-// //   const url = wmsSource.getFeatureInfoUrl(
-// //     evt.coordinate,
-// //     viewResolution,
-// //     'EPSG:3857',
-// //     { 'INFO_FORMAT': 'application/json' }
-// //   );
-
-// //   if (url) {
-// //     fetch(url)
-// //       .then(response => response.json())
-// //       .then(data => {
-// //         if (data.features.length > 0) {
-// //           const courAppelCode = data.features[0].properties.num_ca;
-// //           console.log("Survol de la cour d'appel :", courAppelCode);
-
-// //           // Mise à jour du filtre pour afficher uniquement les communes dans la cour d'appel
-// //           const communeSource = commune.getSource();
-// //           communeSource.updateParams({
-// //             'CQL_FILTER': `n_ca='${courAppelCode}'`
-// //           });
-
-// //           commune.setVisible(true); // S'assurer que la couche est bien visible
-// //         } else {
-// //           commune.setVisible(false); // Masquer la couche si aucune cour d'appel n'est détectée
-// //         }
-// //       })
-// //       .catch(error => console.error('Erreur lors de la récupération des données:', error));
-// //   }
-// // });
-
-// ========================================================================================
 // ==========================  Fonctions filtrage des points  =========================== 
-// ========================================================================================
 
 // Fonction pour récupérer et afficher les types depuis GeoServer
-// Sélection des listes où afficher les types et catégories
 const Listtype = document.querySelector('ul#list-type');
 const Listcategorie = document.querySelector('ul#list-categorie');
 
@@ -635,6 +579,7 @@ function createFilterItem(value, listSet, frag) {
         frag.appendChild(li);
     }
 }
+
 // Récupération et affichage des types et catégories
 point_justice_vec.on('change', function () {
     if (point_justice_vec.getState() === 'ready') {
@@ -743,7 +688,7 @@ function afficherPointsJusticeDansEmpriseEcran() {
 
     // Ajout d'un événement de clic pour zoomer et afficher le popup
     listItem.addEventListener('click', function () {
-      map.getView().animate({ center: point, zoom: 10, duration: 800 }); // Zoom sur le point
+      map.getView().animate({ center: point, zoom: 14, duration: 800 }); // Zoom sur le point
       
       // Récupération des infos du point
       const adresse = feature.get('adresse') || 'Adresse inconnue';
@@ -751,7 +696,7 @@ function afficherPointsJusticeDansEmpriseEcran() {
       const telephone = feature.get('telephone') || 'Non disponible';
 
       // Mise à jour du popup
-      document.getElementById('text-info').innerHTML = `
+      document.getElementById('info-pj').innerHTML = `
         <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
         <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
         <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
@@ -774,51 +719,10 @@ function afficherPointsJusticeDansEmpriseEcran() {
 map.on('moveend', afficherPointsJusticeDansEmpriseEcran);
 map.on('loadend', afficherPointsJusticeDansEmpriseEcran);
 
-// // ========================================================================================
-// // ===============================  Fonctions accésoires  =============================== 
-// // ========================================================================================
-
-// // Fermer le panneau lorsque l'utilisateur clique en dehors de celui-ci
-// document.addEventListener('click', function(event) {
-//   var contentPanel = document.getElementById('content-layer-panel');
-//   var btnLayerPanel = document.getElementById('btn-layer-panel');
-//   if (contentPanel.style.display === 'block' && !contentPanel.contains(event.target) && !btnLayerPanel.contains(event.target)) {
-//       contentPanel.style.display = 'none';
-//       contentPanel.style.zIndex = '';
-//   }
-// });
-
-// // document.getElementById('btn-close-layer-panel').addEventListener('click', function() {
-// //   document.getElementById('content-layer-panel').style.display = 'none';
-// // });
-
-// // Utilisation de la fonction générique pour les boutons
-// toggleDiv('button-text', 'text-info', ['stat-info', 'stat-list']);
-// toggleDiv('button-stat', 'stat-info', ['text-info', 'stat-list']);
-// toggleDiv('button-list', 'stat-list', ['text-info', 'stat-info'])
-
-// document.addEventListener("DOMContentLoaded", function () {
-//   const buttons = document.querySelectorAll(".button-info");
-//   const sections = document.querySelectorAll(".view-info");
-
-//   buttons.forEach((button, index) => {
-//     button.addEventListener("click", function () {
-//       // Supprimer la classe active de tous les boutons
-//       buttons.forEach(btn => btn.classList.remove("active"));
-      
-//       // Ajouter la classe active au bouton cliqué
-//       this.classList.add("active");
-
-//       // Masquer toutes les sections
-//       sections.forEach(section => section.style.display = "none");
-
-//       // Afficher la section correspondante
-//       sections[index].style.display = "block";
-//     });
-//   });
-// });
+// ===============================  Fonctions accésoires  =============================== 
 
 // =======================  Création du popup  ================================
+
 const popupElement = document.createElement('div');
 popupElement.id = 'popup';
 popupElement.style.position = 'absolute';
@@ -846,14 +750,14 @@ map.on('click', function (event) {
   });
 
   if (feature) {
-    const intitule = feature.get('intitule'); // Récupère l'intitulé du point
-    const categorie = feature.get('categorie'); // Récupère la catégorie du point
-    const adresse = feature.get('adresse'); // Récupère l'adresse du point
-    const codgeo = feature.get('codgeo'); // Récupère le téléphone du point
-    const telephone = feature.get('telephone'); // Récupère le téléphone du point
+    const intitule = feature.get('intitule');
+    const categorie = feature.get('categorie');
+    const adresse = feature.get('adresse'); 
+    const codgeo = feature.get('codgeo');
+    const telephone = feature.get('telephone'); 
     if (intitule) {
 
-      document.getElementById('text-info').innerHTML = `
+      document.getElementById('info-pj').innerHTML = `
         <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
         <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
         <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo} </div>
@@ -863,7 +767,6 @@ map.on('click', function (event) {
       popupElement.innerHTML = `<b>${intitule}</b>`;
       popup.setPosition(event.coordinate);
       popupElement.style.display = 'block';
-      popupElement.style.border = '';
     }
   } else {
     popupElement.style.display = 'none';
@@ -873,6 +776,7 @@ map.on('click', function (event) {
 // ========================================================================================
 // ============ Fonctions gestion les graphes et infrormation statistique  ================ 
 // ========================================================================================
+
 // Fonction pour compter le nombre de tribunaux par type_pj
 let tribunalChart; // Variable pour stocker le graphique
 
@@ -949,11 +853,9 @@ map.on("click", function (evt) {
   });
 });
 
-
-// ========================================================================================
-// ====================== Intégration du widget d'adressage  ==============================
+// ========================== Intégration du widget d'adressage  ==============================
 //  =====================   Intégration des 5 plus proches   ==============================
-// ========================================================================================
+
 // Déclare locationLayer globalement afin de pouvoir supprimer les points de anciennes recherches
 let locationLayer = null; 
 
@@ -976,136 +878,3 @@ function displayClosestPoints(closestPoints) {
 }
 
 // Déclarez la fonction calculateDistance
-function calculateDistance(point1, point2) {
-  // Vérifiez que les points sont des tableaux avec deux éléments
-  if (!Array.isArray(point1) || point1.length !== 2 ||
-      !Array.isArray(point2) || point2.length !== 2) {
-    console.error("Coordonnées invalides:", point1, point2);
-    return Infinity; // retourne une distance infinie en cas d'erreur
-  }
-
-  const [lon1, lat1] = point1;
-  const [lon2, lat2] = point2;
-
-  // Utilisation de la formule de Haversine pour une meilleure précision
-  const R = 6371; // Rayon de la Terre en kilomètres
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
-
-  return distance.toFixed(1); // Formater à une décimale
-}
-
-// ====================== Intégration du widget d'adressage  ==============================
-function findClosestPoints(targetCoordinates, n) {
-  const features = point_justice_vec.getFeatures(); // Récupérer les entités depuis la source
-  
-  const distances = features.map(feature => {
-    const coords = feature.getGeometry().getCoordinates();
-
-    // Vérifie le format des coordonnées
-    if (!Array.isArray(coords) || coords.length < 2) {
-      console.error("Coordonnées de géométrie invalides:", coords);
-      return null; // Ignore les entités invalides
-    }
-
-    // Récupérer les valeurs attributaires
-    const properties = feature.getProperties();
-    
-    return {
-      name: properties.libelle|| "Inconnu",  // Assurez-vous que la propriété 'name' existe
-      coordinates: coords,
-      distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)) // Correction ici
-    };
-  }).filter(item => item !== null); // Filtrer les éléments invalides
-
-  // Trier les distances par ordre croissant
-  distances.sort((a, b) => a.distance - b.distance);
-
-  // Retourner les n points les plus proches
-  return distances.slice(0, n);
-}
-
-// Exemple d'utilisation après avoir recherché un lieu
-function searchLocation(query) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-
-  $.get(url, function(data) {
-    if (data.length > 0) {
-      const firstResult = data[0];
-      const coordinates = [parseFloat(firstResult.lon), parseFloat(firstResult.lat)];
-
-      // Centrer la carte sur le lieu trouvé
-      map.getView().setCenter(ol.proj.fromLonLat(coordinates));
-      map.getView().setZoom(15);
-
-      // Mettre à jour le marqueur existant ou en créer un nouveau
-      if (locationLayer === null) {
-        locationLayer = new ol.layer.Vector({
-          source: new ol.source.Vector()
-        });
-        map.addLayer(locationLayer);
-      } else {
-        locationLayer.getSource().clear();
-      }
-
-      // Ajouter un marqueur
-      const location = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates))
-      });
-
-      // Créer un style pour le marqueur avec un fichier local
-      const locationStyle = new ol.style.Style({
-        image: new ol.style.Icon({
-          src: './img/localisation.png',
-          scale: 0.1,
-          anchor: [0.5, 1]
-        })
-      });
-
-      // Appliquer le style au marqueur
-      location.setStyle(locationStyle);
-
-      // Ajouter le marqueur à la source de la couche
-      locationLayer.getSource().addFeature(location);
-
-      // Trouver les 5 points les plus proches
-      const closestPoints = findClosestPoints(coordinates, 5);
-      console.log("5 points les plus proches :", closestPoints);
-
-      // Afficher les points les plus proches dans la div
-      displayClosestPoints(closestPoints);
-
-
-    } else {
-      alert("Aucun résultat trouvé.");
-    }
-  }).fail(function() {
-    alert("Erreur lors de la recherche du lieu. Veuillez réessayer.");
-  });
-}
-
-
-// Événement sur le bouton de recherche
-$('#searchButton').on('click', function() {
-  const query = $('#search').val();
-  if (query) {
-    searchLocation(query);
-    } else {
-    alert("Veuillez entrer un lieu à rechercher.");
-    }
-});
-
-      // Événement sur la barre de recherche pour valider avec Entrée
-$('#search').on('keypress', function(e) {
- if (e.which === 13) { // Touche Entrée
-  const query = $(this).val();
-  if (query) {
-    searchLocation(query);
-    }
-  }
-});
