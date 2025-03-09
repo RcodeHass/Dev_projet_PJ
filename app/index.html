@@ -52,10 +52,18 @@
       </nav>
       <!-- Div qui contient la carte -->
       <div id="map"></div>
+      <!-- Choix de la couche de fond -->
+      <div class="map-controls" style="position: absolute; top: 70px; right: 10px;" >
+        <!-- <label for="basemap-select">Choisir la couche de fond :</label> -->
+        <select class="form-select" id="basemap-select">
+          <option value="osm">OSM</option>
+          <option value="positron">Positron</option>
+        </select>
+      </div>
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-3 p-3 z-1" id="sidebar">
+          <div class="col-12 col-md-5 col-lg-4 p-3 z-1" id="sidebar">
             <div class="input-group mb-3">
               <button class="btn-primary z-1" id="btn-layer-panel">=</button>
               <input type="text" class="form-control" id="search" placeholder="Rechercher une adresse...">
@@ -67,7 +75,7 @@
             <div id="layer-content" class="z-1" style="display: none;">
               <div id="list-distance-pj" class="mb-2 theme-layer theme-color2 z-1">
                 <h5> Point de justice les plus proches</h5>
-                <table id="closest-points-table">
+                <table id="closest-points-table" class="table table-scroll">
                   <thead>
                     <tr>
                       <th>Nom</th>
@@ -77,7 +85,7 @@
                   <tbody>
                     <!-- Les lignes du tableau seront ajoutées ici par JavaScript -->
                   </tbody>
-                </table>>
+                </table>
               </div>
               <!-- Gestion des couches -->
               <div id="control-couches" class="mb-2 theme-layer theme-color2">
@@ -150,11 +158,9 @@
 
           <!-- Contenu des sections -->
           <div class="tab-content mt-3" id="contenu-info">
+            <!-- Information de base sur l'application -->
             <div id="app-info" class="tab-pane fade show active p-2 custom-padding" role="tabpanel">
               <p class="fs-6"> A savoir avant d'utiliser cette cartographie
-                Cette application cartographique est un projet exploratoire visant à fiabiliser la donnée et à développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. Réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, elle est basée sur des données fournies par le ministère de la Justice.
-                La SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaite disposer d’une cartographie web interactive basée sur des outils open source, mettant en avant à la fois les points de justice accessibles sur la France entière. S’adressant aux collectivités et aux citoyens, cet outil a pour ambition de permettre la visualisation des points d’accès à la justice, la mise en perspective des besoins, facilitant ainsi la prise de décision.
-                 
                 Comment utiliser cette cartographie ? 
                 <ul>
                   <li>Utilisez le champ de recherche pour trouver une adresse spécifique.</li>
@@ -164,44 +170,33 @@
                 </ul>
                 </p>
             </div>
+            <!-- Information statistique des graphiques -->
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
-              <!-- Liste déroulante pour changer de graphique -->
               <div>
                 <label for="graph-select">Choisir un graphique :</label>
                 <select id="graph-select" class="form-select">
                   <option value="tribunalChart">Graphique Tribunal</option>
-                  <option value="autreGraphique">Autre Graphique</option>
+                  <option value="visitorChart">Nombre de visiteurs</option>
                 </select>
               </div>
-              <div id="graph"><canvas id="tribunalChart" width="400" height="250"></canvas>
+              <div id="graph">
+                <canvas id="tribunalChart" width="400" height="250"></canvas>
+                <canvas id="visitorChart" style="display: none;"></canvas>
               </div>
               <div> information sur le graphique afficher </div>
               <div>
-                <!-- Liste des indicateurs -->
                 <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
                   <h5>Changer catégorie (expérimentale)</h5>
                   <ul class="list-group" id="list-categorie"></ul>
                 </div>
               </div>
             </div>
+            <!-- Information sur les indicateurs -->
             <div id="stat-indicateur" class="tab-pane fade" role="tabpanel">
               <ul class="list-group" id="list-indic"></ul>
-              
-              <div id="legend" class="theme-seconde-color p-3">
-                <div id="legend-raster">
-                  <div>
-                    <p>Légende indicateur</p>
-                    <img id = "legend-image1" src="" alt=""> 
-                  </div>
-                  <div> 
-                      <p> <img id = "legend-image2"  alt=""> Deals by contries</p>
-                  </div>
-                </div>
-                <div id="legend-vecteur">
-                </div>
-                
-              </div>
+              <p> Texte explicatif de chaque indicateur afficher </p>
             </div>
+            <!-- Liste des points de justice -->
             <div id="list-info" class="tab-pane fade" role="tabpanel">
               <ul class="list-group" id="list-pj"></ul>
             </div>
@@ -215,13 +210,27 @@
       <img src="img/prev.png" alt="Ouvrir">
       </button>
       
+      <!-- information apropos -->
       <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-50 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title" id="offcanvasAproposLabel">À propos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body text-center">
-          <p>Carto-justice est une application qui permet de visualiser les données judiciaires de manière interactive. Elle a été créée pour faciliter l'accès à l'information et promouvoir la transparence dans le système judiciaire.</p>
+        <div class="offcanvas-body">
+          <p class="text-justify">Cette application cartographique est un projet exploratoire visant à fiabiliser la donnée et à développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. Réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, elle est basée sur des données fournies par le ministère de la Justice.
+            La SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaite disposer d’une cartographie web interactive basée sur des outils open source, mettant en avant à la fois les points de justice accessibles sur la France entière. S’adressant aux collectivités et aux citoyens, cet outil a pour ambition de permettre la visualisation des points d’accès à la justice, la mise en perspective des besoins, facilitant ainsi la prise de décision.
+          </p>
+        </div>
+      </div>
+
+      <!-- Légende -->
+      <div id="legende" style="display: none;">
+        <div class="legend-container">
+          <div class="square"> <span class="label">800</span> </div>
+          <div class="square"> <span class="label">600</span> </div>
+          <div class="square"> <span class="label">200</span> </div>
+          <div class="square"> <span class="label">50</span> </div>
+          <div class="square"> <span class="label">10</span> </div>
         </div>
       </div>
       

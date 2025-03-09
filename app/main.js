@@ -84,12 +84,18 @@ const calculateJenksClassesForLayer = (source, indicator, numClasses = 5) => {
 
   if (values.length < numClasses) return values; // Sécurité si peu de valeurs
 
-  const jenksClasses = [];
-  for (let i = 1; i <= numClasses; i++) {
-    jenksClasses.push(values[Math.floor(i * values.length / numClasses) - 1]);
+  const jenksClasses = [values[0]]; // On commence par la valeur minimale
+
+  for (let i = 1; i < numClasses - 1; i++) {
+    const index = Math.round(i * (values.length - 1) / (numClasses - 1)); 
+    jenksClasses.push(values[index]); 
   }
+
+  jenksClasses.push(values[values.length - 1]); // Ajouter la valeur max
+
   return jenksClasses;
 };
+
 
 // Fonction pour appliquer un style dynamique basé sur un indicateur donné
 const applyJenksStyleToLayer = (layer, source, indicator, colorScale, threshold = 42) => {
@@ -108,7 +114,7 @@ const applyJenksStyleToLayer = (layer, source, indicator, colorScale, threshold 
     const taux = parseFloat(feature.get(indicator)) || 0;
     return new Style({
       fill: new Fill({ color: getJenksColor(taux) }),
-      stroke: new Stroke({ color: 'black', width: 0.2 })
+      stroke: new Stroke({ color: 'white', width: 0.4 })
     });
   });
 };
@@ -244,6 +250,22 @@ courAppelLayer.setVisible(false);
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
 
+// Gestion du changement de couche de fond
+document.getElementById('basemap-select').addEventListener('change', function() {
+  const selectedBasemap = this.value;
+  
+  // Masquer toutes les couches de fond
+  couche_osm.setVisible(false);
+  positronLayer.setVisible(false);
+  
+  // Afficher la couche de fond sélectionnée
+  if (selectedBasemap === 'osm') {
+    couche_osm.setVisible(true);
+  } else if (selectedBasemap === 'positron') {
+    positronLayer.setVisible(true);
+  }
+  // Ajoutez d'autres conditions pour les autres couches de fond
+});
 // ========================================================================================
 // ===========================  Fonction  de basse de l'appli ============================ 
 // ========================================================================================
@@ -297,6 +319,7 @@ const activateBasicButton = () => {
   document.getElementById('tab-stat').style.display = 'none';
   document.getElementById('indicateur-panel').style.display = 'none';
   document.getElementById('tab-indicateur').style.display = 'none';
+  document.getElementById('legende').style.display = 'none';
 
   // Masquer les couches contenant des indicateurs en mode Basic
   courAppelLayer.setVisible(false);
@@ -315,6 +338,7 @@ const deactivateBasicButton = () => {
   document.getElementById('indicateur-panel').style.display = 'block';
   document.getElementById('tab-stat').style.display = 'block';
   document.getElementById('tab-indicateur').style.display = 'block';
+  document.getElementById('legende').style.display = 'block';
 
   // Afficher la couche par défaut
   courAppelLayer.setVisible(true);
@@ -330,9 +354,85 @@ document.getElementById('advanced-button').addEventListener('click', deactivateB
 // // ====================== Fonctions d'intéraction avec les couches  ====================== 
 // // ========================================================================================
 
-// Fonction pour mettre à jour le style en fonction des cases cochées
+// ============== Changer ici le titre des indicateurs =================
+const indicatorTitles = {
+  'part_fmp': "Part des familles monoparentales",
+  'nb_victime_1000': "Nombre de victimes pour 1000 habitants",
+  'taux_chomage': "Taux de chômage",
+  'age_moyen': "Âge moyen",
+  'taux_pauvrete': "Taux de pauvreté (%)",
+};
+
+// ============== Fontion de mise a jour de la légende =================
+const updateLegend = (indicator, source, colorScale) => {
+  const legendContainer = document.querySelector('.legend-container');
+  if (!legendContainer) return;
+
+  legendContainer.innerHTML = ''; // Nettoyage de la légende précédente
+
+  if (indicator === 'aucun' || !colorScale || !source) {
+    document.getElementById('legende').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('legende').style.display = 'block';
+
+  // Ajout du titre correspondant à l’indicateur
+  const title = document.createElement('h6');
+  title.textContent = indicatorTitles[indicator] || "Indicateur";
+  title.style.marginBottom = "8px"; // Espacement avec la légende
+  legendContainer.appendChild(title);
+
+  // Calcul des classes de Jenks
+  const jenksClasses = calculateJenksClassesForLayer(source, indicator);
+  if (!jenksClasses || jenksClasses.length < 2) return;
+
+  for (let i = 0; i < jenksClasses.length - 1; i++) {
+    const legendItem = document.createElement('div');
+    legendItem.classList.add('square');
+    legendItem.style.backgroundColor = colorScale[i]; // Appliquer la couleur
+
+    const label = document.createElement('span');
+    label.classList.add('label');
+    label.textContent = `${jenksClasses[i].toFixed(1)} - ${jenksClasses[i + 1].toFixed(1)}`;
+
+    legendItem.appendChild(label);
+    legendContainer.appendChild(legendItem);
+  }
+};
+
+// ======= Fonction pour mettre à jour le style en fonction des cases cochées ===========
+const waitForSourceReady = (source, callback) => {
+  if (source.getState() === 'ready') {
+    callback();
+  } else {
+    source.once('change', () => {
+      if (source.getState() === 'ready') {
+        callback();
+      }
+    });
+  }
+};
+
 const updateLayerStyles = () => {
   const selectedIndicator = document.querySelector('#list-indic input:checked')?.value || 'taux_pauvrete';
+
+  if (selectedIndicator === 'aucun') {
+    // Appliquer un style transparent
+    const outlineStyle = new Style({
+      fill: new Fill({ color: 'rgba(0, 0, 0, 0)' }),
+      stroke: new Stroke({ color: 'rgba(0, 0, 0, 0.31)', width: 0.8 })
+    });
+
+    [courAppelLayer, tribunalJudiciaireLayer, prudhommeLayer].forEach(layer => {
+      if (layer.getVisible()) {
+        layer.setStyle(outlineStyle);
+      }
+    });
+
+    updateLegend('aucun', null);
+    return;
+  }
 
   let colorScale;
   switch (selectedIndicator) {
@@ -344,15 +444,28 @@ const updateLayerStyles = () => {
     default: return;
   }
 
-  // Appliquer le style à la couche visible uniquement
+  let source = null;
+  let activeLayer = null;
+
   if (courAppelLayer.getVisible()) {
-    applyJenksStyleToLayer(courAppelLayer, courAppelSource, selectedIndicator, colorScale);
+    source = courAppelSource;
+    activeLayer = courAppelLayer;
   } else if (tribunalJudiciaireLayer.getVisible()) {
-    applyJenksStyleToLayer(tribunalJudiciaireLayer, tibunalJudiciaireSource, selectedIndicator, colorScale);
+    source = tibunalJudiciaireSource;
+    activeLayer = tribunalJudiciaireLayer;
   } else if (prudhommeLayer.getVisible()) {
-    applyJenksStyleToLayer(prudhommeLayer, PrudhommeSource, selectedIndicator, colorScale);
+    source = PrudhommeSource;
+    activeLayer = prudhommeLayer;
+  }
+
+  if (activeLayer && source) {
+    waitForSourceReady(source, () => {
+      applyJenksStyleToLayer(activeLayer, source, selectedIndicator, colorScale);
+      updateLegend(selectedIndicator, source, colorScale);
+    });
   }
 };
+
 
 // Fonction pour afficher et masquer la couche point 
 const checkbox_pt_justice = document.getElementById('checkbox-pt_justice');
@@ -382,22 +495,14 @@ checkbox_commune.addEventListener('change', (event) => {
 // Fonctions pour afficher et masquer la couche Cour d'appel
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
+
 document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
   radio.addEventListener("change", (event) => {
-    if (event.target.id === "checkbox-cour_appel") {
-      courAppelLayer.setVisible(true);
-      tribunalJudiciaireLayer.setVisible(false);
-      prudhommeLayer.setVisible(false);
-    } else if (event.target.id === "checkbox-trib_judiciaire") {
-      tribunalJudiciaireLayer.setVisible(true);
-      courAppelLayer.setVisible(false);
-      prudhommeLayer.setVisible(false);
-    } else if (event.target.id === "checkbox-prudhomme") {
-      prudhommeLayer.setVisible(true);
-      courAppelLayer.setVisible(false);
-      tribunalJudiciaireLayer.setVisible(false);
-    }
-    updateLayerStyles(); 
+    courAppelLayer.setVisible(event.target.id === "checkbox-cour_appel");
+    tribunalJudiciaireLayer.setVisible(event.target.id === "checkbox-trib_judiciaire");
+    prudhommeLayer.setVisible(event.target.id === "checkbox-prudhomme");
+
+    setTimeout(updateLayerStyles, 200); // Petit délai pour éviter les conflits
   });
 });
 
@@ -496,7 +601,7 @@ map.on("singleclick", function (evt) {
   });
 
   if (selectedCode) {
-    console.log("Code sélectionné :", selectedCode);
+    // console.log("Code sélectionné :", selectedCode);
 
     // Appliquer le filtre CQL sur la couche commune WMS
     const communeSource = commune.getSource();
@@ -504,26 +609,52 @@ map.on("singleclick", function (evt) {
       "CQL_FILTER": `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`
     });
 
-    console.log("Filtre CQL appliqué :", `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`);
+    // console.log("Filtre CQL appliqué :", `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`);
   } else {
   }
 });
 
 // ========================== Légende =============================
 
-const geoserverUrl = "http://localhost:8090/geoserver/wms";
+// const geoserverUrl = "http://localhost:8090/geoserver/wms";
 
-// Nom de la couche et du style
-const layerName = "data_point_justice:commune";
-const styleName = "part_fmp";
+// // Nom de la couche et du style
+// const layerName = "data_point_justice:commune";
+// const styleName = "part_fmp";
 
-// Construction de l'URL de la légende
-const legendUrl = `${geoserverUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layerName}&STYLE=${styleName}`;
+// // Construction de l'URL de la légende
+// const legendUrl = `${geoserverUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layerName}&STYLE=${styleName}`;
 
-// Affectation à l'élément HTML
-document.getElementById("legend-image1").src = legendUrl;
+// // Affectation à l'élément HTML
+// document.getElementById("legend-image1").src = legendUrl;
 
-// ==========================  Fonctions filtrage des points  =========================== 
+
+// ====================  Fonctions filtrage des points de justice  ======================= 
+
+// Ajouter un indicateur de chargement (engrenage)
+const loadingImage = document.createElement('img');
+loadingImage.src = 'img/delai.png';
+loadingImage.id = 'loadingIndicator';
+loadingImage.style.position = 'absolute';
+loadingImage.style.top = '50%';
+loadingImage.style.left = '50%';
+loadingImage.style.transform = 'translate(-50%, -50%)';
+loadingImage.style.zIndex = 9999; // S'assurer que l'image est au-dessus des autres éléments
+loadingImage.style.display = 'none'; // Initialement caché
+loadingImage.style.width = '100px'; // Ajouter une taille fixe pour l'image
+loadingImage.style.height = '100px';
+loadingImage.style.border = '20px solid red'; 
+document.body.appendChild(loadingImage);
+
+// Fonction pour afficher l'indicateur de chargement
+function showLoadingIndicator() {
+  loadingImage.style.display = 'block'; // Afficher l'image de chargement
+}
+
+// Fonction pour masquer l'indicateur de chargement
+function hideLoadingIndicator() {
+  loadingImage.style.display = 'none'; // Masquer l'image de chargement
+}
 
 // Fonction pour récupérer et afficher les types depuis GeoServer
 const Listtype = document.querySelector('ul#list-type');
@@ -537,47 +668,49 @@ const fragCategorie = document.createDocumentFragment();
 
 // Fonction générique pour créer un switch dans une liste donnée
 function createFilterItem(value, listSet, frag) {
-    if (!listSet.has(value)) {
-        listSet.add(value);
+  if (!listSet.has(value)) {
+    listSet.add(value);
 
-        // Création du switch (checkbox)
-        const switchInput = document.createElement('input');
-        switchInput.type = 'checkbox';
-        switchInput.checked = true; // Par défaut, activé
-        switchInput.dataset.filterValue = value;
-        switchInput.classList.add("form-check-input");
+    // Création du switch (checkbox)
+    const switchInput = document.createElement('input');
+    switchInput.type = 'checkbox';
+    switchInput.checked = true; // Par défaut, activé
+    switchInput.dataset.filterValue = value;
+    switchInput.classList.add("form-check-input");
 
-        // Création du label pour le switch
-        const switchLabel = document.createElement('label');
-        switchLabel.classList.add("form-check-label");
-        switchLabel.appendChild(switchInput);
-        switchLabel.appendChild(document.createTextNode(value));
+    // Création du label pour le switch
+    const switchLabel = document.createElement('label');
+    switchLabel.classList.add("form-check-label");
+    switchLabel.appendChild(switchInput);
+    switchLabel.appendChild(document.createTextNode(value));
 
-        // Création de l'élément <li> (cliquable)
-        const li = document.createElement('li');
-        li.classList.add("form-check");
-        li.dataset.filterValue = value;
+    // Création de l'élément <li> (cliquable)
+    const li = document.createElement('li');
+    li.classList.add("form-check");
+    li.dataset.filterValue = value;
 
-        // Ajout des éléments au <li>
-        li.appendChild(switchLabel);
+    // Ajout des éléments au <li>
+    li.appendChild(switchLabel);
 
-        // Rendre tout le <li> cliquable
-        li.addEventListener('click', function (event) {
-            if (event.target !== switchInput && event.target !== switchLabel) {
-                switchInput.checked = !switchInput.checked;
-                switchInput.dispatchEvent(new Event('change')); // Déclencher l'événement de changement
-            }
-        });
+    // Rendre tout le <li> cliquable
+    li.addEventListener('click', function (event) {
+      if (event.target !== switchInput && event.target !== switchLabel) {
+        switchInput.checked = !switchInput.checked;
+        switchInput.dispatchEvent(new Event('change')); // Déclencher l'événement de changement
+      }
+    });
 
-        // Gestion du filtrage
-        switchInput.addEventListener('change', debounce(() => {
-            filterPointsJustice();
-            afficherPointsJusticeDansEmpriseEcran();
-        }, 300));
+    // Gestion du filtrage
+    switchInput.addEventListener('change', debounce(() => {
+        showLoadingIndicator(); // Afficher le chargement avant de filtrer
+        filterPointsJustice();
+        afficherPointsJusticeDansEmpriseEcran();
+        hideLoadingIndicator(); // Masquer le chargement après le filtrage
+    }, 300));
 
-        // Ajout au fragment
-        frag.appendChild(li);
-    }
+    // Ajout au fragment
+    frag.appendChild(li);
+  }
 }
 
 // Récupération et affichage des types et catégories
@@ -674,7 +807,7 @@ function afficherPointsJusticeDansEmpriseEcran() {
 
   // Trier les points par distance et sélectionner les 25 plus proches
   pointsVisibles.sort((a, b) => a.distance - b.distance);
-  const pointsAffiches = pointsVisibles.slice(0, 25);
+  const pointsAffiches = pointsVisibles.slice(0, 20);
 
   // Afficher les points sélectionnés
   pointsAffiches.forEach(({ feature }) => {
@@ -718,8 +851,6 @@ function afficherPointsJusticeDansEmpriseEcran() {
 // Mise à jour dynamique lors des interactions de la carte
 map.on('moveend', afficherPointsJusticeDansEmpriseEcran);
 map.on('loadend', afficherPointsJusticeDansEmpriseEcran);
-
-// ===============================  Fonctions accésoires  =============================== 
 
 // =======================  Création du popup  ================================
 
@@ -778,7 +909,7 @@ map.on('click', function (event) {
 // ========================================================================================
 
 // Fonction pour compter le nombre de tribunaux par type_pj
-let tribunalChart; // Variable pour stocker le graphique
+let tribunalChart; 
 
 // Fonction pour compter les tribunaux par type dans une zone spécifique
 function countTribunalsByTypeInZone(geometry) {
@@ -871,8 +1002,8 @@ function displayClosestPoints(closestPoints) {
 
   closestPoints.forEach(point => {
     const row = $('<tr>').append(
-      $('<td>').text(point.name),
-      $('<td>').text(point.distance + ' km')
+      $('<td>').text(point.name).css('cursor', 'pointer').click(() => zoomToFeature(point.feature)),
+      $('<td>').text(point.distance + ' m')
     );
     tableBody.append(row);
   });
