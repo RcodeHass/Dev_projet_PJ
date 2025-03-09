@@ -853,9 +853,10 @@ map.on("click", function (evt) {
   });
 });
 
-// ========================== Intégration du widget d'adressage  ==============================
+// ========================================================================================
+// ====================== Intégration du widget d'adressage  ==============================
 //  =====================   Intégration des 5 plus proches   ==============================
-
+// ========================================================================================
 // Déclare locationLayer globalement afin de pouvoir supprimer les points de anciennes recherches
 let locationLayer = null; 
 
@@ -878,3 +879,136 @@ function displayClosestPoints(closestPoints) {
 }
 
 // Déclarez la fonction calculateDistance
+function calculateDistance(point1, point2) {
+  // Vérifiez que les points sont des tableaux avec deux éléments
+  if (!Array.isArray(point1) || point1.length !== 2 ||
+      !Array.isArray(point2) || point2.length !== 2) {
+    console.error("Coordonnées invalides:", point1, point2);
+    return Infinity; // retourne une distance infinie en cas d'erreur
+  }
+
+  const [lon1, lat1] = point1;
+  const [lon2, lat2] = point2;
+
+  // Utilisation de la formule de Haversine pour une meilleure précision
+  const R = 6371; // Rayon de la Terre en kilomètres
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+
+  return distance.toFixed(1); // Formater à une décimale
+}
+
+// ====================== Intégration du widget d'adressage  ==============================
+function findClosestPoints(targetCoordinates, n) {
+  const features = point_justice_vec.getFeatures(); // Récupérer les entités depuis la source
+  
+  const distances = features.map(feature => {
+    const coords = feature.getGeometry().getCoordinates();
+
+    // Vérifie le format des coordonnées
+    if (!Array.isArray(coords) || coords.length < 2) {
+      console.error("Coordonnées de géométrie invalides:", coords);
+      return null; // Ignore les entités invalides
+    }
+
+    // Récupérer les valeurs attributaires
+    const properties = feature.getProperties();
+    
+    return {
+      name: properties.libelle|| "Inconnu",  // Assurez-vous que la propriété 'name' existe
+      coordinates: coords,
+      distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)) // Correction ici
+    };
+  }).filter(item => item !== null); // Filtrer les éléments invalides
+
+  // Trier les distances par ordre croissant
+  distances.sort((a, b) => a.distance - b.distance);
+
+  // Retourner les n points les plus proches
+  return distances.slice(0, n);
+}
+
+// Exemple d'utilisation après avoir recherché un lieu
+function searchLocation(query) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+
+  $.get(url, function(data) {
+    if (data.length > 0) {
+      const firstResult = data[0];
+      const coordinates = [parseFloat(firstResult.lon), parseFloat(firstResult.lat)];
+
+      // Centrer la carte sur le lieu trouvé
+      map.getView().setCenter(ol.proj.fromLonLat(coordinates));
+      map.getView().setZoom(15);
+
+      // Mettre à jour le marqueur existant ou en créer un nouveau
+      if (locationLayer === null) {
+        locationLayer = new ol.layer.Vector({
+          source: new ol.source.Vector()
+        });
+        map.addLayer(locationLayer);
+      } else {
+        locationLayer.getSource().clear();
+      }
+
+      // Ajouter un marqueur
+      const location = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates))
+      });
+
+      // Créer un style pour le marqueur avec un fichier local
+      const locationStyle = new ol.style.Style({
+        image: new ol.style.Icon({
+          src: './img/localisation.png',
+          scale: 0.1,
+          anchor: [0.5, 1]
+        })
+      });
+
+      // Appliquer le style au marqueur
+      location.setStyle(locationStyle);
+
+      // Ajouter le marqueur à la source de la couche
+      locationLayer.getSource().addFeature(location);
+
+      // Trouver les 5 points les plus proches
+      const closestPoints = findClosestPoints(coordinates, 5);
+      console.log("5 points les plus proches :", closestPoints);
+
+      // Afficher les points les plus proches dans la div
+      displayClosestPoints(closestPoints);
+
+
+    } else {
+      alert("Aucun résultat trouvé.");
+    }
+  }).fail(function() {
+    alert("Erreur lors de la recherche du lieu. Veuillez réessayer.");
+  });
+}
+
+
+// Événement sur le bouton de recherche
+$('#searchButton').on('click', function() {
+  const query = $('#search').val();
+  if (query) {
+    searchLocation(query);
+    } else {
+    alert("Veuillez entrer un lieu à rechercher.");
+    }
+});
+
+      // Événement sur la barre de recherche pour valider avec Entrée
+$('#search').on('keypress', function(e) {
+ if (e.which === 13) { // Touche Entrée
+  const query = $(this).val();
+  if (query) {
+    searchLocation(query);
+    }
+  }
+});
