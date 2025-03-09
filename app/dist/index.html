@@ -13,8 +13,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carto-justice</title>
-    <script type="module" crossorigin src="/assets/index-FF7EzS4U.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DyT5aHsS.css">
+    <script type="module" crossorigin src="/assets/index-Dy1HyuJF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BVM4jpzx.css">
   </head>
   <body>
 
@@ -52,6 +52,14 @@
       </nav>
       <!-- Div qui contient la carte -->
       <div id="map"></div>
+      <!-- Choix de la couche de fond -->
+      <div class="map-controls" style="position: absolute; top: 70px; right: 10px;" >
+        <!-- <label for="basemap-select">Choisir la couche de fond :</label> -->
+        <select class="form-select" id="basemap-select">
+          <option value="osm">OSM</option>
+          <option value="positron">Positron</option>
+        </select>
+      </div>
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
         <div class="row">
@@ -150,6 +158,7 @@
 
           <!-- Contenu des sections -->
           <div class="tab-content mt-3" id="contenu-info">
+            <!-- Information de base sur l'application -->
             <div id="app-info" class="tab-pane fade show active p-2 custom-padding" role="tabpanel">
               <p class="fs-6"> A savoir avant d'utiliser cette cartographie
                 Comment utiliser cette cartographie ? 
@@ -161,45 +170,33 @@
                 </ul>
                 </p>
             </div>
+            <!-- Information statistique des graphiques -->
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
-              <!-- Liste déroulante pour changer de graphique -->
               <div>
                 <label for="graph-select">Choisir un graphique :</label>
                 <select id="graph-select" class="form-select">
                   <option value="tribunalChart">Graphique Tribunal</option>
-                  <option value="autreGraphique">Autre Graphique</option>
+                  <option value="visitorChart">Nombre de visiteurs</option>
                 </select>
               </div>
-              <div id="graph"><canvas id="tribunalChart" width="400" height="250"></canvas>
+              <div id="graph">
+                <canvas id="tribunalChart" width="400" height="250"></canvas>
+                <canvas id="visitorChart" style="display: none;"></canvas>
               </div>
               <div> information sur le graphique afficher </div>
               <div>
-                <!-- Liste des indicateurs -->
                 <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
                   <h5>Changer catégorie (expérimentale)</h5>
                   <ul class="list-group" id="list-categorie"></ul>
                 </div>
               </div>
             </div>
+            <!-- Information sur les indicateurs -->
             <div id="stat-indicateur" class="tab-pane fade" role="tabpanel">
               <ul class="list-group" id="list-indic"></ul>
-              
-              <div id="legend" class="theme-seconde-color p-3">
-                <div id="legend-raster">
-                  <div>
-                    <p>Légende indicateur</p>
-                    <img id = "legend-image1" src="" alt=""> 
-                  </div>
-                  <div> 
-                      <p> <img id = "legend-image2"  alt=""> Deals by contries</p>
-                  </div>
-                </div>
-                <div id="legend-vecteur">
-                  <div></div>
-                </div>
-                
-              </div>
+              <p> Texte explicatif de chaque indicateur afficher </p>
             </div>
+            <!-- Liste des points de justice -->
             <div id="list-info" class="tab-pane fade" role="tabpanel">
               <ul class="list-group" id="list-pj"></ul>
             </div>
@@ -213,6 +210,7 @@
       <img src="data:image/png;base64,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" alt="Ouvrir">
       </button>
       
+      <!-- information apropos -->
       <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-50 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title" id="offcanvasAproposLabel">À propos</h5>
@@ -222,6 +220,17 @@
           <p class="text-justify">Cette application cartographique est un projet exploratoire visant à fiabiliser la donnée et à développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. Réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, elle est basée sur des données fournies par le ministère de la Justice.
             La SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaite disposer d’une cartographie web interactive basée sur des outils open source, mettant en avant à la fois les points de justice accessibles sur la France entière. S’adressant aux collectivités et aux citoyens, cet outil a pour ambition de permettre la visualisation des points d’accès à la justice, la mise en perspective des besoins, facilitant ainsi la prise de décision.
           </p>
+        </div>
+      </div>
+
+      <!-- Légende -->
+      <div id="legende" style="display: none;">
+        <div class="legend-container">
+          <div class="square"> <span class="label">800</span> </div>
+          <div class="square"> <span class="label">600</span> </div>
+          <div class="square"> <span class="label">200</span> </div>
+          <div class="square"> <span class="label">50</span> </div>
+          <div class="square"> <span class="label">10</span> </div>
         </div>
       </div>
       
