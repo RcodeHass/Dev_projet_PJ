@@ -321,7 +321,7 @@ const activateBasicButton = () => {
   document.getElementById('tab-indicateur').style.display = 'none';
   document.getElementById('legende').style.display = 'none';
 
-  // Masquer les couches contenant des indicateurs en mode Basic
+  // Masquer les couches contenant des indicateurs en mode basique
   courAppelLayer.setVisible(false);
   tribunalJudiciaireLayer.setVisible(false);
   prudhommeLayer.setVisible(false);
@@ -580,6 +580,25 @@ courAppelSource.once('change', () => {
   }
 });
 
+
+// // Fonction pour mettre à jour le style de la couche commune
+// function updateLayerStyle(styleName) {
+//   const communeLayer = map.getLayers().getArray().find(layer => layer.get('name') === 'commune');
+
+//   if (communeLayer) {
+//     communeLayer.getSource().updateParams({ 'STYLES': styleName });
+//   }
+// }
+
+// // Exemple d'utilisation
+// const indicators = [
+//   { part_fmp: 'part_fmp', styleName: 'part_fmp' },
+//   { nb_victime_1000: 'nb_victime_1000', styleName: 'nb_victime_1000' },
+//   { taux_chomage: 'taux_chomage', styleName: 'taux_chomage' },
+//   { age_moyen: 'age_moyen', styleName: 'age_moyen' },
+//   { taux_pauvrete: 'taux_pauvrete', styleName: 'taux_pauvrete'}
+// ];
+
 // // ========================================================================================
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
 // // ========================================================================================
@@ -684,6 +703,43 @@ function createFilterItem(value, listSet, frag) {
     switchLabel.appendChild(switchInput);
     switchLabel.appendChild(document.createTextNode(value));
 
+    // Créer l'élément <i> pour l'icône d'information
+    const infoIcon = document.createElement('i');
+    infoIcon.classList.add('bi', 'bi-info-circle', 'ms-2', 'text-info');  // Classe Bootstrap pour l'icône d'info
+    infoIcon.setAttribute('data-bs-toggle', 'tooltip');  // Activer le tooltip
+    infoIcon.setAttribute('data-bs-placement', 'left');  // Position du tooltip
+    infoIcon.setAttribute('title', `Information sur le type: ${value}`);  // Le texte du tooltip
+
+    // Personnaliser le texte du tooltip (ici, un texte dynamique selon la valeur)
+    const tooltipText = value === 'Domaine juridique'
+    ? 'Lieu ou service où les citoyens peuvent obtenir des informations, des conseils ou un accompagnement concernant leurs droits et obligations, ainsi que l\'accès à des services juridiques dans diverses branches du droit, comme le droit civil, pénal ou administratif.' 
+    : value === 'Spécialiste hors FS'
+    ? 'Professionnel du droit, comme un avocat ou un notaire, qui fournit des services juridiques spécialisés en dehors du réseau France Service.'
+    : value === 'Généraliste hors FS'
+    ? 'Professionnel du droit qui offre des conseils juridiques sur une gamme large de sujets, mais hors du cadre du réseau France Service.'
+    : value === 'France Service'
+    ? 'Réseau de points d\'accueil physiques qui offrent des services administratifs et juridiques de proximité pour faciliter l\'accès aux droits des citoyens en France.'
+    : value === 'Pérmanences'
+    ? 'NSP'
+    : value === 'Maisons'
+    ? 'Maison du droit'
+    : value === 'Autre'
+    ? 'Point-Justice non catégorisé'
+    : value === 'Mairie'
+    ? 'Point-Justice situé dans une mairie, appartenant généralement au Type France-Service'
+    : value === 'Etablissement'
+    ? 'Tous les points-justices qui se situe ou sont liés dans un bâtiment appartenant au Ministère de la Justice'
+    : value === 'Associations'
+    ? 'Tous les points-justices qui sont situé ou sont liés à une association'
+    : `Informations sur le filtre: ${value} - Description non disponible.`
+    ;  // Valeur par défaut si aucun des cas ne correspond
+  
+    // Ajouter le texte personnalisé au tooltip
+    infoIcon.setAttribute('title', tooltipText);  // Le texte du tooltip
+
+    // Ajouter l'icône à la fin du label
+    switchLabel.appendChild(infoIcon);
+
     // Création de l'élément <li> (cliquable)
     const li = document.createElement('li');
     li.classList.add("form-check");
@@ -712,6 +768,12 @@ function createFilterItem(value, listSet, frag) {
     frag.appendChild(li);
   }
 }
+
+// Initialiser tous les tooltips dans la page
+const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+tooltips.forEach(function (tooltip) {
+  new bootstrap.Tooltip(tooltip);  // Crée et initialise le tooltip pour chaque élément
+});
 
 // Récupération et affichage des types et catégories
 point_justice_vec.on('change', function () {
@@ -771,6 +833,10 @@ function debounce(func, wait) {
 
 // Appeler la fonction de filtrage initialement
 filterPointsJustice();
+
+//rajouter les informations pour les Types de PJ lors du filtrage par l'utilisateur 
+
+
 
 // Fonction pour afficher dynamiquement les points visibles sur la carte
 function afficherPointsJusticeDansEmpriseEcran() {
