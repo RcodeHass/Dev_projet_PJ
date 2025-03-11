@@ -264,8 +264,8 @@ document.getElementById('basemap-select').addEventListener('change', function() 
   } else if (selectedBasemap === 'positron') {
     positronLayer.setVisible(true);
   }
-  // Ajoutez d'autres conditions pour les autres couches de fond
 });
+
 // ========================================================================================
 // ===========================  Fonction  de basse de l'appli ============================ 
 // ========================================================================================
@@ -286,7 +286,8 @@ document.getElementById("btn-layer-panel").addEventListener("click", function ()
 document.addEventListener("DOMContentLoaded", function () {
   var infoPanel = document.getElementById("infoPanel");
   var toggleButton = document.getElementById("toggleButton");
-  var toggleImg = toggleButton.querySelector("img"); // Récupère l'image du bouton
+  var toggleImg = toggleButton.querySelector("img");
+  var legende = document.getElementById("legende");
 
   function updateButton() {
     setTimeout(() => { 
@@ -297,11 +298,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (panelOpen) {
         toggleButton.style.right = (panelWidth + 10) + "px";
         toggleImg.src = "img/next.png"; 
+        legende.style.right = (panelWidth + 10) + "px"; 
       } else {
         toggleButton.style.right = "10px";
         toggleImg.src = "img/prev.png"; 
+        legende.style.right = "10px";
       }
-    }, 3); // Délai pour la transition
+    }, 1); // Délai pour la transition
   }
 
   // Met à jour l'image et la position du bouton à l'ouverture/fermeture du panneau
@@ -312,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
   updateButton();
 });
 
-// Fonction pour passer de l'onglet de avancée a l'onglet de basse
+// =====  Fonction pour passer de l'onglet de avancée a l'onglet de base ======
 const activateBasicButton = () => {
   document.getElementById('list-categorie-panel').style.display = 'none';
   document.getElementById('control-couches').style.display = 'none';
@@ -320,17 +323,21 @@ const activateBasicButton = () => {
   document.getElementById('indicateur-panel').style.display = 'none';
   document.getElementById('tab-indicateur').style.display = 'none';
   document.getElementById('legende').style.display = 'none';
+  vecteur_point_justice.setVisible(true);
 
   // Masquer les couches contenant des indicateurs en mode basique
   courAppelLayer.setVisible(false);
   tribunalJudiciaireLayer.setVisible(false);
   prudhommeLayer.setVisible(false);
+  
+  // Cocher le checkbox-pt_justice
+  document.getElementById('checkbox-pt_justice').checked = true;
 };
 
 // Ajouter l'événement au bouton "basic-button"
 document.getElementById('basic-button').addEventListener('click', activateBasicButton);
 
-// Activer le bouton "basic-button" par défaut au chargement du site
+// =====  Fonction pour passer de l'onglet de de base au mode avancée =====
 window.addEventListener('load', activateBasicButton);
 const deactivateBasicButton = () => {
   document.getElementById('list-categorie-panel').style.display = 'block';
@@ -414,6 +421,7 @@ const waitForSourceReady = (source, callback) => {
   }
 };
 
+// =================== Fonction pour mettre à jour le style d'indicateur  =================
 const updateLayerStyles = () => {
   const selectedIndicator = document.querySelector('#list-indic input:checked')?.value || 'taux_pauvrete';
 
@@ -506,9 +514,9 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
   });
 });
 
-// // ========================================================================================
+// // ======================================================================================
 // // ====================== Fonctions pour gérer les indicateur   ====================== 
-// // ========================================================================================
+// // ======================================================================================
 
 // Récupérer les indicateurs à partir de l'une des sources
 const getIndicatorsFromSource = (source) => {
@@ -603,7 +611,7 @@ courAppelSource.once('change', () => {
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
 // // ========================================================================================
 
-// // ============== Écouteur de clic pour récupérer le code du cours d'appel ================
+// // ============== Écouteur de clic pour récupérer les communes ================
 
 map.on("singleclick", function (evt) {
   let selectedCode = null;
@@ -620,32 +628,50 @@ map.on("singleclick", function (evt) {
   });
 
   if (selectedCode) {
-    // console.log("Code sélectionné :", selectedCode);
-
     // Appliquer le filtre CQL sur la couche commune WMS
     const communeSource = commune.getSource();
     communeSource.updateParams({
       "CQL_FILTER": `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`
     });
 
-    // console.log("Filtre CQL appliqué :", `num_ca=${selectedCode} OR num_tj=${selectedCode} OR num_cph=${selectedCode}`);
+    // Récupérer l'indicateur sélectionné (par exemple, depuis un bouton radio ou un autre mécanisme)
+    const selectedIndicator = document.querySelector('#list-indic input:checked')?.value || 'taux_pauvrete';
+
+    // Définir le style à appliquer en fonction de l'indicateur sélectionné
+    let selectedStyle;
+    switch (selectedIndicator) {
+      case 'part_fmp':
+        selectedStyle = 'data_point_justice:part_fmp';
+        break;
+      case 'nb_victime_1000':
+        selectedStyle = 'data_point_justice:nb_victime_1000';
+        break;
+      case 'taux_chomage':
+        selectedStyle = 'data_point_justice:taux_chomage';
+        break;
+      case 'age_moyen':
+        selectedStyle = 'data_point_justice:age_moyen';
+        break;
+      case 'taux_pauvrete':
+        selectedStyle = 'data_point_justice:taux_pauvrete';
+        break;
+      default:
+        selectedStyle = 'data_point_justice:taux_pauvrete'; // Par défaut
+    }
+
+    // Mettre à jour les paramètres WMS pour appliquer le style sélectionné
+    communeSource.updateParams({
+      "STYLES": selectedStyle
+    });
+
   } else {
+    // Si aucun code n'est sélectionné, réinitialiser la couche à son style par défaut
+    const communeSource = commune.getSource();
+    communeSource.updateParams({
+      "STYLES": '' // ou "defaultStyle" si vous avez un style par défaut configuré
+    });
   }
 });
-
-// ========================== Légende =============================
-
-// const geoserverUrl = "http://localhost:8090/geoserver/wms";
-
-// // Nom de la couche et du style
-// const layerName = "data_point_justice:commune";
-// const styleName = "part_fmp";
-
-// // Construction de l'URL de la légende
-// const legendUrl = `${geoserverUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=${layerName}&STYLE=${styleName}`;
-
-// // Affectation à l'élément HTML
-// document.getElementById("legend-image1").src = legendUrl;
 
 
 // ====================  Fonctions filtrage des points de justice  ======================= 
@@ -858,7 +884,7 @@ filterPointsJustice();
 
 
 
-// Fonction pour afficher dynamiquement les points visibles sur la carte
+// ============ Fonction pour afficher la liste des points de justicevisibles ==========
 function afficherPointsJusticeDansEmpriseEcran() {
   const extent = map.getView().calculateExtent(map.getSize()); // Récupère l'étendue visible
   const center = ol.extent.getCenter(extent); // Récupère le centre de l'étendue visible
@@ -994,8 +1020,8 @@ map.on('click', function (event) {
 // ============ Fonctions gestion les graphes et infrormation statistique  ================ 
 // ========================================================================================
 
-// Fonction pour compter le nombre de tribunaux par type_pj
 let tribunalChart; 
+let visitorChart;
 
 // Fonction pour compter les tribunaux par type dans une zone spécifique
 function countTribunalsByTypeInZone(geometry) {
@@ -1011,8 +1037,23 @@ function countTribunalsByTypeInZone(geometry) {
   return counts;
 }
 
-// Fonction pour mettre à jour le graphe
-function updateChart(counts) {
+// Fonction pour calculer la somme des visiteurs par type de point de justice dans une zone spécifique
+function countVisitorsByTypeInZone(geometry) {
+  const counts = {}; // Stocke la somme des visiteurs par type
+
+  point_justice_vec.forEachFeature(function (feature) {
+    const type = feature.get('type_pj'); // Récupère la valeur du champ type_pj
+    const nbVisites = feature.get('nb_visite'); // Récupère la valeur du nombre de visiteurs
+    if (type && nbVisites && geometry.intersectsExtent(feature.getGeometry().getExtent())) {
+      counts[type] = (counts[type] || 0) + nbVisites; // Ajoute le nombre de visiteurs
+    }
+  });
+
+  return counts;
+}
+
+// Fonction pour mettre à jour le graphique des tribunaux
+function updateTribunalChart(counts) {
   const labels = Object.keys(counts); // Les types de tribunaux
   const data = Object.values(counts); // Nombre d'occurrences par type
 
@@ -1023,7 +1064,7 @@ function updateChart(counts) {
     tribunalChart.destroy();
   }
 
-  // Créer un nouveau graphique
+  // Créer un nouveau graphique pour les tribunaux
   tribunalChart = new Chart(ctx, {
     type: 'bar', // Type de graphe (barres)
     data: {
@@ -1045,30 +1086,75 @@ function updateChart(counts) {
   });
 }
 
+// Fonction pour mettre à jour le graphique des visiteurs
+function updateVisitorChart(counts) {
+  const labels = Object.keys(counts); // Les types de tribunaux
+  const data = Object.values(counts); // Somme des visiteurs par type
+
+  const ctx = document.getElementById('visitorChart').getContext('2d');
+
+  // Détruire l'ancien graphique s'il existe
+  if (visitorChart) {
+    visitorChart.destroy();
+  }
+
+  // Créer un nouveau graphique pour les visiteurs
+  visitorChart = new Chart(ctx, {
+    type: 'bar', // Type de graphe (barres)
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Nombre de visiteurs par type',
+        data: data,
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
 // Attendre le chargement des données et afficher le graphe initial
 point_justice_vec.once('change', function () {
   if (point_justice_vec.getState() === 'ready') {
     const counts = countTribunalsByTypeInZone(map.getView().calculateExtent(map.getSize()));
-    updateChart(counts);
+    updateTribunalChart(counts);
   }
 });
 
+// Écouteur de clic pour la mise à jour des graphiques
 map.on("click", function (evt) {
   map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
     if (layer === courAppelLayer || layer === tribunalJudiciaireLayer || layer === prudhommeLayer) {
       const geom = feature.getGeometry(); // Géométrie de l'entité sélectionnée
-      const counts = countTribunalsByTypeInZone(geom); // Compter les tribunaux dans la zone cliquée
-      updateChart(counts); // Mettre à jour le graphe avec les nouvelles données
+      const tribunalCounts = countTribunalsByTypeInZone(geom); // Compter les tribunaux dans la zone cliquée
+      const visitorCounts = countVisitorsByTypeInZone(geom); // Compter les visiteurs dans la zone cliquée
 
-      let count = 0;
-      vecteur_point_justice.getSource().forEachFeature(function (pointFeature) {
-        if (geom.intersectsExtent(pointFeature.getGeometry().getExtent())) {
-          count++;
-        }
-      });
+      updateTribunalChart(tribunalCounts); // Mettre à jour le graphe des tribunaux
+      updateVisitorChart(visitorCounts); // Mettre à jour le graphe des visiteurs
     }
   });
 });
+
+// Fonction pour basculer entre les graphiques
+document.getElementById('graph-select').addEventListener('change', function (e) {
+  const selectedGraph = e.target.value;
+
+  if (selectedGraph === 'tribunalChart') {
+    document.getElementById('tribunalChart').style.display = 'block';
+    document.getElementById('visitorChart').style.display = 'none';
+  } else if (selectedGraph === 'visitorChart') {
+    document.getElementById('tribunalChart').style.display = 'none';
+    document.getElementById('visitorChart').style.display = 'block';
+  }
+});
+
 
 // ========================================================================================
 // ====================== Intégration du widget d'adressage  ===============================
@@ -1167,15 +1253,23 @@ function addCustomMarker(coordinates) {
       geometry: new ol.geom.Point(coordinates)
   });
 
-  location.setStyle(new ol.style.Style({
+  const iconStyle = new ol.style.Style({
       image: new ol.style.Icon({
           src: './img/localisation.png',
           scale: 0.1,
           anchor: [0.5, 1]
       })
-  }));
+  });
+
+  location.setStyle(iconStyle);
 
   locationLayer.getSource().addFeature(location);
+
+  // Ajouter un écouteur d'événement pour supprimer le marqueur au premier clic
+  map.once('click', function (event) {
+      // Supprimer le marqueur dès le premier clic
+      locationLayer.getSource().clear();
+  });
 }
 
 // Fonction pour calculer la distance entre deux points

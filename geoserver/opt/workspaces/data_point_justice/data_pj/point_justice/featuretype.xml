@@ -1,5 +1,5 @@
 <featureType>
-  <id>FeatureTypeInfoImpl--26d77fff:1950f96deb9:-7ffb</id>
+  <id>FeatureTypeInfoImpl--3757dc6b:19586b4f221:-7ffc</id>
   <name>point_justice</name>
   <nativeName>point_justice</nativeName>
   <namespace>
@@ -23,22 +23,19 @@
   <nativeBoundingBox>
     <minx>-5.0980276</minx>
     <maxx>9.5279896</maxx>
-    <miny>41.583307</miny>
-    <maxy>51.04458</maxy>
+    <miny>41.5929702896053</miny>
+    <maxy>51.035972</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
     <minx>-5.0980276</minx>
     <maxx>9.5279896</maxx>
-    <miny>41.583307</miny>
-    <maxy>51.04458</maxy>
+    <miny>41.5929702896053</miny>
+    <maxy>51.035972</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
-  <metadata>
-    <entry key="cachingEnabled">false</entry>
-  </metadata>
   <store class="dataStore">
     <id>DataStoreInfoImpl-7faf15a8:19503fe21cb:-7ff8</id>
   </store>

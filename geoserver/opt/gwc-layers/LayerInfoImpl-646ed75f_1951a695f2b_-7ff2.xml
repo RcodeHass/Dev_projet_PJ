@@ -37,7 +37,7 @@
         <string>data_point_justice:taux_chomage</string>
         <string>data_point_justice:taux_pauvrete</string>
       </availableStyles>
-      <defaultStyle>data_point_justice:part_fmp</defaultStyle>
+      <defaultStyle>data_point_justice:taux_pauvrete</defaultStyle>
     </styleParameterFilter>
   </parameterFilters>
   <gutter>0</gutter>
