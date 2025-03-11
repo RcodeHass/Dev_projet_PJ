@@ -99,7 +99,7 @@ button {
 }
 
 /* ==================================================== */
-/* ========= Style de la l'entet de la page =========== */
+/* ========= Style de la l'entête de la page =========== */
 /* ==================================================== */
 
 #head-app {
@@ -152,7 +152,7 @@ button {
 }
 
 /* ==================================================== */
-/* ========= Style de la l'entet de la page =========== */
+/* ========= Style de la l'entête de la page =========== */
 /* ==================================================== */
 
 
@@ -197,6 +197,38 @@ button {
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
+
+/*=============personaliser l'onglet de suggestion de la bar de recherche ==========*/
+/* Style de la liste des suggestions */
+#suggestions {
+  position: absolute;
+  top: 100%; /* Ajustez cette valeur selon la position de votre champ de recherche */
+  left: 0%; /* Ajustez cette valeur selon la position de votre champ de recherche */
+  width: 100%; /* Largeur de la liste des suggestions */
+  max-height: 200px; /* Hauteur maximale de la liste des suggestions */
+  overflow-y: auto; /* Ajouter une barre de défilement si nécessaire */
+  background-color: white; /* Couleur de fond */
+  border: 1px solid #ccc; /* Bordure */
+  border-radius: 4px; /* Coins arrondis */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Ombre pour un effet de profondeur */
+  z-index: 1000; /* Assurez-vous que la liste est au-dessus des autres éléments */
+  display: none; /* Masqué par défaut */
+}
+
+/* Style des éléments de la liste */
+#suggestions li {
+  list-style-type: none;
+  padding: 5px;
+  cursor: pointer;
+  width: 100%; /* Assurez-vous que les éléments prennent toute la largeur */
+  box-sizing: border-box; /* Inclure le padding et la bordure dans la largeur totale */
+}
+
+/* Effet de survol sur les éléments de la liste */
+#suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
 
 /* ==================================================== */
 /* ============== Style de l'onglet info ============== */

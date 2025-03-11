@@ -321,7 +321,7 @@ const activateBasicButton = () => {
   document.getElementById('tab-indicateur').style.display = 'none';
   document.getElementById('legende').style.display = 'none';
 
-  // Masquer les couches contenant des indicateurs en mode Basic
+  // Masquer les couches contenant des indicateurs en mode basique
   courAppelLayer.setVisible(false);
   tribunalJudiciaireLayer.setVisible(false);
   prudhommeLayer.setVisible(false);
@@ -580,6 +580,25 @@ courAppelSource.once('change', () => {
   }
 });
 
+
+// // Fonction pour mettre à jour le style de la couche commune
+// function updateLayerStyle(styleName) {
+//   const communeLayer = map.getLayers().getArray().find(layer => layer.get('name') === 'commune');
+
+//   if (communeLayer) {
+//     communeLayer.getSource().updateParams({ 'STYLES': styleName });
+//   }
+// }
+
+// // Exemple d'utilisation
+// const indicators = [
+//   { part_fmp: 'part_fmp', styleName: 'part_fmp' },
+//   { nb_victime_1000: 'nb_victime_1000', styleName: 'nb_victime_1000' },
+//   { taux_chomage: 'taux_chomage', styleName: 'taux_chomage' },
+//   { age_moyen: 'age_moyen', styleName: 'age_moyen' },
+//   { taux_pauvrete: 'taux_pauvrete', styleName: 'taux_pauvrete'}
+// ];
+
 // // ========================================================================================
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
 // // ========================================================================================
@@ -667,9 +686,18 @@ const fragType = document.createDocumentFragment();
 const fragCategorie = document.createDocumentFragment();
 
 // Fonction générique pour créer un switch dans une liste donnée
-function createFilterItem(value, listSet, frag) {
+function createFilterItem(value, listSet, frag, isTypeList) {
   if (!listSet.has(value)) {
     listSet.add(value);
+
+    // Création du <li> conteneur
+    const li = document.createElement('li');
+    li.classList.add("form-check", "d-flex", "align-items-center");
+    li.dataset.filterValue = value;
+    
+    // Création du conteneur global pour tout aligner
+    const container = document.createElement('div');
+    container.classList.add("d-flex", "align-items-center", "w-100", "py-1");
 
     // Création du switch (checkbox)
     const switchInput = document.createElement('input');
@@ -677,20 +705,69 @@ function createFilterItem(value, listSet, frag) {
     switchInput.checked = true; // Par défaut, activé
     switchInput.dataset.filterValue = value;
     switchInput.classList.add("form-check-input");
+    switchInput.style.marginRight = "0.5rem";
 
     // Création du label pour le switch
     const switchLabel = document.createElement('label');
-    switchLabel.classList.add("form-check-label");
-    switchLabel.appendChild(switchInput);
+    switchLabel.classList.add("form-check-label", "d-flex", "align-items-center");
+    switchLabel.setAttribute('for', value); // Associer le label au switch
+
+    // Ajout de l'image uniquement si l'élément est ajouté à la liste des types
+    if (isTypeList) {
+      const iconImg = document.createElement('img');
+      iconImg.src = categorieIcons[value] || "img/Divers.png"; 
+      iconImg.alt = value;
+      iconImg.style.width = "20px"; // Taille de l'icône
+      iconImg.style.height = "100%";
+      iconImg.style.marginRight = "0.5rem"; // Marge à droite uniquement
+      switchLabel.appendChild(iconImg); // Icône à gauche du texte dans le label
+    }
+
+    // Ajouter le texte au label
     switchLabel.appendChild(document.createTextNode(value));
 
-    // Création de l'élément <li> (cliquable)
-    const li = document.createElement('li');
-    li.classList.add("form-check");
-    li.dataset.filterValue = value;
+    // Créer l'élément <i> pour l'icône d'information
+    const infoIcon = document.createElement('i');
+    infoIcon.classList.add('bi', 'bi-info-circle', 'ms-2', 'text-info');  // Classe Bootstrap pour l'icône d'info
+    infoIcon.setAttribute('data-bs-toggle', 'tooltip');  // Activer le tooltip
+    infoIcon.setAttribute('data-bs-placement', 'left');  // Position du tooltip
+    infoIcon.setAttribute('title', `Information sur le type: ${value}`);  // Le texte du tooltip
 
-    // Ajout des éléments au <li>
-    li.appendChild(switchLabel);
+    // Personnaliser le texte du tooltip (ici, un texte dynamique selon la valeur)
+    const tooltipText = value === 'Domaine juridique'
+    ? 'Lieu ou service où les citoyens peuvent obtenir des informations, des conseils ou un accompagnement concernant leurs droits et obligations, ainsi que l\'accès à des services juridiques dans diverses branches du droit, comme le droit civil, pénal ou administratif.' 
+    : value === 'Spécialiste hors FS'
+    ? 'Professionnel du droit, comme un avocat ou un notaire, qui fournit des services juridiques spécialisés en dehors du réseau France Service.'
+    : value === 'Généraliste hors FS'
+    ? 'Professionnel du droit qui offre des conseils juridiques sur une gamme large de sujets, mais hors du cadre du réseau France Service.'
+    : value === 'France Service'
+    ? 'Réseau de points d\'accueil physiques qui offrent des services administratifs et juridiques de proximité pour faciliter l\'accès aux droits des citoyens en France.'
+    : value === 'Pérmanences'
+    ? 'NSP'
+    : value === 'Maisons'
+    ? 'Maison du droit'
+    : value === 'Autre'
+    ? 'Point-Justice non catégorisé'
+    : value === 'Mairie'
+    ? 'Point-Justice situé dans une mairie, appartenant généralement au Type France-Service'
+    : value === 'Etablissement'
+    ? 'Tous les points-justices qui se situe ou sont liés dans un bâtiment appartenant au Ministère de la Justice'
+    : value === 'Associations'
+    ? 'Tous les points-justices qui sont situé ou sont liés à une association'
+    : `Informations sur le filtre: ${value} - Description non disponible.`;
+
+    // Ajouter le texte personnalisé au tooltip
+    infoIcon.setAttribute('title', tooltipText);  // Le texte du tooltip
+
+    // Ajouter l'icône à la fin du label
+    switchLabel.appendChild(infoIcon);
+
+    // Ajout du switch et du texte dans le conteneur
+    container.appendChild(switchInput); // Switch à gauche
+    container.appendChild(switchLabel); // Texte et icônes à droite
+
+    // Ajout du conteneur dans le <li>
+    li.appendChild(container);
 
     // Rendre tout le <li> cliquable
     li.addEventListener('click', function (event) {
@@ -713,6 +790,12 @@ function createFilterItem(value, listSet, frag) {
   }
 }
 
+// Initialiser tous les tooltips dans la page
+const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+tooltips.forEach(function (tooltip) {
+  new bootstrap.Tooltip(tooltip);  // Crée et initialise le tooltip pour chaque élément
+});
+
 // Récupération et affichage des types et catégories
 point_justice_vec.on('change', function () {
     if (point_justice_vec.getState() === 'ready') {
@@ -723,10 +806,10 @@ point_justice_vec.on('change', function () {
             const categorie = feature.get('categorie'); // Récupération du champ catégorie
 
             if (type_pj) {
-                createFilterItem(type_pj, equipementsType, fragType);
+                createFilterItem(type_pj, equipementsType, fragType, true); // true pour Listtype
             }
             if (categorie) {
-                createFilterItem(categorie, equipementsCategorie, fragCategorie);
+                createFilterItem(categorie, equipementsCategorie, fragCategorie, false); // false pour Listcategorie
             }
         });
 
@@ -771,6 +854,9 @@ function debounce(func, wait) {
 
 // Appeler la fonction de filtrage initialement
 filterPointsJustice();
+//rajouter les informations pour les Types de PJ lors du filtrage par l'utilisateur 
+
+
 
 // Fonction pour afficher dynamiquement les points visibles sur la carte
 function afficherPointsJusticeDansEmpriseEcran() {
@@ -988,133 +1074,211 @@ map.on("click", function (evt) {
 // ====================== Intégration du widget d'adressage  ===============================
 // ========================================================================================
 // Déclare locationLayer globalement afin de pouvoir supprimer les points des anciennes recherches
+// Déclaration de la couche pour le marqueur sélectionné
 let locationLayer = null;
 
-function displayClosestPoints(closestPoints) {
-  const tableBody = $('#closest-points-table tbody');
-  tableBody.empty(); // Supprimer les anciennes lignes
+// Récupérer les éléments HTML
+const searchInput = document.getElementById('search');
+const suggestionsList = document.getElementById('suggestions');
+const searchButton = document.getElementById('searchButton');
 
-  if (closestPoints.length === 0) {
-    tableBody.append('<tr><td colspan="2">Aucun point trouvé</td></tr>');
-    return;
+// Fonction pour rechercher une adresse via Nominatim
+async function fetchSuggestions(query) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=fr`;
+  try {
+      const response = await fetch(url);
+      return await response.json();
+  } catch (error) {
+      console.error('Erreur lors de la récupération des suggestions :', error);
+      return [];
+  }
+}
+
+// Fonction pour exécuter la recherche sur la première suggestion trouvée
+async function executeSearch(query) {
+  const results = await fetchSuggestions(query);
+  if (results.length > 0) {
+      selectSuggestion(results[0]);
+  } else {
+      alert("Aucun résultat trouvé.");
+  }
+}
+
+// Fonction pour mettre à jour les suggestions
+async function updateSuggestions() {
+  const query = searchInput.value.trim();
+  if (query.length < 3) {
+      suggestionsList.style.display = 'none';
+      return;
   }
 
-  closestPoints.forEach(point => {
-    const row = $('<tr>').append(
-      $('<td>').text(point.name).css('cursor', 'pointer').click(() => zoomToFeature(point.feature)),
-      $('<td>').text(point.distance + ' m')
-    );
-    tableBody.append(row);
+  const results = await fetchSuggestions(query);
+  suggestionsList.innerHTML = '';
+
+  if (results.length === 0) {
+      suggestionsList.style.display = 'none';
+      return;
+  }
+
+  results.forEach((place) => {
+      const li = document.createElement('li');
+      li.textContent = place.display_name;
+      li.dataset.lat = place.lat;
+      li.dataset.lon = place.lon;
+      li.addEventListener('click', () => selectSuggestion(place));
+      suggestionsList.appendChild(li);
   });
+
+  suggestionsList.style.display = 'block';
 }
 
-function zoomToFeature(feature) {
-  const coordinates = feature.getGeometry().getCoordinates();
-  map.getView().animate({ center: coordinates, zoom: 14, duration: 800 });
-  
-  const intitule = feature.get('intitule') || 'Sans intitulé';
-  const categorie = feature.get('categorie') || 'Non classé';
-  const adresse = feature.get('adresse') || 'Adresse inconnue';
-  const codgeo = feature.get('codgeo') || '';
-  const telephone = feature.get('telephone') || 'Non disponible';
-  
-  document.getElementById('info-pj').innerHTML = `
-    <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
-    <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
-    <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
-    <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
-  `;
+// Fonction pour sélectionner une suggestion
+function selectSuggestion(place) {
+  const lat = parseFloat(place.lat);
+  const lon = parseFloat(place.lon);
+  const coordinates = ol.proj.fromLonLat([lon, lat]);
+
+  // Mettre à jour le champ de recherche
+  searchInput.value = place.display_name;
+  suggestionsList.style.display = 'none';
+
+  // Centrer et zoomer sur la sélection
+  map.getView().setCenter(coordinates);
+  map.getView().setZoom(15);
+
+  // Ajouter un marqueur
+  addCustomMarker(coordinates);
+
+  // Trouver et afficher les points les plus proches
+  const closestPoints = findClosestPoints([lon, lat], 5);
+  displayClosestPoints(closestPoints);
 }
 
+// Fonction pour ajouter un marqueur sur la carte
+function addCustomMarker(coordinates) {
+  if (locationLayer === null) {
+      locationLayer = new ol.layer.Vector({ source: new ol.source.Vector() });
+      map.addLayer(locationLayer);
+  } else {
+      locationLayer.getSource().clear();
+  }
+
+  const location = new ol.Feature({
+      geometry: new ol.geom.Point(coordinates)
+  });
+
+  location.setStyle(new ol.style.Style({
+      image: new ol.style.Icon({
+          src: './img/localisation.png',
+          scale: 0.1,
+          anchor: [0.5, 1]
+      })
+  }));
+
+  locationLayer.getSource().addFeature(location);
+}
+
+// Fonction pour calculer la distance entre deux points
 function calculateDistance(point1, point2) {
-  const R = 6371000;
+  const R = 6371000; // Rayon de la Terre en mètres
   const dLat = (point2[1] - point1[1]) * Math.PI / 180;
   const dLon = (point2[0] - point1[0]) * Math.PI / 180;
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(point1[1] * Math.PI / 180) * Math.cos(point2[1] * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(point1[1] * Math.PI / 180) * Math.cos(point2[1] * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return Math.round(R * c);
 }
 
+// Fonction pour trouver les points les plus proches
 function findClosestPoints(targetCoordinates, n) {
   const features = point_justice_vec.getFeatures().filter(feature => feature.getStyle() === null);
-  
+
   const distances = features.map(feature => {
-    const coords = feature.getGeometry().getCoordinates();
-    return {
-      name: feature.get('intitule') || 'Inconnu',
-      coordinates: coords,
-      distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)),
-      feature: feature
-    };
+      const coords = feature.getGeometry().getCoordinates();
+      return {
+          name: feature.get('intitule') || 'Inconnu',
+          coordinates: coords,
+          distance: calculateDistance(targetCoordinates, ol.proj.toLonLat(coords)),
+          feature: feature
+      };
   });
 
   distances.sort((a, b) => a.distance - b.distance);
   return distances.slice(0, n);
 }
 
-function searchLocation(query) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-  
-  $.get(url, function(data) {
-    if (data.length > 0) {
-      const firstResult = data[0];
-      const coordinates = [parseFloat(firstResult.lon), parseFloat(firstResult.lat)];
+// Fonction pour afficher les points les plus proches
+function displayClosestPoints(closestPoints) {
+  const tableBody = document.querySelector('#closest-points-table tbody');
+  tableBody.innerHTML = '';
 
-      map.getView().setCenter(ol.proj.fromLonLat(coordinates));
-      map.getView().setZoom(15);
+  if (closestPoints.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="2">Aucun point trouvé</td></tr>';
+      return;
+  }
 
-      if (locationLayer === null) {
-        locationLayer = new ol.layer.Vector({ source: new ol.source.Vector() });
-        map.addLayer(locationLayer);
-      } else {
-        locationLayer.getSource().clear();
-      }
+  closestPoints.forEach(point => {
+      const row = document.createElement('tr');
+      const nameCell = document.createElement('td');
+      nameCell.textContent = point.name;
+      nameCell.style.cursor = 'pointer';
+      nameCell.addEventListener('click', () => zoomToFeature(point.feature));
 
-      const location = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates))
-      });
-      
-      location.setStyle(new ol.style.Style({
-        image: new ol.style.Icon({ src: './img/localisation.png', scale: 0.1, anchor: [0.5, 1] })
-      }));
-      
-      locationLayer.getSource().addFeature(location);
+      const distanceCell = document.createElement('td');
+      distanceCell.textContent = point.distance + ' m';
 
-      const closestPoints = findClosestPoints(coordinates, 5);
-      displayClosestPoints(closestPoints);
-    } else {
-      alert("Aucun résultat trouvé.");
-    }
-  }).fail(function() {
-    alert("Erreur lors de la recherche du lieu. Veuillez réessayer.");
+      row.appendChild(nameCell);
+      row.appendChild(distanceCell);
+      tableBody.appendChild(row);
   });
 }
 
-map.on('click', function(event) {
-  const clickedFeatures = map.getFeaturesAtPixel(event.pixel);
-  if (!clickedFeatures || clickedFeatures.length === 0) {
-    if (locationLayer !== null) {
-      locationLayer.getSource().clear();
-    }
+// Fonction pour zoomer sur un point sélectionné
+function zoomToFeature(feature) {
+  const coordinates = feature.getGeometry().getCoordinates();
+  map.getView().animate({ center: coordinates, zoom: 14, duration: 800 });
+
+  const intitule = feature.get('intitule') || 'Sans intitulé';
+  const categorie = feature.get('categorie') || 'Non classé';
+  const adresse = feature.get('adresse') || 'Adresse inconnue';
+  const codgeo = feature.get('codgeo') || '';
+  const telephone = feature.get('telephone') || 'Non disponible';
+
+  document.getElementById('info-pj').innerHTML = `
+      <div class="info-item"><b>Intitulé:</b> ${intitule}</div>
+      <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
+      <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo}</div>
+      <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
+  `;
+}
+
+// Écouteur sur le champ de recherche avec délai pour limiter les requêtes
+let searchTimeout = null;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const query = searchInput.value.trim();
+  if (query.length > 2) {
+      searchTimeout = setTimeout(updateSuggestions, 300);
   }
 });
 
-$('#searchButton').on('click', function() {
-  const query = $('#search').val();
+// Écouteur sur le bouton de recherche
+searchButton.addEventListener('click', () => {
+  const query = searchInput.value;
   if (query) {
-    searchLocation(query);
+      executeSearch(query);
   } else {
-    alert("Veuillez entrer un lieu à rechercher.");
+      alert("Veuillez entrer un lieu à rechercher.");
   }
 });
 
-$('#search').on('keypress', function(e) {
-  if (e.which === 13) {
-    const query = $(this).val();
-    if (query) {
-      searchLocation(query);
-    }
+// Écouteur sur la touche "Entrée" pour lancer la recherche
+searchInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+      const query = searchInput.value;
+      if (query) {
+          executeSearch(query);
+      }
   }
 });
