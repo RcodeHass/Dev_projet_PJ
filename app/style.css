@@ -1,16 +1,20 @@
 /* ici on commences par impoter les styles d'Openlayer */
 @import "node_modules/ol/ol.css";
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 /* ==================================================== */
 /* =================== Style de la page =============== */
 /* ==================================================== */
+
+* {
+  font-family: 'Outfit', Regula;
+}
+
 html, body {
   margin: 0;
+  padding: 0;
   height: 100%;
   background-color: rgba(66, 66, 66, 0.192);
-  overflow: hidden;
-
 }
 
 body{
@@ -18,12 +22,13 @@ body{
   align-items: center;
 }
 
-#container {
-  position: absolute;
+/* #container {
+  position: relative;
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
 
-}
+} */
 
 #map {
   position: absolute;
@@ -47,7 +52,6 @@ body{
 }
 
 .theme-color2 {
-  /* background-color: rgba(68, 120, 124, 0.123); */
   background-color: rgb(245, 245, 245);
 }
 
@@ -90,7 +94,6 @@ h4 {
 }
 
 
-
 button {
   cursor: pointer;
   box-shadow: none;
@@ -100,15 +103,6 @@ button {
   margin: 0; 
   font: inherit; 
   color: inherit; 
-}
-
-
-#overlay{
-  position: absolute;
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  flex-direction: column;
 }
 
 /* ==================================================== */
@@ -171,6 +165,7 @@ button {
 
 #sidebar {
   transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
 }
 
 #btn-layer-panel {
@@ -251,13 +246,26 @@ button {
   padding: 0;
 }
 
-
-#info-content {
-  /* overflow-x: hidden; */
-  height: fit-content;
+.size-info {
+  width: 500px !important; 
+  max-width: 80vw;
+  max-height: 100vh !important; 
 }
 
+#info-content {
+  height: fit-content;
+  overflow-y: hidden;
+  padding-bottom: 40px;
+}
 
+#contenu-info {
+  height: 70%;
+  overflow-y: auto;
+  margin-bottom: 30px;
+}
+.titre-info {
+  padding: 0 10px 0 10px !important;
+}
 #entete-info {
   height: 20%;
 }
@@ -274,8 +282,9 @@ button {
 }
 
 /* Style pour la section d'informations dynamiques */
-#dynamic-info {
+.dynamic-info {
   margin-top: 10px;
+  margin-bottom: 10px;
   width: 100%;
   padding: 1px;
   border: 1px solid #ddd;
@@ -284,24 +293,24 @@ button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#dynamic-info p {
+.dynamic-info p {
   font-size: 1.1em;
   color: #333;
   margin-bottom: 10px;
 }
 
-#dynamic-info ul {
+.dynamic-info ul {
   list-style-type: none;
   padding: 0;
 }
 
-#dynamic-info li {
+.dynamic-info li {
   font-size: 1em;
   color: #555;
   margin-bottom: 5px;
 }
 
-#dynamic-info li:before {
+.dynamic-info li:before {
   content: "• ";
   color: #007bff;
   font-weight: bold;
@@ -313,7 +322,7 @@ button {
 
 #legende {
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   right: 10px;
   width: 200px;
   background: white;
@@ -345,4 +354,42 @@ button {
   position: static;
   margin-left: 100px;
   white-space: nowrap;
+}
+
+
+/*  ============== A propos  ================ */
+
+#logos-apropos {
+  display: flex;
+  bottom: 10px;
+}
+
+.image-apropos {
+  width: auto;
+  height: 40px;
+  margin: 10px;
+}
+
+
+/*  ============== Onglet auteurs de la carte  ================ */
+#auteur{
+  position: absolute;
+  z-index: 10;
+  background-color: rgba(240, 248, 255, 0.281);
+  bottom: 0;
+  width: 100%;
+  height: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+#auteur p {
+  margin: 0 5px;
+  font-size: 12px; 
+}
+
+#auteur img {
+  margin: 0 5px;
+  width: 15px;
 }

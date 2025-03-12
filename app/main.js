@@ -47,7 +47,7 @@ const categorieIcons = {
   "France Service": "img/FS.png",
   "Autre": "img/logo.png",
   "Spécialiste hors FS": "img/S.png",
-  "Domaine juridique": "img/D.svg",
+  "Domaine juridique": "img/D.png",
   "Généraliste hors FS": "img/G.png"
 };
 
@@ -76,7 +76,7 @@ const vecteur_point_justice = new ol.layer.Vector({
 
 // =======================================================================================
 // Fonction pour calculer les classes de Jenks 
-const calculateJenksClassesForLayer = (source, indicator, numClasses = 5) => {
+const calculateJenksClassesForLayer = (source, indicator, numClasses = 6) => {
   const values = source.getFeatures()
     .map(f => parseFloat(f.get(indicator)))
     .filter(v => !isNaN(v))
@@ -119,16 +119,18 @@ const applyJenksStyleToLayer = (layer, source, indicator, colorScale, threshold 
   });
 };
 
-// Palettes de couleurs pour chaque indicateur
+// Palettes de couleurs pour chaque indicateur (6 couleurs)
 const colorsPartFmp = [
   'rgba(255, 255, 204, 0.8)', // Jaune clair
-  'rgba(255, 204, 153, 0.8)', // Orange clair
-  'rgba(255, 153, 102, 0.8)', // Orange moyen
-  'rgba(255, 102, 51, 0.8)',  // Rouge clair
-  'rgba(204, 0, 0, 0.8)'      // Rouge foncé
+  'rgba(255, 230, 153, 0.8)', // Jaune intermédiaire
+  'rgba(255, 204, 102, 0.8)', // Orange clair
+  'rgba(255, 153, 51, 0.8)',  // Orange foncé
+  'rgba(204, 51, 0, 0.8)',    // Rouge clair
+  'rgba(153, 0, 0, 0.8)'      // Rouge foncé
 ];
 
 const colorsnb_victime_1000 = [
+  'rgba(255, 230, 255, 0.8)', // Pourpre très clair
   'rgba(255, 204, 255, 0.8)', // Pourpre clair
   'rgba(255, 153, 255, 0.8)', // Pourpre moyen clair
   'rgba(204, 102, 204, 0.8)', // Pourpre moyen
@@ -137,6 +139,7 @@ const colorsnb_victime_1000 = [
 ];
 
 const colorstaux_chomage = [
+  'rgba(230, 243, 255, 0.8)', // Bleu très clair
   'rgba(204, 229, 255, 0.8)', // Bleu clair
   'rgba(153, 204, 255, 0.8)', // Bleu moyen clair
   'rgba(102, 178, 255, 0.8)', // Bleu moyen
@@ -145,14 +148,16 @@ const colorstaux_chomage = [
 ];
 
 const colorsMoyenAge = [
-  'rgba(31, 120, 180, 0.8)', // Rose clair
-  'rgba(51, 160, 44, 0.8)', // Rose moyen
-  'rgba(182, 181, 181, 0.8)',   // Magenta
-  'rgba(227, 26, 28, 0.8)',   // Bleu clair
-  'rgba(177, 0, 38, 0.8)'      // Bleu foncé
+  'rgba(141, 211, 199, 0.8)', // Bleu-vert clair
+  'rgba(31, 120, 180, 0.8)',  // Rose clair
+  'rgba(51, 160, 44, 0.8)',   // Rose moyen
+  'rgba(182, 181, 181, 0.8)', // Magenta
+  'rgba(227, 26, 28, 0.8)',   // Rouge foncé
+  'rgba(177, 0, 38, 0.8)'     // Bleu foncé
 ];
 
 const colorsTauxPauvrete = [
+  'rgba(230, 255, 230, 0.8)', // Vert très clair
   'rgba(204, 255, 204, 0.8)', // Vert clair
   'rgba(153, 255, 153, 0.8)', // Vert moyen
   'rgba(102, 204, 102, 0.8)', // Vert plus foncé
@@ -323,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
   infoPanel.addEventListener("hidden.bs.offcanvas", updateButton);
 
   // Initialisation au chargement
-  infoPanel.classList.add("show"); // Ajoute la classe 'show' pour ouvrir le panneau
+  infoPanel.classList.add("show"); 
 
   // Initialisation au chargement
   updateButton();
@@ -438,15 +443,31 @@ map.on('singleclick', function (evt) {
 });
 
 function updateUIWithFeatureInfo(info) {
-  const dynamicInfoDiv = document.getElementById('dynamic-info');
-  dynamicInfoDiv.innerHTML = '<p>Informations de l\'entité sélectionnée :</p>';
-  const ul = document.createElement('ul');
+  const dynamicInfoDiv1 = document.getElementById('dynamic-info');
+  const dynamicInfoDiv2 = document.getElementById('dynamic-info2');
+
+  // Nettoyer les deux divs avant d'ajouter de nouvelles infos
+  dynamicInfoDiv1.innerHTML = '<p>Informations de l\'entité sélectionnée :</p>';
+  dynamicInfoDiv2.innerHTML = '<p>Informations complémentaires :</p>';
+
+  const ul1 = document.createElement('ul');
+  const ul2 = document.createElement('ul');
+
+  // Ajouter les mêmes informations dans les deux listes
   for (const key in info) {
     const li = document.createElement('li');
     li.textContent = `${key}: ${info[key]}`;
-    ul.appendChild(li);
+
+    // Ajouter dans la première liste (dynamic-info)
+    ul1.appendChild(li);
+
+    // Ajouter dans la deuxième liste (dynamic-info2)
+    ul2.appendChild(li.cloneNode(true)); // Utiliser cloneNode pour éviter de créer une nouvelle instance de l'élément
   }
-  dynamicInfoDiv.appendChild(ul);
+
+  // Ajouter les listes dans les divs
+  dynamicInfoDiv1.appendChild(ul1);
+  dynamicInfoDiv2.appendChild(ul2);
 }
 
 
@@ -589,7 +610,7 @@ checkbox_commune.addEventListener('change', (event) => {
   }
 });
 
-// Fonctions pour afficher et masquer la couche Cour d'appel
+// Fonctions pour afficher et masquer les couches de découpage administratif 
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
 
@@ -599,7 +620,33 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
     tribunalJudiciaireLayer.setVisible(event.target.id === "checkbox-trib_judiciaire");
     prudhommeLayer.setVisible(event.target.id === "checkbox-prudhomme");
 
-    updateLayerStyles (); // mise à jour du style
+    let activeLayer = null;
+    let activeSource = null;
+
+    if (courAppelLayer.getVisible()) {
+      activeLayer = courAppelLayer;
+      activeSource = courAppelSource;
+    } else if (tribunalJudiciaireLayer.getVisible()) {
+      activeLayer = tribunalJudiciaireLayer;
+      activeSource = tibunalJudiciaireSource;
+    } else if (prudhommeLayer.getVisible()) {
+      activeLayer = prudhommeLayer;
+      activeSource = PrudhommeSource;
+    }
+
+    if (activeLayer && activeSource) {
+      // Attendre que la source soit prête avant d'appliquer le style
+      activeSource.once('change', () => {
+        if (activeSource.getState() === 'ready') {
+          updateLayerStyles();
+        }
+      });
+
+      // Si la source est déjà prête, appliquer immédiatement
+      if (activeSource.getState() === 'ready') {
+        updateLayerStyles();
+      }
+    }
   });
 });
 
@@ -614,6 +661,14 @@ const indicatorLabels = {
   age_moyen: "Âge moyen",
   taux_pauvrete: "Taux de pauvreté (%)",
 };
+
+const indicatorDescriptions = {
+  part_fmp: "Cet indicateur permet de visualiser la part de ménages monoparentaux dans chaque limite administrative que vous souhaitez consulter. La part des familles monoparentales est un indicateur pertinent pour analyser et essayer de prévoir les besoins juridiques d’un territoire. En effet, une famille monoparentale suppose des besoins juridiques spécifiques (divorce). De plus, les familles monoparentales sont plus susceptibles d’être exposées à des difficultés socio-économiques, qui peuvent nécessiter des conseils juridiques précis.",
+  nb_victime_1000: "Nous avons utilisé les données issues des enregistrements par la police et la gendarmerie, cela permet de mesurer la délinquance présente sur chaque territoire. Cette donnée représente la moyenne des victimes de 2016 à 2024 pour 1000 habitants par communes. L’indicateur porte sur les crimes et les délits (à l’exclusion des contraventions et des délits routiers), enregistrés pour la première fois par les forces de sécurité et portés à la connaissance de l’institution judiciaire.",
+  taux_chomage: "Le taux de chômage d’un territoire apparaît comme un indicateur socio-économique intéressant pour mesurer les besoins juridiques d’un territoire. Un taux de chômage plus élevé, en plus de traduire les difficultés sociales d’un territoire, ce qui implique des besoins juridiques différents, va aussi traduire les difficultés économiques d’un territoire. Elles peuvent alors se répercuter sur le nombre de décisions rendues par les Conseils des Prud’hommes, par exemple sur les contentieux de licenciement.",
+  age_moyen: "L’âge moyen d’un territoire apparaît comme un indicateur intéressant pour anticiper les besoins judiciaires d’une population résidente.",
+  taux_pauvrete: "Le taux de pauvreté est un indicateur clé pour mesurer les inégalités économiques et sociales au sein d'un territoire. Il permet de mieux comprendre les besoins spécifiques des populations en matière d'accès au droit et aux services juridiques.",
+};
 // Récupérer les indicateurs à partir de l'une des sources
 const getindicatorSelectedFromSource = (source) => {
   const features = source.getFeatures();
@@ -621,6 +676,26 @@ const getindicatorSelectedFromSource = (source) => {
 
   const properties = features[0].getProperties();
   return Object.keys(properties).slice(3);
+};
+
+// Fonction pour mettre à jour le titre et la description de l'indicateur sélectionné
+const updateIndicatorText = (selectedIndicator) => {
+  const titleContainer = document.getElementById('titre_indicateur');
+  const textContainer = document.getElementById('txt-indicateur');
+
+  // Réinitialiser les contenus
+  titleContainer.innerHTML = '';
+  textContainer.innerHTML = '';
+
+  if (selectedIndicator && selectedIndicator !== 'aucun') {
+    // Ajouter le titre
+    const title = document.createElement('h5');
+    title.textContent = indicatorLabels[selectedIndicator] || 'Indicateur sélectionné';
+    titleContainer.appendChild(title);
+
+    // Ajouter la description
+    textContainer.textContent = indicatorDescriptions[selectedIndicator] || 'Aucune description disponible.';
+  }
 };
 
 // Fonction pour créer des boutons radio au lieu de checkboxes
@@ -639,9 +714,13 @@ const createRadioList = (indicatorSelected) => {
     
     if (indicator === 'taux_pauvrete') {
       radio.checked = true;
+      updateIndicatorText(indicator);
     }
 
-    radio.addEventListener('change', updateLayerStyles);
+    radio.addEventListener('change', (event) => {
+      updateLayerStyles();
+      updateIndicatorText(event.target.value);
+    });
 
     const label = document.createElement('label');
     label.htmlFor = indicator;
@@ -665,7 +744,10 @@ const createRadioList = (indicatorSelected) => {
   noneRadio.classList.add("form-check-input");
   noneRadio.checked = false; // Défini par défaut
 
-  noneRadio.addEventListener('change', updateLayerStyles);
+  noneRadio.addEventListener('change', () => {
+    updateLayerStyles();
+    updateIndicatorText('');
+  });
 
   const noneLabel = document.createElement('label');
   noneLabel.htmlFor = 'aucun';
@@ -686,24 +768,6 @@ courAppelSource.once('change', () => {
   }
 });
 
-
-// // Fonction pour mettre à jour le style de la couche commune
-// function updateLayerStyle(styleName) {
-//   const communeLayer = map.getLayers().getArray().find(layer => layer.get('name') === 'commune');
-
-//   if (communeLayer) {
-//     communeLayer.getSource().updateParams({ 'STYLES': styleName });
-//   }
-// }
-
-// // Exemple d'utilisation
-// const indicatorSelected = [
-//   { part_fmp: 'part_fmp', styleName: 'part_fmp' },
-//   { nb_victime_1000: 'nb_victime_1000', styleName: 'nb_victime_1000' },
-//   { taux_chomage: 'taux_chomage', styleName: 'taux_chomage' },
-//   { age_moyen: 'age_moyen', styleName: 'age_moyen' },
-//   { taux_pauvrete: 'taux_pauvrete', styleName: 'taux_pauvrete'}
-// ];
 
 // // ========================================================================================
 // // ============ Fonctions gestion des couche de découpage administratif ================== 
@@ -771,7 +835,9 @@ map.on("singleclick", function (evt) {
   }
 });
 
+// =======================================================================================
 // ====================  Fonctions filtrage des points de justice  ======================= 
+// =======================================================================================
 
 // Ajouter un indicateur de chargement (engrenage)
 const loadingImage = document.createElement('img');
@@ -980,8 +1046,10 @@ filterPointsJustice();
 //rajouter les informations pour les Types de PJ lors du filtrage par l'utilisateur 
 
 
-
+//========================================================================================
 // ============ Fonction pour afficher la liste des points de justicevisibles ==========
+//========================================================================================
+
 function afficherPointsJusticeDansEmpriseEcran() {
   const extent = map.getView().calculateExtent(map.getSize()); // Récupère l'étendue visible
   const center = ol.extent.getCenter(extent); // Récupère le centre de l'étendue visible
@@ -1061,8 +1129,9 @@ function afficherPointsJusticeDansEmpriseEcran() {
 map.on('moveend', afficherPointsJusticeDansEmpriseEcran);
 map.on('loadend', afficherPointsJusticeDansEmpriseEcran);
 
-// =======================  Création du popup  ================================
-
+//========================================================================================
+// ==============================  Création du popup  ===================================
+//========================================================================================
 const popupElement = document.createElement('div');
 popupElement.id = 'popup';
 popupElement.style.position = 'absolute';
@@ -1096,6 +1165,8 @@ map.on('click', function (event) {
     const codgeo = feature.get('codgeo');
     const telephone = feature.get('telephone');
     const classe = feature.get('classe'); 
+    const ratio = feature.get('ratio'); 
+    const ecart_moy = feature.get('ecart_moy'); 
     if (intitule) {
 
       document.getElementById('info-pj').innerHTML = `
@@ -1103,9 +1174,13 @@ map.on('click', function (event) {
         <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
         <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo} </div>
         <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
-        <div class="info-item"><b>Classe:</b> ${classe}</div>
       `;
       
+      document.getElementById('indice-access').innerHTML = `
+        <div class="info-item"><b>Classe:</b> ${classe}</div>
+        <div class="info-item"><b>Ratio:</b> ${ratio}</div>
+        <div class="info-item"><b>Ecart moyen:</b> ${ecart_moy}</div>
+      `;
       popupElement.innerHTML = `<b>${intitule}</b>`;
       popup.setPosition(event.coordinate);
       popupElement.style.display = 'block';
@@ -1412,19 +1487,33 @@ function displayClosestPoints(closestPoints) {
   }
 
   closestPoints.forEach(point => {
-      const row = document.createElement('tr');
-      const nameCell = document.createElement('td');
-      nameCell.textContent = point.name;
-      nameCell.style.cursor = 'pointer';
-      nameCell.addEventListener('click', () => zoomToFeature(point.feature));
+    const row = document.createElement('tr');
+    const nameCell = document.createElement('td');
+    nameCell.textContent = point.name;
+    nameCell.style.cursor = 'pointer';
 
-      const distanceCell = document.createElement('td');
-      distanceCell.textContent = point.distance + ' m';
+    // Ajout de l'événement de clic pour afficher le popup
+    nameCell.addEventListener('click', () => {
+      // Zoomer sur le point sélectionné
+      zoomToFeature(point.feature);
 
-      row.appendChild(nameCell);
-      row.appendChild(distanceCell);
-      tableBody.appendChild(row);
-  });
+      // Afficher un popup avec le nom du point
+      const intitule = point.feature.get('intitule') || 'Sans intitulé';
+      const coordinates = point.feature.getGeometry().getCoordinates();
+      
+      // Définir la position et le contenu du popup
+      popupElement.innerHTML = `<b>${intitule}</b>`;
+      popup.setPosition(coordinates);
+      popupElement.style.display = 'block';
+    });
+
+    const distanceCell = document.createElement('td');
+    distanceCell.textContent = point.distance + ' m';
+
+    row.appendChild(nameCell);
+    row.appendChild(distanceCell);
+    tableBody.appendChild(row);
+});
 }
 
 // Fonction pour zoomer sur un point sélectionné

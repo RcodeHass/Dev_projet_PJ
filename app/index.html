@@ -39,7 +39,7 @@
           <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" href="#">Carte</a>
+                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" style="font-size: 18px;" href="#">Carte</a>
                 <ul class="dropdown-menu">
                   <li><a href="#" class="dropdown-item" id="basic-button">Où trouver un point-justice ?</a></li>
                   <li><a href="#" class="dropdown-item" id="advanced-button">Carte statistique</a></li>
@@ -47,9 +47,6 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link text-color" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasApropos">A propos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-color" href="#">Contact</a>
               </li>
             </ul>
           </div>
@@ -68,7 +65,7 @@
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
         <div class="row">
-          <div class="col-12 col-md-5 col-lg-3 p-3 z-1" id="sidebar">
+          <div class="col-8 col-md-5 col-lg-3 p-3 z-1" id="sidebar">
             <div class="input-group mb-3">
               <button class="btn-primary z-1" id="btn-layer-panel">=</button>
                 <input type="text" class="form-control" id="search" placeholder="Rechercher une adresse...">
@@ -145,8 +142,8 @@
       <!-- ================ Onglet latéral d'information Bootstrap ===================== -->
       <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding size-info"
       tabindex="-1" id="infoPanel" data-bs-backdrop="false" data-bs-keyboard="false">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title">Informations</h5>
+        <div class="offcanvas-header dynamic-info titre-info">
+          <h4 class="offcanvas-title">Informations</h4>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body" id="info-content">
@@ -161,16 +158,12 @@
             </li>
             <li class="nav-item" id="tab-stat">
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-info" role="tab">Statistique</a>
-                <div id="dynamic-info">
-                  <p>Quelques informations sur la zone sélectionnée :</p>
-                  <!-- Les informations dynamiques seront insérées ici -->
-                </div>
             </li>
             <li class="nav-item" id="tab-indicateur">
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-indicateur" role="tab">Indicateurs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">Liste des point-justices</a>
+              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">Liste point-justices</a>
             </li>
           </ul>
 
@@ -191,6 +184,10 @@
             <!-- Information statistique des graphiques -->
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
               <div>
+                <div id="dynamic-info" class ="dynamic-info">
+                  <p>Quelques informations sur la zone sélectionnée :</p>
+                  <!-- Les informations dynamiques seront insérées ici -->
+                </div>
                 <label for="graph-select">Choisir un graphique :</label>
                 <select id="graph-select" class="form-select">
                   <option value="tribunalChart">Types de point-justices par zone</option>
@@ -206,16 +203,30 @@
                 <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
                   <h5>Changer catégorie (expérimentale)</h5>
                   <ul class="list-group" id="list-categorie"></ul>
+                  <div>
+                    <h5>Indice d'accéssibilité (expérimentale)</h5>
+                    <div id="indice-access"></div>
+                  </div>
                 </div>
               </div>
             </div>
             <!-- Information sur les indicateurs -->
             <div id="stat-indicateur" class="tab-pane fade" role="tabpanel">
-              <ul class="list-group" id="list-indic"></ul>
-              <p> Texte explicatif de chaque indicateur affiché </p>
+              <div id="dynamic-info2" class ="dynamic-info">
+                <p>Quelques informations sur la zone sélectionnée :</p>
+                <!-- Les informations dynamiques seront insérées ici -->
+              </div>
+              <!-- <ul class="list-group" id="list-indic"></ul> -->
+              <p> Attention : 
+                Les indicateurs ne sont pas à prendre comme des statistiques absolues résumant parfaitement un territoire. Ils sont uniquement là pour aider 
+                ceux qui les consultent à avoir facilement et rapidement accès à un aperçu du territoire.  
+              </p>
+              <h5 id="titre_indicateur"> Titre</h5>
+              <div  class="separation-1" id="txt-indicateur"></div>
             </div>
             <!-- Liste des points de justice -->
             <div id="list-info" class="tab-pane fade" role="tabpanel">
+              <p>Liste des 25 points-justices visible au centre de l'écrante</p>
               <ul class="list-group" id="list-pj"></ul>
             </div>
           </div>
@@ -234,9 +245,19 @@
           <h5 class="offcanvas-title" id="offcanvasAproposLabel">À propos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
-          <p class="text-justify">Cette application cartographique est un projet exploratoire, dont le but est de développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. L'application s'adresse à la fois aux utilisateurs cherchant à accéder rapidement à la justice et aux pouvoirs publics voulant comprendre et anticiper les besoins d'accès à la justice. L'application a été réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, en partenariat avec la SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaitant disposer d’une cartographie web interactive basée sur des outils open source et utile pour le plus large public possible.
+        <div class="offcanvas-body d-flex flex-column center">
+          <p class="text-justify">
+            Cette application cartographique est un projet exploratoire, dont le but est de développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. L'application s'adresse à la fois 
+            aux utilisateurs cherchant à accéder rapidement à la justice et aux pouvoirs publics 
+            voulant comprendre et anticiper les besoins d'accès à la justice. L'application a été réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, en partenariat avec la SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), 
+            commanditaire du projet, souhaitant disposer d’une cartographie web interactive basée sur des outils open source et utile pour le plus large public possible.
           </p>
+          <div id="logos-apropos" class="d-flex justify-content-center mt-auto align-self-end">
+            <img class="image-apropos" src="img/Logo_Univ_St_Lyon.png" alt="logo">
+            <img class="image-apropos" src="img/Logo_IERDJ_RVB.png" alt="logo">
+            <img class="image-apropos" src="img/geonum.jpg" alt="logo">
+            <img class="image-apropos" src="img/logo_lyon2.png" alt="logo">
+          </div>
         </div>
       </div>
 
@@ -249,6 +270,12 @@
           <div class="square"> <span class="label">50</span> </div>
           <div class="square"> <span class="label">10</span> </div>
         </div>
+      </div>
+
+      <!-- Auteurs de la carte  -->
+      <div id="auteur">
+        <p>Copyright www.openstreetmap.org; basemaps.cartocdn.com
+        <p> Application web / <img src="img/geonum.jpg" alt="">GéoNum 2025</p>
       </div>
       
     </div>
