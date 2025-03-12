@@ -1072,7 +1072,7 @@ popupElement.style.padding = '5px';
 popupElement.style.border = '1px solid black';
 popupElement.style.borderRadius = '5px';
 popupElement.style.display = 'none';
-popupElement.style.fontSize = '10px';
+popupElement.style.fontSize = '13px';
 document.body.appendChild(popupElement);
 
 const popup = new ol.Overlay({
