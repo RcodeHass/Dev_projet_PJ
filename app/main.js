@@ -47,19 +47,19 @@ const categorieIcons = {
   "France Service": "img/FS.png",
   "Autre": "img/logo.png",
   "Spécialiste hors FS": "img/S.png",
-  "Domaine juridique": "img/D.png",
+  "Domaine juridique": "img/D.svg",
   "Généraliste hors FS": "img/G.png"
 };
 
 // Fonction de style dynamique
 const pointJusticeStyleFunction = function (feature) {
   const categorie = feature.get('type_pj'); // Récupère la valeur du champ "categorie"
-  const iconSrc = categorieIcons[categorie] || "img/Divers.png"; // Icône par défaut si non définie
+  const iconSrc = categorieIcons[categorie] || "img/Divers.svg"; // Icône par défaut si non définie
 
   return new ol.style.Style({
     image: new ol.style.Icon({
       src: iconSrc,
-      scale: 0.02 // Ajustez la taille des icones
+      scale: 0.03 // Ajustez la taille des icones
     })
   });
 };
@@ -145,11 +145,11 @@ const colorstaux_chomage = [
 ];
 
 const colorsMoyenAge = [
-  'rgba(255, 182, 193, 0.8)', // Rose clair
-  'rgba(255, 105, 180, 0.8)', // Rose moyen
-  'rgba(255, 0, 255, 0.8)',   // Magenta
-  'rgba(0, 191, 255, 0.8)',   // Bleu clair
-  'rgba(0, 0, 255, 0.8)'      // Bleu foncé
+  'rgba(31, 120, 180, 0.8)', // Rose clair
+  'rgba(51, 160, 44, 0.8)', // Rose moyen
+  'rgba(182, 181, 181, 0.8)',   // Magenta
+  'rgba(227, 26, 28, 0.8)',   // Bleu clair
+  'rgba(177, 0, 38, 0.8)'      // Bleu foncé
 ];
 
 const colorsTauxPauvrete = [
@@ -310,6 +310,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Met à jour l'image et la position du bouton à l'ouverture/fermeture du panneau
   infoPanel.addEventListener("shown.bs.offcanvas", updateButton);
   infoPanel.addEventListener("hidden.bs.offcanvas", updateButton);
+
+  // Initialisation au chargement
+  infoPanel.classList.add("show"); // Ajoute la classe 'show' pour ouvrir le panneau
 
   // Initialisation au chargement
   updateButton();
@@ -510,7 +513,7 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
     tribunalJudiciaireLayer.setVisible(event.target.id === "checkbox-trib_judiciaire");
     prudhommeLayer.setVisible(event.target.id === "checkbox-prudhomme");
 
-    setTimeout(updateLayerStyles, 200); // Petit délai pour éviter les conflits
+    updateLayerStyles (); // mise à jour du style
   });
 });
 
@@ -616,7 +619,7 @@ courAppelSource.once('change', () => {
 map.on("singleclick", function (evt) {
   let selectedCode = null;
 
-  // Vérifier sur quelle couche l'utilisateur clique
+  // Vérifier sur quelle couche l'utilisateur a cliqué
   map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
     if (layer === courAppelLayer) {
       selectedCode = feature.get("num_ca");
@@ -997,7 +1000,8 @@ map.on('click', function (event) {
     const categorie = feature.get('categorie');
     const adresse = feature.get('adresse'); 
     const codgeo = feature.get('codgeo');
-    const telephone = feature.get('telephone'); 
+    const telephone = feature.get('telephone');
+    const classe = feature.get('classe'); 
     if (intitule) {
 
       document.getElementById('info-pj').innerHTML = `
@@ -1005,6 +1009,7 @@ map.on('click', function (event) {
         <div class="info-item"><b>Catégorie:</b> ${categorie}</div>
         <div class="info-item"><b>Adresse:</b> ${adresse} ${codgeo} </div>
         <div class="info-item"><b>Téléphone:</b> ${telephone}</div>
+        <div class="info-item"><b>Classe:</b> ${classe}</div>
       `;
       
       popupElement.innerHTML = `<b>${intitule}</b>`;

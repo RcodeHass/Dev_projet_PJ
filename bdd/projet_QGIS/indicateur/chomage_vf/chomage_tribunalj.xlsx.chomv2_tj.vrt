@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OGRVRTDataSource>
+    <OGRVRTLayer name="chomage_tribunalj-chomv2_tj">
+        <SrcDataSource relativeToVRT="1">chomage_tribunalj.xlsx</SrcDataSource>
+        <!--Header=False-->
+        <SrcLayer>chomv2_tj</SrcLayer>
+        <Field name="INSEE_CO" src="INSEE_CO" type="String"/>
+        <Field name="ID" src="ID" type="String"/>
+        <Field name="NOM" src="NOM" type="String"/>
+        <Field name="NOM_M" src="NOM_M" type="String"/>
+        <Field name="INSEE_ARM" src="INSEE_ARM" type="String"/>
+        <Field name="POPULAT" src="POPULAT" type="Integer"/>
+        <Field name="STATUT" src="STATUT" type="String"/>
+        <Field name="INSEE_CA" src="INSEE_CA" type="String"/>
+        <Field name="INSEE_ARR" src="INSEE_ARR" type="String"/>
+        <Field name="INSEE_D" src="INSEE_D" type="String"/>
+        <Field name="INSEE_R" src="INSEE_R" type="String"/>
+        <Field name="ORIG_CA" src="ORIG_CA" type="String"/>
+        <Field name="N_CA" src="N_CA" type="String"/>
+        <Field name="COUR_AP" src="COUR_AP" type="String"/>
+        <Field name="ORI_TJ" src="ORI_TJ" type="String"/>
+        <Field name="N_TJ" src="N_TJ" type="String"/>
+        <Field name="TRIBUNAL_J" src="TRIBUNAL_J" type="String"/>
+        <Field name="ORIG_TP" src="ORIG_TP" type="String"/>
+        <Field name="N_TPRX" src="N_TPRX" type="String"/>
+        <Field name="TRIBUNAL_P" src="TRIBUNAL_P" type="String"/>
+        <Field name="ORIG_CP" src="ORIG_CP" type="String"/>
+        <Field name="N_CPH" src="N_CPH" type="String"/>
+        <Field name="PRUDHOM" src="PRUDHOM" type="String"/>
+        <Field name="P21_ACT" src="P21_ACT" type="Real"/>
+        <Field name="P21_CHO" src="P21_CHO" type="Real"/>
+        <Field name="tx_chom" src="tx_chom" type="Real"/>
+    </OGRVRTLayer>
+</OGRVRTDataSource>

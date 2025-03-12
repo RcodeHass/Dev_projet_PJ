@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OGRVRTDataSource>
+    <OGRVRTLayer name="nb_victimes-Taux_CPH">
+        <SrcDataSource relativeToVRT="1">nb_victimes.xlsx</SrcDataSource>
+        <!--Header=False-->
+        <SrcLayer>Taux_CPH</SrcLayer>
+        <Field name="N_CPH" src="N_CPH" type="String"/>
+        <Field name="PRUDHOMMES" src="PRUDHOMMES" type="String"/>
+        <Field name="taux_pour_1000" src="taux_pour_1000" type="Real"/>
+        <Field name="geometry" src="geometry" type="String"/>
+    </OGRVRTLayer>
+</OGRVRTDataSource>

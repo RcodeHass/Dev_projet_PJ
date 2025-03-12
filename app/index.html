@@ -39,10 +39,10 @@
           <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" href="#">Maps</a>
+                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" href="#">Carte</a>
                 <ul class="dropdown-menu">
-                  <li><a href="#" class="dropdown-item" id="basic-button">Carte basique</a></li>
-                  <li><a href="#" class="dropdown-item" id="advanced-button">Carte avancée</a></li>
+                  <li><a href="#" class="dropdown-item" id="basic-button">Ou trouver un point-justices</a></li>
+                  <li><a href="#" class="dropdown-item" id="advanced-button">Carte statistique</a></li>
                 </ul>
               </li>
               <li class="nav-item">
@@ -80,7 +80,7 @@
             <!-- liste des point de justice a proximiter -->
             <div id="layer-content" class="z-1" style="display: none;">
               <div id="list-distance-pj" class="mb-2 theme-layer theme-color2 z-1">
-                <h5> Point de justice les plus proches</h5>
+                <h5> Point-justices les plus proches</h5>
                 <table id="closest-points-table" class="table table-scroll">
                   <thead>
                     <tr>
@@ -96,14 +96,14 @@
               <!-- Gestion des couches -->
               <div id="control-couches" class="mb-2 theme-layer theme-color2">
                 <h5>Filtre type de point de justice</h5>
-                <div class="form-check">
+                <!-- <div class="form-check">
                   <input type="checkbox" class="form-check-input" id="checkbox-commune">
                   <label class="form-check-label " for="checkbox-commune">Commune</label>
-                </div>
-                <div class="form-check">
+                </div> -->
+                <!-- <div class="form-check">
                   <input type="checkbox" class="form-check-input" id="checkbox-pt_justice" checked>
                   <label class="form-check-label " for="checkbox-pt_justice">Point de justice</label>
-                </div>
+                </div> -->
                 <div class="form-check">
                   <input type="radio" class="form-check-input" id="checkbox-cour_appel" name="layer-type" checked>
                   <label class="form-check-label" for="checkbox-cour_appel">Cour d'appel</label>
@@ -120,14 +120,22 @@
 
               <!-- Liste des indicateur -->
               <div id="indicateur-panel" class="mb-2 theme-layer theme-color2">
-                <h5>Indicateurs</h5>
+                <h5>Indicateur</h5>
                 <ul class="list-group" id="list-indic"></ul>
+                <div class="form-check separation-1">
+                  <input type="checkbox" class="form-check-input" id="checkbox-commune">
+                  <label class="form-check-label " for="checkbox-commune">Afficher l'echelle communale </label>
+                </div>
               </div>
 
               <!-- Liste des type de point de justice -->
               <div id="list-type-panel" class="mb-2 theme-layer theme-color2">
-                <h5>Filtre par type</h5>
+                <h5>Filtre type de point-justices</h5>
                 <ul class="list-group" id="list-type"></ul>
+                <div class="form-check separation-1">
+                  <input type="checkbox" class="form-check-input" id="checkbox-pt_justice" checked>
+                  <label class="form-check-label " for="checkbox-pt_justice">Afficher\Masquer les point-justices</label>
+                </div>
               </div>
             </div>
           </div>
@@ -135,7 +143,7 @@
       </div>
 
       <!-- ================ Onglet latéral d'information Bootstrap ===================== -->
-      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding"
+      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding size-info"
       tabindex="-1" id="infoPanel" data-bs-backdrop="false" data-bs-keyboard="false">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title">Informations</h5>
@@ -149,7 +157,7 @@
           <!-- Navigation des onglets -->
           <ul class="nav nav-tabs nav-justified d-flex flex-nowrap" id="infoTabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" href="#app-info" role="tab">Info</a>
+              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" href="#app-info" role="tab">A savoir</a>
             </li>
             <li class="nav-item" id="tab-stat">
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-info" role="tab">Statistique</a>
@@ -158,7 +166,7 @@
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-indicateur" role="tab">Indicateurs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">liste</a>
+              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">Liste point-justices</a>
             </li>
           </ul>
 
