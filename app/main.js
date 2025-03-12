@@ -191,6 +191,17 @@ const PrudhommeSource = new VectorSource({
   crossOrigin: 'anonymous'
 });
 
+//déclaration du style pour mettre en surbrilliance la zone cliquée 
+const highlightStyle = new Style({
+  stroke: new Stroke({
+    color: "yellow", // Contour jaune vif pour la surbrillance
+    width: 4
+  }),
+  fill: new Fill({
+    color: "rgba(255, 255, 0, 0.3)" // Jaune semi-transparent
+  })
+});
+
 // =========================================================================================
 // ================================= Import des couche en wfs ===========================
 // =========================================================================================
@@ -363,6 +374,81 @@ document.getElementById('advanced-button').addEventListener('click', deactivateB
 // // ========================================================================================
 // // ====================== Fonctions d'intéraction avec les couches  ====================== 
 // // ========================================================================================
+//mettre en surbrilliance la zone sélectionnée
+// Supposons que vous avez une liste d'indicateurs
+const indicatorSelected = ['part_fmp', 'nb_victime_1000', 'taux_chomage', 'age_moyen', 'taux_pauvrete'];
+
+// Fonction pour obtenir l'indicateur sélectionné par l'utilisateur
+function getSelectedIndicator() {
+  for (const indicator of indicatorSelected) {
+    if (document.getElementById(indicator).checked) {
+      return indicator;
+    }
+  }
+  return null;
+}
+
+let selectedFeature = null; // Stocke l'entité actuellement surlignée
+
+map.on('singleclick', function (evt) {
+  let newSelectedFeature = null;
+  let selectedCode = null;
+  let indicatorValue = null; // Utilisez let pour permettre la réaffectation
+
+  map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+    if (layer === courAppelLayer) {
+      selectedCode = feature.get("lib_ca");
+      newSelectedFeature = feature;
+    } else if (layer === tribunalJudiciaireLayer) {
+      selectedCode = feature.get("lib_tj");
+      newSelectedFeature = feature;
+    } else if (layer === prudhommeLayer) {
+      selectedCode = feature.get("lib_cph");
+      newSelectedFeature = feature;
+    }
+  });
+
+  if (selectedFeature) {
+    selectedFeature.setStyle(null);
+  }
+
+  if (newSelectedFeature) {
+    newSelectedFeature.setStyle(highlightStyle);
+    selectedFeature = newSelectedFeature;
+
+    // Récupérer l'indicateur sélectionné
+    const selectedIndicator = getSelectedIndicator();
+    if (selectedIndicator) {
+      indicatorValue = newSelectedFeature.get(selectedIndicator);
+      // Limiter le nombre de décimales à deux
+      indicatorValue = parseFloat(indicatorValue).toFixed(2);
+    }
+
+    // Récupérer les informations de l'entité sélectionnée
+    const featureInfo = {
+      nom: selectedCode, // Ajoute le code spécifique à la couche
+      indicateur: indicatorValue
+    };
+
+    // Mettre à jour l'interface utilisateur avec les informations récupérées
+    updateUIWithFeatureInfo(featureInfo);
+  } else {
+    selectedFeature = null;
+  }
+});
+
+function updateUIWithFeatureInfo(info) {
+  const dynamicInfoDiv = document.getElementById('dynamic-info');
+  dynamicInfoDiv.innerHTML = '<p>Informations de l\'entité sélectionnée :</p>';
+  const ul = document.createElement('ul');
+  for (const key in info) {
+    const li = document.createElement('li');
+    li.textContent = `${key}: ${info[key]}`;
+    ul.appendChild(li);
+  }
+  dynamicInfoDiv.appendChild(ul);
+}
+
 
 // ============== Changer ici le titre des indicateurs =================
 const indicatorTitles = {
@@ -520,9 +606,16 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
 // // ======================================================================================
 // // ====================== Fonctions pour gérer les indicateur   ====================== 
 // // ======================================================================================
-
+// déclaration des titres pour les sélections d'indicateurs 
+const indicatorLabels = {
+  part_fmp: "Part de ménages monoparentaux",
+  nb_victime_1000: "Nombre de victimes pour 1000 habitants",
+  taux_chomage: "Taux de chômage",
+  age_moyen: "Âge moyen",
+  taux_pauvrete: "Taux de pauvreté (%)",
+};
 // Récupérer les indicateurs à partir de l'une des sources
-const getIndicatorsFromSource = (source) => {
+const getindicatorSelectedFromSource = (source) => {
   const features = source.getFeatures();
   if (features.length === 0) return [];
 
@@ -531,11 +624,11 @@ const getIndicatorsFromSource = (source) => {
 };
 
 // Fonction pour créer des boutons radio au lieu de checkboxes
-const createRadioList = (indicators) => {
+const createRadioList = (indicatorSelected) => {
   const list = document.getElementById('list-indic');
   list.innerHTML = '';
 
-  indicators.forEach(indicator => {
+  indicatorSelected.forEach(indicator => {
     const listItem = document.createElement('li');
     const radio = document.createElement('input');
     radio.type = 'radio';
@@ -552,7 +645,9 @@ const createRadioList = (indicators) => {
 
     const label = document.createElement('label');
     label.htmlFor = indicator;
-    label.appendChild(document.createTextNode(indicator));
+    label.appendChild(
+      document.createTextNode(indicatorLabels[indicator] || indicator)
+    );
 
     listItem.appendChild(radio);
     listItem.classList.add('form-check');
@@ -585,8 +680,8 @@ const createRadioList = (indicators) => {
 // Initialisation de la liste de boutons radio après chargement de la source
 courAppelSource.once('change', () => {
   if (courAppelSource.getState() === 'ready') {
-    const indicators = getIndicatorsFromSource(courAppelSource);
-    createRadioList(indicators);
+    const indicatorSelected = getindicatorSelectedFromSource(courAppelSource);
+    createRadioList(indicatorSelected);
     updateLayerStyles();
   }
 });
@@ -602,7 +697,7 @@ courAppelSource.once('change', () => {
 // }
 
 // // Exemple d'utilisation
-// const indicators = [
+// const indicatorSelected = [
 //   { part_fmp: 'part_fmp', styleName: 'part_fmp' },
 //   { nb_victime_1000: 'nb_victime_1000', styleName: 'nb_victime_1000' },
 //   { taux_chomage: 'taux_chomage', styleName: 'taux_chomage' },
@@ -675,7 +770,6 @@ map.on("singleclick", function (evt) {
     });
   }
 });
-
 
 // ====================  Fonctions filtrage des points de justice  ======================= 
 

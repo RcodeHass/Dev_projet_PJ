@@ -272,6 +272,40 @@ button {
 .custom-padding {
   padding-right: 10px !important;
 }
+
+/* Style pour la section d'informations dynamiques */
+#dynamic-info {
+  margin-top: 10px;
+  width: 100%;
+  padding: 1px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#dynamic-info p {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#dynamic-info ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#dynamic-info li {
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+#dynamic-info li:before {
+  content: "• ";
+  color: #007bff;
+  font-weight: bold;
+}
 /* ==================================================== */
 /* ============== Style de l'onglet légende ============== */
 /* ==================================================== */
