@@ -43,18 +43,19 @@ const point_justice_vec = new ol.source.Vector({
 });
 
 // Dictionnaire des icônes par type de point de justice
+
 const categorieIcons = {
-  "France Service": "img/FS.png",
-  "Autre": "img/logo.png",
-  "Spécialiste hors FS": "img/S.png",
-  "Domaine juridique": "img/D.png",
-  "Généraliste hors FS": "img/G.png"
+  "France Service": "/img/FS.png",
+  "Autre": "./img/logo.png",
+  "Spécialiste hors FS": "/img/S.png",
+  "Domaine juridique": "/img/D.png",
+  "Généraliste hors FS": "/img/G.png"
 };
 
 // Fonction de style dynamique
 const pointJusticeStyleFunction = function (feature) {
   const categorie = feature.get('type_pj'); // Récupère la valeur du champ "categorie"
-  const iconSrc = categorieIcons[categorie] || "img/Divers.svg"; // Icône par défaut si non définie
+  const iconSrc = categorieIcons[categorie] || "/img/Divers.png"; // Icône par défaut si non définie
 
   return new ol.style.Style({
     image: new ol.style.Icon({
@@ -148,12 +149,12 @@ const colorstaux_chomage = [
 ];
 
 const colorsMoyenAge = [
-  'rgba(141, 211, 199, 0.8)', // Bleu-vert clair
-  'rgba(31, 120, 180, 0.8)',  // Rose clair
-  'rgba(51, 160, 44, 0.8)',   // Rose moyen
-  'rgba(182, 181, 181, 0.8)', // Magenta
-  'rgba(227, 26, 28, 0.8)',   // Rouge foncé
-  'rgba(177, 0, 38, 0.8)'     // Bleu foncé
+  'rgba(177, 0, 38, 0.5)',    // Bleu foncé (moins vif)
+  'rgba(227, 26, 28, 0.5)',   // Rouge foncé (moins vif)
+  'rgba(182, 181, 181, 0.5)', // Magenta (moins vif)
+  'rgba(51, 160, 44, 0.5)',   // Rose moyen (moins vif)
+  'rgba(31, 120, 180, 0.5)',  // Rose clair (moins vif)
+  'rgba(141, 211, 199, 0.5)'  // Bleu-vert clair (moins vif)
 ];
 
 const colorsTauxPauvrete = [
@@ -212,6 +213,7 @@ const highlightStyle = new Style({
 // =========================================================================================
 
 // ============== Impoter la couche commune ================
+
 const commune = new ImageLayer({
   source: new ImageWMS({
     url: geoserversUrl + '/geoserver/data_point_justice/wms',
@@ -265,6 +267,13 @@ const map = new Map({
 courAppelLayer.setVisible(false);
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
+
+// Gestion du changement de couche de fond
+// Initialisation de la couche de fond par défaut
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('basemap-select').value = 'positron';
+  positronLayer.setVisible(true);
+});
 
 // Gestion du changement de couche de fond
 document.getElementById('basemap-select').addEventListener('change', function() {
@@ -328,11 +337,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // Déplacement du bouton
       if (panelOpen) {
         toggleButton.style.right = (panelWidth + 10) + "px";
-        toggleImg.src = "img/next.png"; 
+        toggleImg.src = "/img/next.png"; 
         legende.style.right = (panelWidth + 10) + "px"; 
       } else {
         toggleButton.style.right = "10px";
-        toggleImg.src = "img/prev.png"; 
+        toggleImg.src = "/img/prev.png"; 
         legende.style.right = "10px";
       }
     }, 1); // Délai pour la transition
@@ -380,6 +389,7 @@ const deactivateBasicButton = () => {
   document.getElementById('tab-stat').style.display = 'block';
   document.getElementById('tab-indicateur').style.display = 'block';
   document.getElementById('legende').style.display = 'block';
+  document.getElementById('layer-content').style.display = 'block';
 
   // Afficher la couche par défaut
   courAppelLayer.setVisible(true);
@@ -394,7 +404,7 @@ document.getElementById('advanced-button').addEventListener('click', deactivateB
 
 // // ========================================================================================
 // // ====================== Fonctions d'intéraction avec les couches  ====================== 
-// // ========================================================================================
+// // ======================================================================================
 //mettre en surbrilliance la zone sélectionnée
 // Supposons que vous avez une liste d'indicateurs
 const indicatorSelected = ['part_fmp', 'nb_victime_1000', 'taux_chomage', 'age_moyen', 'taux_pauvrete'];
@@ -488,12 +498,11 @@ function updateUIWithFeatureInfo(info) {
 
 
 // ============== Changer ici le titre des indicateurs =================
-const indicatorTitles = {
-  'part_fmp': "Part des familles monoparentales",
-  'nb_victime_1000': "Nombre de victimes pour 1000 habitants",
-  'taux_chomage': "Taux de chômage",
-  'age_moyen': "Âge moyen",
-  'taux_pauvrete': "Taux de pauvreté (%)",
+const indicatorLabels = {
+  part_fmp: "Part des familles monoparentales (%)",
+  nb_victime_1000: "Nombre de victimes pour 1000 habitants (°/00)",
+  taux_chomage: "Taux de chômage (%)",
+  taux_pauvrete: "Taux de pauvreté (%)",
 };
 
 // ============== Fontion de mise a jour de la légende =================
@@ -512,7 +521,7 @@ const updateLegend = (indicator, source, colorScale) => {
 
   // Ajout du titre correspondant à l’indicateur
   const title = document.createElement('h6');
-  title.textContent = indicatorTitles[indicator] || "Indicateur";
+  title.textContent = indicatorLabels[indicator] || "Indicateur";
   title.style.marginBottom = "8px"; // Espacement avec la légende
   legendContainer.appendChild(title);
 
@@ -670,13 +679,6 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
 // // ====================== Fonctions pour gérer les indicateur   ====================== 
 // // ======================================================================================
 // déclaration des titres pour les sélections d'indicateurs 
-const indicatorLabels = {
-  part_fmp: "Part des familles monoparentales (%)",
-  nb_victime_1000: "Nombre de victimes pour 1000 habitants (°/00)",
-  taux_chomage: "Taux de chômage (%)",
-  age_moyen: "Âge moyen (année)",
-  taux_pauvrete: "Taux de pauvreté (%)",
-};
 
 const indicatorDescriptions = {
   part_fmp: "Cet indicateur permet de visualiser la part de ménages monoparentaux dans chaque limite administrative que vous souhaitez consulter. La part des familles monoparentales est un indicateur pertinent pour analyser et essayer de prévoir les besoins juridiques d’un territoire. En effet, une famille monoparentale suppose des besoins juridiques spécifiques (divorce). De plus, les familles monoparentales sont plus susceptibles d’être exposées à des difficultés socio-économiques, qui peuvent nécessiter des conseils juridiques précis.",
@@ -857,7 +859,7 @@ map.on("singleclick", function (evt) {
 
 // Ajouter un indicateur de chargement (engrenage)
 const loadingImage = document.createElement('img');
-loadingImage.src = 'img/delai.gif';
+loadingImage.src = '/img/delai.gif';
 loadingImage.id = 'loadingIndicator';
 loadingImage.style.position = 'absolute';
 loadingImage.style.top = '50%';
@@ -919,7 +921,7 @@ function createFilterItem(value, listSet, frag, isTypeList) {
     // Ajout de l'image uniquement si l'élément est ajouté à la liste des types
     if (isTypeList) {
       const iconImg = document.createElement('img');
-      iconImg.src = categorieIcons[value] || "img/Divers.png"; 
+      iconImg.src = categorieIcons[value] || "/img/Divers.png"; 
       iconImg.alt = value;
       iconImg.style.width = "20px"; // Taille de l'icône
       iconImg.style.height = "100%";
@@ -1330,8 +1332,14 @@ map.on("click", function (evt) {
       const tribunalCounts = countTribunalsByTypeInZone(geom); // Compter les tribunaux dans la zone cliquée
       const visitorCounts = countVisitorsByTypeInZone(geom); // Compter les visiteurs dans la zone cliquée
 
-      updateTribunalChart(tribunalCounts); // Mettre à jour le graphe des tribunaux
-      updateVisitorChart(visitorCounts); // Mettre à jour le graphe des visiteurs
+      // Récupérer l'option sélectionnée dans le dropdown
+      const selectedGraph = document.getElementById('graph-select').value;
+
+      if (selectedGraph === 'tribunalChart') {
+        updateTribunalChart(tribunalCounts);
+      } else if (selectedGraph === 'visitorChart') {
+        updateVisitorChart(visitorCounts);
+      }
     }
   });
 });
@@ -1452,7 +1460,7 @@ locateButton.addEventListener('click', () => {
   if (isLocated) {
       // Si déjà localisé, on supprime le marqueur et réinitialise l'image
       userPositionLayer.getSource().clear();
-      locateImg.src = "./img/localisation.svg"; // Remettre l'icône par défaut
+      locateImg.src = "/img/localisation.svg"; // Remettre l'icône par défaut
       isLocated = false;
   } else {
       // Sinon, obtenir la position de l'utilisateur
@@ -1485,7 +1493,7 @@ locateButton.addEventListener('click', () => {
                   userPositionLayer.getSource().addFeature(userFeature);
 
                   // Changer l’image du bouton pour indiquer que la localisation est active
-                  locateImg.src = "./img/croix.png"; 
+                  locateImg.src = "/img/croix.png"; 
 
                   isLocated = true;
 
@@ -1500,6 +1508,13 @@ locateButton.addEventListener('click', () => {
       } else {
           alert("La géolocalisation n'est pas prise en charge par votre navigateur.");
       }
+  }
+});
+
+// Cacher les suggestions si l'utilisateur clique en dehors du champ de recherche et de la liste des suggestions
+document.addEventListener('click', (event) => {
+  if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+      suggestionsList.style.display = 'none';
   }
 });
 
@@ -1518,7 +1533,8 @@ function addCustomMarker(coordinates) {
 
   const iconStyle = new ol.style.Style({
       image: new ol.style.Icon({
-          src: './img/localisation.png',
+      src: './img/localisation.png',
+
           scale: 0.1,
           anchor: [0.5, 1]
       })
@@ -1653,3 +1669,6 @@ searchInput.addEventListener('keypress', (e) => {
       }
   }
 });
+
+
+// Auteur du code:  @ZOBEL  @MEMBRÈDE ; @RIDJALI ; @AZEGHOUDI

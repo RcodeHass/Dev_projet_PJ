@@ -2,19 +2,21 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="shortcut icon" href="/assets/logo-BSj0k_eV.png">
+    <link rel="shortcut icon" href="/img/logo.png">
     <!-- script OL-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol/ol.css" type="text/css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <script src="./node_modules/ol/dist/ol.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ol/ol.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol-ext/dist/ol-ext.min.css"> <!-- ol-ext CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol-ext/dist/ol-ext.min.js"></script> <!-- ol-ext JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> <!--PopperJS pour les toolsTips-->
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carto-justice</title>
-    <script type="module" crossorigin src="/assets/index-Dy1HyuJF.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BVM4jpzx.css">
+    <script type="module" crossorigin src="/assets/index-DwxXZce8.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BiGwZEHr.css">
   </head>
   <body>
 
@@ -28,23 +30,20 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="d-flex align-items-center">
-            <img id ="logo" src="/assets/logo-BSj0k_eV.png" alt="Logo">
+            <img id ="logo" src="/img/logo.png" alt="Logo">
             <h2 style="margin-right: 20px;">Carto-justice</h2>
           </div>
           <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" href="#">Maps</a>
+                <a class="nav-link text-color dropdown-toggle" data-bs-toggle="dropdown" style="font-size: 18px;" href="#">Carte</a>
                 <ul class="dropdown-menu">
-                  <li><a href="#" class="dropdown-item" id="basic-button">Carte basic</a></li>
-                  <li><a href="#" class="dropdown-item" id="advanced-button">Carte avancée</a></li>
+                  <li><a href="#" class="dropdown-item" id="basic-button">Où trouver un point-justice ?</a></li>
+                  <li><a href="#" class="dropdown-item" id="advanced-button">Carte statistique</a></li>
                 </ul>
               </li>
               <li class="nav-item">
                 <a class="nav-link text-color" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasApropos">A propos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-color" href="#">Contact</a>
               </li>
             </ul>
           </div>
@@ -59,22 +58,30 @@
           <option value="osm">OSM</option>
           <option value="positron">Positron</option>
         </select>
+        <div class="control-zoom">
+          <button id="zoom-in">+</button>
+          <button id="zoom-out">−</button>
+        </div>
       </div>
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
         <div class="row">
-          <div class="col-12 col-md-5 col-lg-4 p-3 z-1" id="sidebar">
+          <div class="col-8 col-md-5 col-lg-3 p-3 z-1" id="sidebar">
             <div class="input-group mb-3">
               <button class="btn-primary z-1" id="btn-layer-panel">=</button>
-              <input type="text" class="form-control" id="search" placeholder="Rechercher une adresse...">
+                <input type="text" class="form-control z-1" id="search" placeholder="Rechercher une adresse...">
+                <ul id="suggestions"></ul>
               <button class="btn-outline-secondary custom-size" id="searchButton">
-                <img src="data:image/png;base64,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" alt="Rech" width="20">
+                <img src="/img/recherche.png" alt="Rech" width="20">
+              </button>
+              <button class="btn-outline-secondary custom-size" id="locate">
+                <img src="/img/localisation.svg" alt="Localisation" width="20">
               </button>
             </div>
             <!-- liste des point de justice a proximiter -->
             <div id="layer-content" class="z-1" style="display: none;">
               <div id="list-distance-pj" class="mb-2 theme-layer theme-color2 z-1">
-                <h5> Point de justice les plus proches</h5>
+                <h5> Point-justices les plus proches</h5>
                 <table id="closest-points-table" class="table table-scroll">
                   <thead>
                     <tr>
@@ -89,18 +96,10 @@
               </div>
               <!-- Gestion des couches -->
               <div id="control-couches" class="mb-2 theme-layer theme-color2">
-                <h5>Filtre type de point de justice</h5>
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="checkbox-commune">
-                  <label class="form-check-label " for="checkbox-commune">Commune</label>
-                </div>
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="checkbox-pt_justice" checked>
-                  <label class="form-check-label " for="checkbox-pt_justice">Point de justice</label>
-                </div>
+                <h5>Filtrer par zones administratives</h5>
                 <div class="form-check">
                   <input type="radio" class="form-check-input" id="checkbox-cour_appel" name="layer-type" checked>
-                  <label class="form-check-label" for="checkbox-cour_appel">Cour d'appel</label>
+                  <label class="form-check-label" for="checkbox-cour_appel">Cour d'Appel</label>
                 </div>
                 <div class="form-check">
                   <input type="radio" class="form-check-input" id="checkbox-trib_judiciaire" name="layer-type">
@@ -108,20 +107,28 @@
                 </div>
                 <div class="form-check">
                   <input type="radio" class="form-check-input" id="checkbox-prudhomme" name="layer-type">
-                  <label class="form-check-label" for="checkbox-prudhomme">Prudhomme</label>
+                  <label class="form-check-label" for="checkbox-prudhomme">Conseil des prud'hommes</label>
                 </div>
               </div>
 
               <!-- Liste des indicateur -->
               <div id="indicateur-panel" class="mb-2 theme-layer theme-color2">
-                <h5>Indicateurs</h5>
+                <h5>Afficher des indicateurs</h5>
                 <ul class="list-group" id="list-indic"></ul>
+                <div class="form-check separation-1">
+                  <input type="checkbox" class="form-check-input" id="checkbox-commune">
+                  <label class="form-check-label " for="checkbox-commune">Afficher l'échelle communale </label>
+                </div>
               </div>
 
               <!-- Liste des type de point de justice -->
               <div id="list-type-panel" class="mb-2 theme-layer theme-color2">
-                <h5>Filtre par type</h5>
+                <h5>Type de point-justices</h5>
                 <ul class="list-group" id="list-type"></ul>
+                <div class="form-check separation-1">
+                  <input type="checkbox" class="form-check-input" id="checkbox-pt_justice" checked>
+                  <label class="form-check-label " for="checkbox-pt_justice">Afficher\Masquer les point-justices</label>
+                </div>
               </div>
             </div>
           </div>
@@ -129,21 +136,21 @@
       </div>
 
       <!-- ================ Onglet latéral d'information Bootstrap ===================== -->
-      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding"
-      tabindex="-1" id="infoPanel" data-bs-backdrop="false" data-bs-keyboard="false">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title">Informations</h5>
+      <div class="offcanvas offcanvas-end offcanvas-no-backdrop theme-color2 vh-100 p-2 custom-padding size-info"
+        id="infoPanel" data-bs-backdrop="false" data-bs-keyboard="false" data-bs-focus="false">
+        <div class="offcanvas-header dynamic-info titre-info">
+          <h4 class="offcanvas-title">Informations</h4>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="offcanvas-body" id="info-content">
+        <div class="offcanvas-body " id="info-content" data-bs-focus="false">
           <div id="entete-info">
-            <div id="info-pj"> Clicker sur un point de justice pour voir ses informations </div>
+            <div id="info-pj"> Cliquez sur un point de justice pour voir ses informations </div>
           </div>
 
           <!-- Navigation des onglets -->
           <ul class="nav nav-tabs nav-justified d-flex flex-nowrap" id="infoTabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" href="#app-info" role="tab">Info</a>
+              <a class="nav-link active" id="tab-info" data-bs-toggle="tab" data-bs-focus="false" href="#app-info" role="tab">A savoir</a>
             </li>
             <li class="nav-item" id="tab-stat">
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-info" role="tab">Statistique</a>
@@ -152,7 +159,7 @@
               <a class="nav-link"  data-bs-toggle="tab" href="#stat-indicateur" role="tab">Indicateurs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">liste</a>
+              <a class="nav-link" id="tab-list" data-bs-toggle="tab" href="#list-info" role="tab">Liste point-justices</a>
             </li>
           </ul>
 
@@ -160,44 +167,79 @@
           <div class="tab-content mt-3" id="contenu-info">
             <!-- Information de base sur l'application -->
             <div id="app-info" class="tab-pane fade show active p-2 custom-padding" role="tabpanel">
-              <p class="fs-6"> A savoir avant d'utiliser cette cartographie
-                Comment utiliser cette cartographie ? 
-                <ul>
-                  <li>Utilisez le champ de recherche pour trouver une adresse spécifique.</li>
-                  <li>Utilisez les filtres pour sélectionner le type de point de justice que vous souhaitez visualiser.</li>
-                  <li>Cliquez sur un point de justice sur la carte pour afficher des informations détaillées.</li>
-                  <li>Consultez les statistiques et indicateurs pour obtenir des données supplémentaires sur les points de justice.</li>
-                </ul>
+              <p class="fs-6">
+                <h5>Comment utiliser Carto-justice ? </h5>
+
+                <p>Vous rencontrez des bugs où vous êtes perdus ? Appuyer sur la touche F5 de votre clavier ou le bouton “ ⤵️Actualiser cette page” de votre navigateur !
                 </p>
+
+                <h6>Vous cherchez le point-justice le plus proche de chez vous ?</h6>
+                <ul>
+                  <li>📍Pour vous localiser, utilisez le champ de recherche pour trouver une adresse ou un lieu. Cliquez n’importe où sur la carte pour faire disparaître le marqueur.</li>
+                  <li>📌Pour vous localiser, vous pouvez aussi autoriser la localisation sur navigateur pour vous géolocaliser automatiquement. Vous pouvez cliquer sur la croix pour faire disparaître votre localisation.</li>
+                  <li>🔍Utilisez les filtres pour sélectionner le type de point-justice que vous souhaitez afficher sur la carte (par exemple, uniquement ceux qui appartiennent au réseau France Service).</li>
+                  <li>🖱️Cliquez sur un point-justice pour afficher les informations détaillées dans ce menu !</li>
+                  <li>📄L’onglet “liste point-justice” vous permet de trouver jusqu'à 25 points-justices les proches du centre de votre écran.</li>
+                </ul>
+                <h6>Vous voulez accéder aux fonctions avancées de l’application ?</h6>
+                <ul>
+                  <li>❓cliquer sur l’onglet “carte” dans la carte de navigation, puis sélectionnez “carte statistique”</li>
+                  <li>🗺️Pour parcourir les indicateurs, utilisez le menu déroulant de gauche. Vous ne pouvez en sélectionner qu’un à la fois.</li>
+                  <li>🏫Pour afficher les communes, cliquez sur la zone de compétence juridique de votre choix !</li>
+                  <li>📶Dans l’onglet “statistique”, vous pouvez consulter une série de statistiques sur la zone administrative sélectionnée. Vous pouvez aussi consulter les informations détaillées de l’indicateur sélectionné, ainsi que quelques expérimentations.</li>
+                  <li>🔍Dans l’onglet “indicateur”, vous pouvez avoir des détails sur la construction et l’objectif des indicateurs</li>
+                  <li>📄L’onglet “liste point-justice” vous permet de trouver jusqu'à 25 points-justices les proches du centre de votre écran.</li>
+
+                </ul>
             </div>
             <!-- Information statistique des graphiques -->
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
               <div>
+                <div id="dynamic-info" class ="dynamic-info">
+                  <p>Quelques informations sur la zone sélectionnée :</p>
+                  <!-- Les informations dynamiques seront insérées ici -->
+                </div>
                 <label for="graph-select">Choisir un graphique :</label>
                 <select id="graph-select" class="form-select">
-                  <option value="tribunalChart">Graphique Tribunal</option>
-                  <option value="visitorChart">Nombre de visiteurs</option>
+                  <option value="tribunalChart">Types de point-justices par zone</option>
+                  <option value="visitorChart">Nombre de visiteurs dans les point-justices par zone</option>
                 </select>
               </div>
               <div id="graph">
                 <canvas id="tribunalChart" width="400" height="250"></canvas>
                 <canvas id="visitorChart" style="display: none;"></canvas>
               </div>
-              <div> information sur le graphique afficher </div>
+              <div> information sur le graphique affiché </div>
               <div>
                 <div id="list-categorie-panel" class="mb-2 theme-layer theme-color2">
                   <h5>Changer catégorie (expérimentale)</h5>
                   <ul class="list-group" id="list-categorie"></ul>
+                  <div>
+                    <h5>Indice capacité (expérimentale)</h5>
+                    <p>L'indicateur indice de capacité représente l’écart à la moyenne du ratio entre le nombre de places disponibles et la population associée par points justice. 
+                      L’indicateur permet de savoir si un point justice est manque ou non de places présentiel par rapport à la population associée (celle pour qui le point justice est le plus proche). Plus la valeur de l'indice est négative, plus le point est en déficit de places et inversement. </p>
+                    <div id="indice-access"></div>
+                  </div>
                 </div>
               </div>
             </div>
             <!-- Information sur les indicateurs -->
             <div id="stat-indicateur" class="tab-pane fade" role="tabpanel">
-              <ul class="list-group" id="list-indic"></ul>
-              <p> Texte explicatif de chaque indicateur afficher </p>
+              <div id="dynamic-info2" class ="dynamic-info">
+                <p>Quelques informations sur la zone sélectionnée :</p>
+                <!-- Les informations dynamiques seront insérées ici -->
+              </div>
+              <!-- <ul class="list-group" id="list-indic"></ul> -->
+              <p> Attention : 
+                Les indicateurs ne sont pas à prendre comme des statistiques absolues résumant parfaitement un territoire. Ils sont uniquement là pour aider 
+                ceux qui les consultent à avoir facilement et rapidement accès à un aperçu du territoire.  
+              </p>
+              <h5 id="titre_indicateur"> Titre</h5>
+              <div  class="separation-1" id="txt-indicateur"></div>
             </div>
             <!-- Liste des points de justice -->
             <div id="list-info" class="tab-pane fade" role="tabpanel">
+              <p>Liste des 25 points-justices visible au centre de l'écran</p>
               <ul class="list-group" id="list-pj"></ul>
             </div>
           </div>
@@ -207,19 +249,29 @@
       <!-- Bouton pour ouvrir l'onglet latéral -->
       <button id="toggleButton" class="btn-primary position-absolute top-50 translate-middle-y" 
       data-bs-toggle="offcanvas" data-bs-target="#infoPanel">
-      <img src="data:image/png;base64,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" alt="Ouvrir">
+      <img src="/img/prev.png" alt="Ouvrir">
       </button>
       
       <!-- information apropos -->
-      <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-50 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
-        <div class="offcanvas-header">
+      <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-70 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
+        <div class="offcanvas-header dynamic-info titre-info">
           <h5 class="offcanvas-title" id="offcanvasAproposLabel">À propos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
-          <p class="text-justify">Cette application cartographique est un projet exploratoire visant à fiabiliser la donnée et à développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. Réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, elle est basée sur des données fournies par le ministère de la Justice.
-            La SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), commanditaire du projet, souhaite disposer d’une cartographie web interactive basée sur des outils open source, mettant en avant à la fois les points de justice accessibles sur la France entière. S’adressant aux collectivités et aux citoyens, cet outil a pour ambition de permettre la visualisation des points d’accès à la justice, la mise en perspective des besoins, facilitant ainsi la prise de décision.
+        <div class="offcanvas-body d-flex flex-column center">
+          <p class="text-justify">
+            Cette application cartographique est un projet exploratoire, dont le but est de développer un outil cartographique interactif et évolutif sur les points d’accès à la justice. L'application s'adresse à la fois 
+            aux utilisateurs cherchant à accéder rapidement à la justice et aux pouvoirs publics 
+            voulant comprendre et anticiper les besoins d'accès à la justice. L'application a été réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, en partenariat avec la SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), 
+            commanditaire du projet, souhaitant disposer d’une cartographie web interactive basée sur des outils open source et utile pour le plus large public possible.
           </p>
+          <div id="logos-apropos" class="d-flex justify-content-center mt-auto">
+            <img class="image-apropos" src="/img/geonum.jpg" alt="logo">
+            <img class="image-apropos" src="/img/logo_sentinelles.png" alt="logo">
+            <img class="image-apropos" src="/img/logo_lyon2.png" alt="logo">
+            <img class="image-apropos" src="/img/logo_lyon3.png" alt="logo">
+            <img class="image-apropos" src="/img/Logo_IERDJ_RVB.png" alt="logo">
+          </div>
         </div>
       </div>
 
@@ -233,10 +285,19 @@
           <div class="square"> <span class="label">10</span> </div>
         </div>
       </div>
-      
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <!-- Auteurs de la carte  -->
+      <div id="auteur">
+        <p>Copyright <a href="https://www.openstreetmap.org/copyright">openstreetmap</a>,
+        Application web  <img src="/img/geonum.jpg" alt=""> <a href="https://mastergeonum.org/">GéoNum </a> Promotion 2024-2025</p>
+      </div>
+      <!-- Géolocalisation -->
+
+    </div>
+    
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.umd.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
   </body>

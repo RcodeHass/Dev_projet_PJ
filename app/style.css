@@ -107,7 +107,7 @@ button {
   color: inherit; 
 }
 
-.controls {
+.control-zoom {
   display: flex;
   gap: 4px;
   flex-direction: column;
@@ -120,20 +120,19 @@ button {
   
 }
 
-.controls button {
+.control-zoom button {
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid rgba(129, 129, 129, 0.822);
   border-radius: 5px;
-  padding: 5px;
   font-size: 20px;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   justify-content: center;
   align-items: center;
 }
 
-.controls button:hover {
+.control-zoom button:hover {
   background-color: lightgray;
 }
 
@@ -201,13 +200,12 @@ button {
 
 #search {
   position: relative;
-  z-index: 1050;
 }
 
 #layer-content {
   overflow-y: auto;
   height: 75vh;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 #btn-layer-panel {
