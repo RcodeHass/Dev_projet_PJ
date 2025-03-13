@@ -282,6 +282,21 @@ document.getElementById('basemap-select').addEventListener('change', function() 
   }
 });
 
+// Récupération des boutons
+const zoomInButton = document.getElementById('zoom-in');
+const zoomOutButton = document.getElementById('zoom-out');
+
+// Ajout des événements de clic
+zoomInButton.addEventListener('click', () => {
+    let view = map.getView();
+    view.setZoom(view.getZoom() + 1);
+});
+
+zoomOutButton.addEventListener('click', () => {
+    let view = map.getView();
+    view.setZoom(view.getZoom() - 1);
+});
+
 // ========================================================================================
 // ===========================  Fonction  de basse de l'appli ============================ 
 // ========================================================================================
