@@ -93,14 +93,6 @@
               <!-- Gestion des couches -->
               <div id="control-couches" class="mb-2 theme-layer theme-color2">
                 <h5>Filtrer par zones administratives</h5>
-                <!-- <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="checkbox-commune">
-                  <label class="form-check-label " for="checkbox-commune">Commune</label>
-                </div> -->
-                <!-- <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="checkbox-pt_justice" checked>
-                  <label class="form-check-label " for="checkbox-pt_justice">Point de justice</label>
-                </div> -->
                 <div class="form-check">
                   <input type="radio" class="form-check-input" id="checkbox-cour_appel" name="layer-type" checked>
                   <label class="form-check-label" for="checkbox-cour_appel">Cour d'Appel</label>
@@ -204,7 +196,7 @@
                   <h5>Changer catégorie (expérimentale)</h5>
                   <ul class="list-group" id="list-categorie"></ul>
                   <div>
-                    <h5>Indice d'accéssibilité (expérimentale)</h5>
+                    <h5>Indice capacité (expérimentale)</h5>
                     <div id="indice-access"></div>
                   </div>
                 </div>
@@ -240,7 +232,7 @@
       </button>
       
       <!-- information apropos -->
-      <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-50 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
+      <div class="offcanvas offcanvas-apropos position-fixed top-50 start-50 translate-middle d-flex flex-column justify-content-center align-items-center p-4 w-70 rounded shadow bg-light" tabindex="-1" id="offcanvasApropos" aria-labelledby="offcanvasAproposLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title" id="offcanvasAproposLabel">À propos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -252,11 +244,12 @@
             voulant comprendre et anticiper les besoins d'accès à la justice. L'application a été réalisée par des étudiants en master 2 Géographie Numérique et Sentinelle de Lyon, en partenariat avec la SADJAV (Service de l'accès au droit et à la justice et de l'aide aux victimes), 
             commanditaire du projet, souhaitant disposer d’une cartographie web interactive basée sur des outils open source et utile pour le plus large public possible.
           </p>
-          <div id="logos-apropos" class="d-flex justify-content-center mt-auto align-self-end">
-            <img class="image-apropos" src="img/Logo_Univ_St_Lyon.png" alt="logo">
-            <img class="image-apropos" src="img/Logo_IERDJ_RVB.png" alt="logo">
+          <div id="logos-apropos" class="d-flex justify-content-center mt-auto">
             <img class="image-apropos" src="img/geonum.jpg" alt="logo">
+            <img class="image-apropos" src="img/logo_sentinelles.png" alt="logo">
             <img class="image-apropos" src="img/logo_lyon2.png" alt="logo">
+            <img class="image-apropos" src="img/logo_lyon3.png" alt="logo">
+            <img class="image-apropos" src="img/Logo_IERDJ_RVB.png" alt="logo">
           </div>
         </div>
       </div>
@@ -274,8 +267,8 @@
 
       <!-- Auteurs de la carte  -->
       <div id="auteur">
-        <p>Copyright www.openstreetmap.org; basemaps.cartocdn.com
-        <p> Application web / <img src="img/geonum.jpg" alt="">GéoNum 2025</p>
+        <p>Copyright <a href="https://www.openstreetmap.org/copyright">openstreetmap</a>,
+        Application web  <img src="img/geonum.jpg" alt=""> <a href="https://mastergeonum.org/">GéoNum </a> Promotion 2024-2025</p>
       </div>
       
     </div>

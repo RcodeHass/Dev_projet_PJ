@@ -841,7 +841,7 @@ map.on("singleclick", function (evt) {
 
 // Ajouter un indicateur de chargement (engrenage)
 const loadingImage = document.createElement('img');
-loadingImage.src = 'img/delai.png';
+loadingImage.src = 'img/delai.gif';
 loadingImage.id = 'loadingIndicator';
 loadingImage.style.position = 'absolute';
 loadingImage.style.top = '50%';
@@ -849,18 +849,17 @@ loadingImage.style.left = '50%';
 loadingImage.style.transform = 'translate(-50%, -50%)';
 loadingImage.style.zIndex = 9999; // S'assurer que l'image est au-dessus des autres éléments
 loadingImage.style.display = 'none'; // Initialement caché
-loadingImage.style.width = '100px'; // Ajouter une taille fixe pour l'image
-loadingImage.style.height = '100px';
-loadingImage.style.border = '20px solid red'; 
+loadingImage.style.width = '50px'; // Ajouter une taille fixe pour l'image
+loadingImage.style.height = '50px';
 document.body.appendChild(loadingImage);
 
 // Fonction pour afficher l'indicateur de chargement
-function showLoadingIndicator() {
+async function showLoadingIndicator() {
   loadingImage.style.display = 'block'; // Afficher l'image de chargement
 }
 
 // Fonction pour masquer l'indicateur de chargement
-function hideLoadingIndicator() {
+async function hideLoadingIndicator() {
   loadingImage.style.display = 'none'; // Masquer l'image de chargement
 }
 
@@ -966,13 +965,18 @@ function createFilterItem(value, listSet, frag, isTypeList) {
       }
     });
 
+    // Gestion du image
+    switchInput.addEventListener('change', debounce(() => {
+      showLoadingIndicator(); // Afficher le chargement avant de filtrer
+  }, 10));
+
+
     // Gestion du filtrage
     switchInput.addEventListener('change', debounce(() => {
-        showLoadingIndicator(); // Afficher le chargement avant de filtrer
         filterPointsJustice();
         afficherPointsJusticeDansEmpriseEcran();
         hideLoadingIndicator(); // Masquer le chargement après le filtrage
-    }, 300));
+    }, 20));
 
     // Ajout au fragment
     frag.appendChild(li);

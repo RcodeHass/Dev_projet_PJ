@@ -15,11 +15,13 @@ html, body {
   padding: 0;
   height: 100%;
   background-color: rgba(66, 66, 66, 0.192);
+
 }
 
 body{
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 /* #container {
@@ -165,7 +167,12 @@ button {
 
 #sidebar {
   transition: transform 0.3s ease-in-out;
+}
+
+#layer-content {
   overflow-y: auto;
+  height: 75vh;
+  margin-bottom: 10px;
 }
 
 #btn-layer-panel {
