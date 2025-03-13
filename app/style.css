@@ -107,12 +107,30 @@ button {
   color: inherit; 
 }
 
+.controls {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  margin-top: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  width: fit-content;
+  right: 0;
+  position: absolute;
+  
+}
+
 .controls button {
   background-color: white;
   border: 1px solid black;
-  padding: 10px;
-  font-size: 18px;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 20px;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
 }
 
 .controls button:hover {
@@ -179,6 +197,11 @@ button {
 
 #sidebar {
   transition: transform 0.3s ease-in-out;
+}
+
+#search {
+  position: relative;
+  z-index: 1050;
 }
 
 #layer-content {

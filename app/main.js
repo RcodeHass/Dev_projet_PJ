@@ -391,6 +391,7 @@ const deactivateBasicButton = () => {
 // Ajouter l'événement au bouton "advanced-button"
 document.getElementById('advanced-button').addEventListener('click', deactivateBasicButton);;
 
+
 // // ========================================================================================
 // // ====================== Fonctions d'intéraction avec les couches  ====================== 
 // // ========================================================================================
@@ -670,10 +671,10 @@ document.querySelectorAll('input[name="layer-type"]').forEach((radio) => {
 // // ======================================================================================
 // déclaration des titres pour les sélections d'indicateurs 
 const indicatorLabels = {
-  part_fmp: "Part de ménages monoparentaux",
-  nb_victime_1000: "Nombre de victimes pour 1000 habitants",
-  taux_chomage: "Taux de chômage",
-  age_moyen: "Âge moyen",
+  part_fmp: "Part des familles monoparentales (%)",
+  nb_victime_1000: "Nombre de victimes pour 1000 habitants (°/00)",
+  taux_chomage: "Taux de chômage (%)",
+  age_moyen: "Âge moyen (année)",
   taux_pauvrete: "Taux de pauvreté (%)",
 };
 
@@ -682,7 +683,7 @@ const indicatorDescriptions = {
   nb_victime_1000: "Nous avons utilisé les données issues des enregistrements par la police et la gendarmerie, cela permet de mesurer la délinquance présente sur chaque territoire. Cette donnée représente la moyenne des victimes de 2016 à 2024 pour 1000 habitants par communes. L’indicateur porte sur les crimes et les délits (à l’exclusion des contraventions et des délits routiers), enregistrés pour la première fois par les forces de sécurité et portés à la connaissance de l’institution judiciaire.",
   taux_chomage: "Le taux de chômage d’un territoire apparaît comme un indicateur socio-économique intéressant pour mesurer les besoins juridiques d’un territoire. Un taux de chômage plus élevé, en plus de traduire les difficultés sociales d’un territoire, ce qui implique des besoins juridiques différents, va aussi traduire les difficultés économiques d’un territoire. Elles peuvent alors se répercuter sur le nombre de décisions rendues par les Conseils des Prud’hommes, par exemple sur les contentieux de licenciement.",
   age_moyen: "L’âge moyen d’un territoire apparaît comme un indicateur intéressant pour anticiper les besoins judiciaires d’une population résidente.",
-  taux_pauvrete: "Le taux de pauvreté est un indicateur clé pour mesurer les inégalités économiques et sociales au sein d'un territoire. Il permet de mieux comprendre les besoins spécifiques des populations en matière d'accès au droit et aux services juridiques.",
+  taux_pauvrete: "Le taux de pauvreté d’un territoire est un indicateur important pour comprendre les enjeux judiciaires d’un territoire. En France, l’INSEE définit le seuil de pauvreté comme 60 % du revenu médian, soit environ 1 158 euros par mois en 2021. Une population plus exposée à la précarité peut faire face à des problématiques judiciaires spécifiques, que ce soit en tant que victime ou auteur d’infractions. Les délits liés aux conditions de vie, comme les vols de nécessité, peuvent être plus fréquents dans les zones où le taux de pauvreté est élevé. À l’inverse, ces populations sont aussi plus vulnérables aux arnaques financières, aux marchands de sommeil ou aux abus de faiblesse.",
 };
 // Récupérer les indicateurs à partir de l'une des sources
 const getindicatorSelectedFromSource = (source) => {

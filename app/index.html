@@ -64,7 +64,7 @@
         <div class="controls">
           <button id="zoom-in">+</button>
           <button id="zoom-out">−</button>
-      </div>
+        </div>
       </div>
       <!-- ========================= Onglet latéral ========================-->
       <div class="container-fluid">
@@ -168,14 +168,29 @@
             <!-- Information de base sur l'application -->
             <div id="app-info" class="tab-pane fade show active p-2 custom-padding" role="tabpanel">
               <p class="fs-6">
-                Comment utiliser Carto-justice ? 
-                <ul>
-                  <li>Utilisez le champ de recherche pour trouver une adresse ou un lieu.</li>
-                  <li>Utilisez les filtres pour sélectionner le type de point-justice que vous souhaitez afficher sur la carte.</li>
-                  <li>Cliquez sur un point-justice pour afficher les informations détaillées dans ce menu !</li>
-                  <li>Si vous le souhaitez, vous pouvez consultez les statistiques et indicateurs via le mode "carte avancée".</li>
-                </ul>
+                <h5>Comment utiliser Carto-justice ? </h5>
+
+                <p>Vous rencontrez des bugs où vous êtes perdus ? Appuyer sur la touche F5 de votre clavier ou le bouton “ ⤵️Actualiser cette page” de votre navigateur !
                 </p>
+
+                <h6>Vous cherchez le point-justice le plus proche de chez vous ?</h6>
+                <ul>
+                  <li>📍Pour vous localiser, utilisez le champ de recherche pour trouver une adresse ou un lieu. Cliquez n’importe où sur la carte pour faire disparaître le marqueur.</li>
+                  <li>📌Pour vous localiser, vous pouvez aussi autoriser la localisation sur navigateur pour vous géolocaliser automatiquement. Vous pouvez cliquer sur la croix pour faire disparaître votre localisation.</li>
+                  <li>🔍Utilisez les filtres pour sélectionner le type de point-justice que vous souhaitez afficher sur la carte (par exemple, uniquement ceux qui appartiennent au réseau France Service).</li>
+                  <li>🖱️Cliquez sur un point-justice pour afficher les informations détaillées dans ce menu !</li>
+                  <li>📄L’onglet “liste point-justice” vous permet de trouver jusqu'à 25 points-justices les proches du centre de votre écran.</li>
+                </ul>
+                <h6>Vous voulez accéder aux fonctions avancées de l’application ?</h6>
+                <ul>
+                  <li>❓cliquer sur l’onglet “carte” dans la carte de navigation, puis sélectionnez “carte statistique”</li>
+                  <li>🗺️Pour parcourir les indicateurs, utilisez le menu déroulant de gauche. Vous ne pouvez en sélectionner qu’un à la fois.</li>
+                  <li>🏫Pour afficher les communes, cliquez sur la zone de compétence juridique de votre choix !</li>
+                  <li>📶Dans l’onglet “statistique”, vous pouvez consulter une série de statistiques sur la zone administrative sélectionnée. Vous pouvez aussi consulter les informations détaillées de l’indicateur sélectionné, ainsi que quelques expérimentations.</li>
+                  <li>🔍Dans l’onglet “indicateur”, vous pouvez avoir des détails sur la construction et l’objectif des indicateurs</li>
+                  <li>📄L’onglet “liste point-justice” vous permet de trouver jusqu'à 25 points-justices les proches du centre de votre écran.</li>
+
+                </ul>
             </div>
             <!-- Information statistique des graphiques -->
             <div id="stat-info" class="tab-pane fade" role="tabpanel">
@@ -201,6 +216,8 @@
                   <ul class="list-group" id="list-categorie"></ul>
                   <div>
                     <h5>Indice capacité (expérimentale)</h5>
+                    <p>L'indicateur indice de capacité représente l’écart à la moyenne du ratio entre le nombre de places disponibles et la population associée par points justice. 
+                      L’indicateur permet de savoir si un point justice est manque ou non de places présentiel par rapport à la population associée (celle pour qui le point justice est le plus proche). Plus la valeur de l'indice est négative, plus le point est en déficit de places et inversement. </p>
                     <div id="indice-access"></div>
                   </div>
                 </div>
