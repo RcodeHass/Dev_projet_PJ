@@ -77,6 +77,9 @@
               <button class="btn-outline-secondary custom-size" id="searchButton">
                 <img src="img/recherche.png" alt="Rech" width="20">
               </button>
+              <button class="btn-outline-secondary custom-size" id="locate">
+                <img src="img/localisation.svg" alt="Localisation" width="20">
+              </button>
             </div>
             <!-- liste des point de justice a proximiter -->
             <div id="layer-content" class="z-1" style="display: none;">
@@ -222,7 +225,7 @@
             </div>
             <!-- Liste des points de justice -->
             <div id="list-info" class="tab-pane fade" role="tabpanel">
-              <p>Liste des 25 points-justices visible au centre de l'écrante</p>
+              <p>Liste des 25 points-justices visible au centre de l'écran</p>
               <ul class="list-group" id="list-pj"></ul>
             </div>
           </div>
@@ -274,8 +277,10 @@
         <p>Copyright <a href="https://www.openstreetmap.org/copyright">openstreetmap</a>,
         Application web  <img src="img/geonum.jpg" alt=""> <a href="https://mastergeonum.org/">GéoNum </a> Promotion 2024-2025</p>
       </div>
-      
+      <!-- Géolocalisation -->
+
     </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="./main.js"></script>

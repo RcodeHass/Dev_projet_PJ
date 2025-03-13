@@ -1427,11 +1427,80 @@ function selectSuggestion(place) {
 
   // Ajouter un marqueur
   addCustomMarker(coordinates);
-
   // Trouver et afficher les points les plus proches
   const closestPoints = findClosestPoints([lon, lat], 5);
   displayClosestPoints(closestPoints);
 }
+
+// Ajout d'un calque pour afficher la position de l'utilisateur
+const userPositionLayer = new ol.layer.Vector({
+  source: new ol.source.Vector()
+});
+map.addLayer(userPositionLayer);
+
+// Récupération du bouton de localisation et de l'image à l'intérieur
+const locateButton = document.getElementById('locate');
+const locateImg = locateButton.querySelector('img'); 
+
+// Variables pour gérer l'état de la localisation
+let isLocated = false;
+let userFeature = null;
+
+// Fonction de géolocalisation
+locateButton.addEventListener('click', () => {
+  if (isLocated) {
+      // Si déjà localisé, on supprime le marqueur et réinitialise l'image
+      userPositionLayer.getSource().clear();
+      locateImg.src = "./img/localisation.svg"; // Remettre l'icône par défaut
+      isLocated = false;
+  } else {
+      // Sinon, obtenir la position de l'utilisateur
+      if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+                  const userCoords = [position.coords.longitude, position.coords.latitude];
+                  const userLocation = ol.proj.fromLonLat(userCoords);
+
+                  // Centrer la carte sur la position de l'utilisateur
+                  map.getView().setCenter(userLocation);
+                  map.getView().setZoom(15);
+
+                  // Créer ou mettre à jour le marqueur
+                  userFeature = new ol.Feature({
+                      geometry: new ol.geom.Point(userLocation)
+                  });
+
+                  // Style du marqueur
+                  userFeature.setStyle(new ol.style.Style({
+                      image: new ol.style.Circle({
+                          radius: 6,
+                          fill: new ol.style.Fill({ color: 'blue' }),
+                          stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+                      })
+                  }));
+
+                  // Mise à jour de la couche de marqueur
+                  userPositionLayer.getSource().clear();
+                  userPositionLayer.getSource().addFeature(userFeature);
+
+                  // Changer l’image du bouton pour indiquer que la localisation est active
+                  locateImg.src = "./img/croix.png"; 
+
+                  isLocated = true;
+
+                  // Trouver et afficher les points les plus proches
+                  const closestPoints = findClosestPoints(userCoords, 5);
+                  displayClosestPoints(closestPoints);
+              },
+              (error) => {
+                  alert("Impossible d'accéder à votre position : " + error.message);
+              }
+          );
+      } else {
+          alert("La géolocalisation n'est pas prise en charge par votre navigateur.");
+      }
+  }
+});
 
 // Fonction pour ajouter un marqueur sur la carte
 function addCustomMarker(coordinates) {
