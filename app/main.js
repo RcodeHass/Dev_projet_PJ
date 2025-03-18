@@ -635,6 +635,16 @@ checkbox_commune.addEventListener('change', (event) => {
   }
 });
 
+// Fonction pour fermer l'onglet latéral lorsqu'on clique sur le bouton de recherche
+document.getElementById("search").addEventListener("click", function() {
+  let infoPanel = document.getElementById("infoPanel");
+  let bsOffcanvas = bootstrap.Offcanvas.getInstance(infoPanel); // Récupère l'instance Bootstrap
+
+  if (bsOffcanvas) {
+      bsOffcanvas.hide(); // Ferme l'onglet latéral
+  }
+});
+
 // Fonctions pour afficher et masquer les couches de découpage administratif 
 tribunalJudiciaireLayer.setVisible(false);
 prudhommeLayer.setVisible(false);
